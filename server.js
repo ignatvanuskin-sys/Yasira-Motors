@@ -99,6 +99,9 @@ function securityHeaders(res, nonce) {
     "base-uri 'self'",
     "frame-ancestors 'none'",
     "object-src 'none'",
+    /* Встраиваемая карта 2ГИС. Без frame-src действует default-src 'self',
+       и карта молча не загрузилась бы. */
+    'frame-src https://widgets.2gis.com',
   ].join('; ');
 
   res.setHeader('Content-Security-Policy', csp);

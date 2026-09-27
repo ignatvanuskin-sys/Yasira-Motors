@@ -115,6 +115,11 @@ const config = {
     /* Подтверждено блоком «Транспорт» карточки 2GIS */
     transit: { stop: 'Ясира', walk: '2 мин · 200 м' },
     parkingCount: 3,
+
+    /* Встраиваемая карта 2ГИС: показывает карточку самого сервиса
+       с фотографиями и часами работы, а не абстрактную метку. */
+    twoGisFirmId: str('BUSINESS_2GIS_FIRM_ID', '70000001029237438'),
+    twoGisCity: str('BUSINESS_2GIS_CITY', 'aktau'),
   },
 
   booking: {

@@ -95,13 +95,21 @@ function serviceCard(service, options = {}) {
 
 /**
  * Шапка секции. Номер секции подставляется автоматически.
+ *
+ * Заголовок можно передать двумя строками — тогда вторая выделяется
+ * акцентным цветом. Приём взят с сайтов-референсов: двухстрочный заголовок
+ * задаёт ритм и читается легче, чем одна длинная строка.
+ *
  * @param {string} kicker
- * @param {string} title
+ * @param {string|string[]} title одна строка или две
  * @param {string} [text]
  * @param {{center?:boolean, index?:string|null}} [options]
  */
 function sectionHead(kicker, title, text, options = {}) {
   const index = options.index === null ? null : options.index || nextSectionIndex();
+  const lines = Array.isArray(title) ? title : [title];
+  const lastIndex = lines.length - 1;
+
   return html`
     <header class="section-head${options.center ? ' is-center' : ''}">
       ${kicker
@@ -110,9 +118,50 @@ function sectionHead(kicker, title, text, options = {}) {
             <span>${kicker}</span>
           </p>`
         : ''}
-      <h2 class="section-title">${title}</h2>
+      <h2 class="section-title">
+        ${lines.map(
+          (line, position) => html`<span class="ttl-line${position === lastIndex && lines.length > 1 ? ' is-accent' : ''}"
+            >${line}</span
+          >`
+        )}
+      </h2>
       ${text ? html`<p class="section-text">${text}</p>` : ''}
     </header>
+  `;
+}
+
+/**
+ * Встраиваемая карта 2ГИС.
+ *
+ * Заменяет статичный снимок карты: тот на тёмном фоне читался плохо,
+ * показывал пятно вместо ориентиров и не давал ни масштаба, ни адреса.
+ * Виджет отдаёт настоящую карту с карточкой сервиса — часами работы,
+ * рейтингом и фотографиями.
+ *
+ * @param {{zoom?:number, tall?:boolean}} [options]
+ */
+function mapEmbed(options = {}) {
+  const b = config.business;
+  const params = encodeURIComponent(
+    JSON.stringify({
+      pos: { lat: b.lat, lon: b.lon, zoom: options.zoom || 17 },
+      opt: { city: b.twoGisCity },
+      org: b.twoGisFirmId,
+    })
+  );
+
+  return html`
+    <div class="map-embed${options.tall ? ' is-tall' : ''}">
+      <iframe
+        src="https://widgets.2gis.com/widget?type=firmsonmap&options=${params}"
+        title="Карта: ${b.name}, ${b.address}"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+      <a class="map-embed-link" href="${b.twoGis}" rel="noopener" target="_blank">
+        ${icon('route', { size: 18 })} Открыть в 2ГИС
+      </a>
+    </div>
   `;
 }
 
@@ -240,6 +289,7 @@ module.exports = {
   serviceCard,
   sectionHead,
   photoBand,
+  mapEmbed,
   nextSectionIndex,
   reviewCard,
   galleryGrid,

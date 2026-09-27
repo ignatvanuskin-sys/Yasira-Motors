@@ -15,6 +15,7 @@ const {
   serviceCard,
   sectionHead,
   photoBand,
+  mapEmbed,
   reviewCard,
   galleryGrid,
   faqList,
@@ -155,11 +156,11 @@ function servicesSection() {
   const popular = SERVICES.filter((s) => s.popular);
 
   return html`
-    <section class="section services-section" id="services">
+    <section class="section section-deep services-section" id="services">
       <div class="container">
         ${sectionHead(
           'Услуги',
-          'Что можно сделать в YASIRA MOTORS',
+          ['Что можно сделать', 'в YASIRA MOTORS'],
           'Направления работ заявлены компанией в карточке 2ГИС и на официальном сайте. ' +
             'Выберите категорию, чтобы посмотреть подробности и записаться.'
         )}
@@ -216,11 +217,11 @@ function servicesSection() {
 
 function selectorSection() {
   return html`
-    <section class="section selector-section" id="selector">
+    <section class="section section-tint selector-section" id="selector">
       <div class="container">
         ${sectionHead(
           'Подбор услуги',
-          'Что нужно вашему автомобилю?',
+          ['С чем приезжают', 'в сервис'],
           'Опишите симптом — покажем, с какой услуги логично начать. ' +
             'Это не диагноз: точную причину мастер определит на месте.'
         )}
@@ -287,11 +288,11 @@ function whySection() {
   ];
 
   return html`
-    <section class="section why-section" id="why">
+    <section class="section section-deep why-section" id="why">
       <div class="container">
         ${sectionHead(
           'Почему YASIRA MOTORS',
-          'Факты, а не общие слова',
+          ['Факты,', 'а не общие слова'],
           'Каждый пункт ниже подтверждается данными из карточки организации 2ГИС и с официального сайта компании.'
         )}
         <div class="why-grid">
@@ -329,9 +330,12 @@ function howSection() {
     { n: '04', title: 'Получаете обслуживание', text: 'Мастер называет объём и стоимость до начала работ.' },
   ];
   return html`
-    <section class="section how-section" id="how">
+    <section class="section section-tint how-section" id="how">
       <div class="container">
-        ${sectionHead('Как это работает', 'Четыре шага от заявки до готового автомобиля')}
+        ${sectionHead('Как это работает', [
+          'Четыре шага',
+          'от заявки до готового автомобиля',
+        ])}
         <ol class="steps">
           ${steps.map(
             (step) => html`
@@ -357,11 +361,11 @@ function howSection() {
 
 function pricingSection() {
   return html`
-    <section class="section pricing-section" id="pricing">
+    <section class="section section-deep pricing-section" id="pricing">
       <div class="container">
         ${sectionHead(
           'Стоимость',
-          'Почему мы не публикуем прайс «от и до»',
+          ['Почему мы не публикуем', 'прайс «от и до»'],
           'Цена ремонта зависит от марки, модели, года и состояния конкретного автомобиля. ' +
             'Цифра, названная без осмотра, вводила бы в заблуждение — поэтому её здесь нет.'
         )}
@@ -423,11 +427,11 @@ function pricingSection() {
 
 function gallerySection() {
   return html`
-    <section class="section gallery-section" id="gallery">
+    <section class="section section-tint gallery-section" id="gallery">
       <div class="container">
         ${sectionHead(
-          'Как выглядит сервис',
-          'Реальные фотографии YASIRA MOTORS',
+          'Фотографии',
+          ['Так выглядит', 'сервис изнутри'],
           'Это снимки компании, а не стоковые изображения. Фотографии опубликованы на официальном сайте yasira.kz.'
         )}
         ${galleryGrid(GALLERY)}
@@ -441,11 +445,14 @@ function gallerySection() {
 function reviewsSection() {
   const items = REVIEWS.slice(0, 6);
   return html`
-    <section class="section reviews-section" id="reviews">
+    <section class="section section-deep reviews-section" id="reviews">
       <div class="container">
         ${sectionHead(
           'Отзывы',
-          `Рейтинг ${config.business.rating} из 5 — по ${config.business.ratingsCount} оценкам в 2ГИС`,
+          [
+            `Рейтинг ${config.business.rating} из 5`,
+            `по ${config.business.ratingsCount} оценкам в 2ГИС`,
+          ],
           'Ниже — отрывки реальных отзывов с указанием автора и даты. Мы не пишем отзывы за клиентов.'
         )}
 
@@ -478,12 +485,12 @@ function reviewsSection() {
 function bookingSection() {
   const b = config.business;
   return html`
-    <section class="section booking-section" id="booking">
+    <section class="section section-band booking-section" id="booking">
       <div class="container booking-layout">
         <div class="booking-copy">
           ${sectionHead(
             'Онлайн-запись',
-            'Запишитесь на удобное время',
+            ['Запишитесь', 'на удобное время'],
             'Выберите услугу, дату и время — заявка уйдёт администратору сразу. ' +
               'Он свяжется с вами, чтобы подтвердить запись и уточнить детали.'
           )}
@@ -571,9 +578,9 @@ function bookingSection() {
 function locationSection() {
   const b = config.business;
   return html`
-    <section class="section location-section" id="location">
+    <section class="section section-deep location-section" id="location">
       <div class="container">
-        ${sectionHead('Как нас найти', `${b.name} в ${b.city}`)}
+        ${sectionHead('Как нас найти', [b.addressShort, 'первый этаж'])}
         <div class="location-layout">
           <div class="location-info">
             <ul class="info-list">
@@ -616,27 +623,7 @@ function locationSection() {
             ${contactActions({ withRoute: true })}
           </div>
 
-          <div class="location-map">
-            <a
-              class="map-link"
-              href="${b.twoGis}"
-              rel="noopener"
-              target="_blank"
-              aria-label="Открыть YASIRA MOTORS в 2ГИС"
-            >
-              <img
-                src="/img/map.png"
-                alt="Карта: ${b.name}, ${b.address}"
-                loading="lazy"
-                decoding="async"
-                width="1000"
-                height="700"
-              >
-              <span class="map-overlay">
-                ${icon('route', { size: 20 })} Открыть в 2ГИС
-              </span>
-            </a>
-          </div>
+          ${mapEmbed({ tall: true })}
         </div>
       </div>
     </section>
@@ -647,9 +634,9 @@ function locationSection() {
 
 function faqSection() {
   return html`
-    <section class="section faq-section" id="faq">
+    <section class="section section-tint faq-section" id="faq">
       <div class="container narrow">
-        ${sectionHead('Вопросы и ответы', 'Частые вопросы о сервисе и записи')}
+        ${sectionHead('Вопросы и ответы', ['Частые вопросы', 'о сервисе и записи'])}
         ${faqList(FAQ)}
       </div>
     </section>

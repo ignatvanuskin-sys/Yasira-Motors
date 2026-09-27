@@ -7,7 +7,7 @@
 const { html } = require('../lib/html');
 const { icon } = require('./icons');
 const { layout } = require('./layout');
-const { sectionHead, faqList, contactActions } = require('./partials');
+const { sectionHead, faqList, contactActions, mapEmbed } = require('./partials');
 const config = require('../config');
 const { FAQ } = require('../content/faq');
 const seo = require('../lib/seo');
@@ -115,23 +115,7 @@ function renderContacts() {
         </div>
 
         <div class="contacts-map">
-          <a
-            class="map-link map-link-tall"
-            href="${b.twoGis}"
-            rel="noopener"
-            target="_blank"
-            aria-label="Открыть YASIRA MOTORS в 2ГИС"
-          >
-            <img
-              src="/img/map.png"
-              alt="Карта: YASIRA MOTORS, ${b.address}"
-              loading="eager"
-              decoding="async"
-              width="1000"
-              height="700"
-            >
-            <span class="map-overlay">${icon('route', { size: 20 })} Открыть в 2ГИС</span>
-          </a>
+          ${mapEmbed({ zoom: 17, tall: true })}
           <p class="map-coords">
             Координаты: ${b.lat.toFixed(6)}, ${b.lon.toFixed(6)}
           </p>

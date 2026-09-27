@@ -14,6 +14,7 @@ const { layout } = require('./layout');
 const {
   serviceCard,
   sectionHead,
+  photoBand,
   reviewCard,
   galleryGrid,
   faqList,
@@ -50,7 +51,7 @@ function hero() {
         </p>
 
         <h1 class="hero-title">
-          Ремонт и обслуживание автомобилей в Актау — <span class="accent">с честной диагностикой</span>
+          Ремонт и обслуживание автомобилей в Актау — <span class="accent">с\u00a0честной диагностикой</span>
         </h1>
 
         <p class="hero-text">
@@ -166,7 +167,7 @@ function servicesSection() {
         <div class="popular-row">
           <h3 class="popular-title">Часто заказывают</h3>
           <div class="popular-grid">
-            ${popular.map((s) => serviceCard(s))}
+            ${popular.map((s) => serviceCard(s, { chip: 'category' }))}
           </div>
         </div>
 
@@ -304,6 +305,15 @@ function whySection() {
             `
           )}
         </div>
+
+        ${photoBand({
+          file: 'directions1.jpg',
+          alt: 'Склад масел и автохимии YASIRA MOTORS: бочки и канистры ADDINOL',
+          title: 'Масла и автохимия — на месте, а не «под заказ»',
+          text:
+            'Больше 1500 наименований масел, смазок и автохимии в наличии. ' +
+            'Поэтому расходники чаще всего меняют в тот же приезд, без ожидания поставки.',
+        })}
       </div>
     </section>
   `;

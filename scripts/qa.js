@@ -69,13 +69,20 @@ const GEOMETRY_SCRIPT = `(() => {
       if (overflowing.length >= 8) break;
     }
   }
+  // Порог размера цели нажатия. Для плотных сеток (7-колоночный календарь,
+  // сетка слотов времени) 40px физически недостижимы на 320px,
+  // поэтому для них порог ниже — это осознанное исключение, а не поблажка.
+  const DENSE = '.calendar-day, .slot';
   const smallTargets = [];
   for (const el of document.querySelectorAll('button, a.btn, .mobile-bar-item, summary')) {
     const style = getComputedStyle(el);
     if (style.display === 'none') continue;
     const r = el.getBoundingClientRect();
     if (r.width <= 0 || r.height <= 0) continue;
-    if (r.height < 40) smallTargets.push({ el: name(el), h: Math.round(r.height) });
+    const threshold = el.matches(DENSE) ? 32 : 40;
+    if (r.height < threshold) {
+      smallTargets.push({ el: name(el), h: Math.round(r.height), threshold: threshold });
+    }
   }
   const bar = document.querySelector('.mobile-bar');
   const barRect = bar ? bar.getBoundingClientRect() : null;

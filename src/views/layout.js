@@ -78,6 +78,8 @@ function layout(page) {
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/favicon.svg">
 ${page.preloadImage ? html`<link rel="preload" as="image" href="${page.preloadImage}" fetchpriority="high">` : ''}
+<link rel="preload" as="font" type="font/woff2" href="/fonts/manrope-cyrillic.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/fonts/manrope-latin.woff2" crossorigin>
 <link rel="stylesheet" href="/css/style.css">
 <script defer src="/js/app.js"></script>
 ${page.schema ? html`<script type="application/ld+json"${nonceHtml}>${raw(page.schema)}</script>` : ''}

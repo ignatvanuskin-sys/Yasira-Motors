@@ -7,7 +7,23 @@
 const { html, raw, esc } = require('../lib/html');
 const { icon } = require('./icons');
 const config = require('../config');
+const context = require('../lib/context');
 const { REVIEW_SOURCE } = require('../content/reviews');
+
+/**
+ * Порядковый номер секции для «приборной» нумерации (01, 02, …).
+ *
+ * Счётчик живёт в контексте запроса (AsyncLocalStorage), поэтому
+ * нумерация сама сбрасывается на каждой странице и не зависит от того,
+ * в каком порядке шаблон вызывает секции.
+ * @returns {string|null}
+ */
+function nextSectionIndex() {
+  const store = context.current();
+  if (!store) return null;
+  store.sectionIndex = (store.sectionIndex || 0) + 1;
+  return String(store.sectionIndex).padStart(2, '0');
+}
 
 /**
  * Форматирование цены.
@@ -40,15 +56,23 @@ function ratingStars(value) {
   return raw(out);
 }
 
-/** Карточка услуги. */
+/**
+ * Карточка услуги.
+ * @param {object} service
+ * @param {{chip?:'auto'|'category'}} [options] chip: 'category' — показывать
+ *   категорию вместо плашки «Часто заказывают». Нужно в подборке популярных
+ *   услуг, где заголовок секции уже говорит о популярности: иначе одинаковые
+ *   плашки повторяются в каждой карточке подряд и выглядят как шаблон.
+ */
 function serviceCard(service, options = {}) {
+  const showCategory = options.chip === 'category' || !service.popular;
   return html`
-    <article class="service-card">
+    <article class="service-card${service.popular ? ' is-popular' : ''}">
       <div class="service-card-top">
         <span class="service-icon" aria-hidden="true">${icon(service.icon, { size: 26 })}</span>
-        ${service.popular
-          ? html`<span class="chip chip-accent">Часто заказывают</span>`
-          : html`<span class="chip">${service.category}</span>`}
+        ${showCategory
+          ? html`<span class="chip">${service.category}</span>`
+          : html`<span class="chip chip-accent">Часто заказывают</span>`}
       </div>
       <h3 class="service-card-title">${service.title}</h3>
       <p class="service-card-text">${service.summary}</p>
@@ -69,14 +93,43 @@ function serviceCard(service, options = {}) {
   `;
 }
 
-/** Шапка секции. */
+/**
+ * Шапка секции. Номер секции подставляется автоматически.
+ * @param {string} kicker
+ * @param {string} title
+ * @param {string} [text]
+ * @param {{center?:boolean, index?:string|null}} [options]
+ */
 function sectionHead(kicker, title, text, options = {}) {
+  const index = options.index === null ? null : options.index || nextSectionIndex();
   return html`
     <header class="section-head${options.center ? ' is-center' : ''}">
-      ${kicker ? html`<p class="kicker">${kicker}</p>` : ''}
+      ${kicker
+        ? html`<p class="kicker">
+            ${index ? html`<span class="section-index">${index}</span>` : ''}
+            <span>${kicker}</span>
+          </p>`
+        : ''}
       <h2 class="section-title">${title}</h2>
       ${text ? html`<p class="section-text">${text}</p>` : ''}
     </header>
+  `;
+}
+
+/**
+ * Широкая фотолента с подписью — разбивает сетки карточек и показывает
+ * реальные снимки сервиса крупно.
+ * @param {{file:string, alt:string, title:string, text:string}} photo
+ */
+function photoBand(photo) {
+  return html`
+    <figure class="photo-band">
+      <img src="/img/${photo.file}" alt="${photo.alt}" loading="lazy" decoding="async">
+      <figcaption>
+        <strong>${photo.title}</strong>
+        <span>${photo.text}</span>
+      </figcaption>
+    </figure>
   `;
 }
 
@@ -179,6 +232,8 @@ module.exports = {
   ratingStars,
   serviceCard,
   sectionHead,
+  photoBand,
+  nextSectionIndex,
   reviewCard,
   galleryGrid,
   faqList,

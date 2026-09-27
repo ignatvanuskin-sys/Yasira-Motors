@@ -6,22 +6,28 @@
 
 /* ── Токены ──────────────────────────────────────────────────────────────── */
 :root {
-  --bg: #0a0c10;
-  --bg-elev: #0e1117;
-  --surface: #14181f;
-  --surface-2: #1a1f28;
-  --surface-3: #212733;
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.14);
+  /* Фон с холодным подтоном: чистый #000 выглядит как «не загрузилось»,
+     а синеватый графит читается как осознанная тёмная тема. */
+  --bg: #07080c;
+  --bg-elev: #0b0d13;
+  --bg-deep: #04050a;
+  --surface: #12161e;
+  --surface-2: #171c26;
+  --surface-3: #1f2532;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --line-accent: rgba(255, 106, 26, 0.45);
 
-  --text: #eef1f6;
-  --text-dim: #b6bfcc;
-  --muted: #8c97a6;
+  --text: #f3f6fa;
+  --text-dim: #c5cdd9;
+  --muted: #94a0b2;
 
   --accent: #ff6a1a;
   --accent-hover: #ff8340;
-  --accent-soft: rgba(255, 106, 26, 0.12);
-  --accent-line: rgba(255, 106, 26, 0.35);
+  --accent-2: #ffb020;
+  --accent-soft: rgba(255, 106, 26, 0.13);
+  --accent-line: rgba(255, 106, 26, 0.38);
+  --glow: rgba(255, 106, 26, 0.28);
   --ok: #34d17f;
   --warn: #ffb020;
   --danger: #ff5468;
@@ -30,17 +36,31 @@
   --radius: 14px;
   --radius-lg: 20px;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 28px 64px rgba(0, 0, 0, 0.55);
+  /* Тени глубже и с цветным подтоном — дают объём вместо плоских карточек */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow: 0 18px 44px -22px rgba(0, 0, 0, 0.95);
+  --shadow-lg: 0 34px 80px -30px rgba(0, 0, 0, 0.95);
+  --shadow-glow: 0 24px 60px -28px var(--glow);
+  /* Верхняя световая линия: главный приём, который отличает
+     «дорогую» тёмную карточку от плоского прямоугольника */
+  --hairline-top: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3) 22%,
+    rgba(255, 255, 255, 0.38) 50%,
+    rgba(255, 255, 255, 0.3) 78%,
+    transparent
+  );
 
-  --container: 1240px;
+  --container: 1280px;
   --gutter: 16px;
-  --section-y: 56px;
+  --section-y: 64px;
   --bar-h: 62px;
 
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, "Noto Sans", sans-serif;
+  --font-display: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
@@ -3394,4 +3414,725 @@ ol {
     color: #000;
     padding-bottom: 0;
   }
+}
+
+/* ==========================================================================
+   СЛОЙ 2 — визуальное усиление
+   --------------------------------------------------------------------------
+   Этот блок идёт ПОСЛЕ правил компонентов осознанно: он задаёт единый
+   «дорогой» тёмный характер поверх базовой вёрстки, не переписывая её.
+   Порядок здесь — часть замысла, а не случайность.
+
+   Что решаем:
+     1. карточки не отделялись от фона → световая линия сверху, объёмная
+        тень и подсветка при наведении;
+     2. страница выглядела монотонной → у каждой секции свой ритм:
+        лента-фото, таймлайн шагов, мозаика галереи, колонки отзывов;
+     3. первый экран выглядел пустым → фотография стала видимой;
+     4. много пустоты → уменьшены вертикальные отступы секций.
+   ========================================================================== */
+
+/* ── Типографика заголовков ─────────────────────────────────────────────── */
+h1,
+h2,
+h3,
+.section-title,
+.page-title,
+.hero-title,
+.final-cta-title,
+.success-title,
+.error-title,
+.admin-title,
+.wizard-panel-title,
+.form-title {
+  font-family: var(--font-display);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+.brand-name,
+.btn,
+.chip,
+.kicker,
+.step-num,
+.stat-value,
+.hero-facts strong,
+.price-value,
+.fact-value,
+.calendar-day,
+.slot,
+.admin-booking-time strong {
+  font-family: var(--font-display);
+}
+
+/* Порядковые номера и технические подписи — моноширинный шрифт:
+   он даёт «приборный» характер, которого не хватало. */
+.step-num,
+.kicker,
+.section-index,
+.admin-table-head,
+.map-coords,
+.slot small,
+.hero-facts span {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Единая поверхность карточек ────────────────────────────────────────── */
+.service-card,
+.why-card,
+.review-card,
+.aside-card,
+.pricing-card,
+.category-block,
+.info-list,
+.faq-item,
+.step,
+.selector,
+.wizard,
+.booking-widget,
+.price-panel,
+.summary,
+.success-contacts,
+.admin-booking,
+.admin-table,
+.admin-form,
+.admin-login-card,
+.calendar,
+.admin-stats li {
+  position: relative;
+  background:
+    linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 62%, var(--surface) 100%);
+  border: 1px solid var(--line);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    var(--shadow);
+}
+
+/* Световая линия по верхней кромке — главный признак «дорогой» тёмной карточки */
+.service-card::before,
+.why-card::before,
+.review-card::before,
+.aside-card::before,
+.pricing-card::before,
+.price-panel::before,
+.booking-widget::before,
+.selector::before,
+.success-contacts::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: var(--hairline-top);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Подсветка при наведении: карточка «оживает», а не просто меняет рамку */
+.service-card:hover,
+.why-card:hover,
+.review-card:hover,
+.step:hover {
+  border-color: var(--line-strong);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    var(--shadow-glow);
+}
+
+.service-card::after,
+.why-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    420px 160px at 80% -10%,
+    rgba(255, 106, 26, 0.14),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.service-card:hover::after,
+.why-card:hover::after {
+  opacity: 1;
+}
+
+/* Популярная услуга отмечается оранжевой линией по кромке, а не
+   повторяющейся плашкой в каждой карточке. */
+.service-card.is-popular::before {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2) 42%, transparent 78%);
+  opacity: 1;
+}
+
+/* ── Нумерация секций ───────────────────────────────────────────────────── */
+.section-head {
+  margin-bottom: 26px;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+
+/* Линия, уходящая от подписи вправо: техничный разделитель */
+.kicker::after {
+  content: '';
+  width: clamp(28px, 8vw, 96px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent-line), transparent);
+}
+
+.section-index {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.34);
+}
+
+/* ── Первый экран: фотография становится видимой ────────────────────────── */
+.hero-media img {
+  opacity: 0.52;
+  filter: saturate(0.85) contrast(1.08) brightness(0.95);
+  object-position: 64% 40%;
+}
+
+.hero-media-scrim {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7, 8, 12, 0.72) 0%,
+      rgba(7, 8, 12, 0.5) 38%,
+      rgba(7, 8, 12, 0.86) 76%,
+      var(--bg) 100%
+    ),
+    linear-gradient(96deg, var(--bg) 4%, rgba(7, 8, 12, 0.24) 58%, transparent 100%);
+}
+
+/* Тёплое свечение за текстом — экран перестаёт быть чёрным прямоугольником */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: auto -10% -30% -10%;
+  height: 60%;
+  z-index: -1;
+  background: radial-gradient(
+    60% 100% at 30% 100%,
+    rgba(255, 106, 26, 0.16),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.hero-facts {
+  background: rgba(10, 12, 18, 0.55);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid var(--line);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    var(--shadow);
+}
+
+.hero-facts li {
+  background: transparent;
+}
+
+/* Разделители между плитками: на десктопе это 4 колонки, на телефоне — 2,
+   поэтому «каждая кроме первой» подходит только широкому экрану. */
+.hero-facts li:not(:first-child) {
+  box-shadow: inset 1px 0 0 var(--line);
+}
+
+@media (max-width: 639px) {
+  .hero-facts li {
+    box-shadow: none;
+  }
+  .hero-facts li:nth-child(even) {
+    box-shadow: inset 1px 0 0 var(--line);
+  }
+}
+
+/* ── Ритм секций: меньше пустоты ────────────────────────────────────────── */
+.section {
+  padding-block: 52px;
+}
+
+.page-head {
+  padding-block: 24px 28px;
+}
+
+.final-cta {
+  padding-block: 56px;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-block: 78px;
+  }
+  .page-head {
+    padding-block: 34px 40px;
+  }
+  .section-head {
+    margin-bottom: 36px;
+  }
+  .final-cta {
+    padding-block: 88px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .section {
+    padding-block: 92px;
+  }
+  .final-cta {
+    padding-block: 104px;
+  }
+}
+
+/* ── Сетки не расширяют страницу из-за содержимого ──────────────────────── */
+/* У grid- и flex-элементов min-width по умолчанию auto: содержимое
+   (длинная кнопка, подпись, таблица) растягивает колонку шире экрана,
+   и на 320px появляется горизонтальная прокрутка всей страницы.
+   Явный min-width: 0 — каноническое лечение. */
+.booking-page-layout > *,
+.location-layout > *,
+.contacts-layout > *,
+.two-col > *,
+.service-hero > *,
+.pricing-grid > *,
+.admin-booking > *,
+.wizard,
+.booking-aside,
+.location-info,
+.location-map,
+.contacts-info,
+.contacts-map,
+.col {
+  min-width: 0;
+}
+
+/* Длинные слова и номера телефонов не должны растягивать колонки */
+.summary-row strong,
+.admin-booking-meta span,
+.info-list span,
+.pricing-times li,
+.two-col p,
+.col p {
+  overflow-wrap: break-word;
+}
+
+/* На очень узких экранах подписи шагов убираем: остаются номера,
+   а горизонтальная лента перестаёт быть тесной. */
+@media (max-width: 389px) {
+  .wizard-step-label {
+    display: none;
+  }
+  .wizard-step {
+    padding: 7px 10px;
+  }
+
+  /* Календарь: 7 колонок в 320px не помещаются при ячейке 42px.
+     Уменьшаем ячейку и зазоры — иначе появляется прокрутка страницы.
+     Это осознанный компромисс: 7-колоночный календарь физически
+     не даёт ячеек по 44px на такой ширине. */
+  .calendar {
+    padding: 8px;
+  }
+  .calendar-days,
+  .calendar-weekdays {
+    gap: 4px;
+  }
+  .calendar-day,
+  .calendar-pad {
+    min-height: 34px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .calendar-day small {
+    font-size: 9px;
+  }
+}
+
+/* Слоты времени: на узком экране 3 колонки вместо 2 — короче список */
+@media (max-width: 389px) {
+  .slots {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .slot {
+    padding: 10px 4px;
+    font-size: 14px;
+  }
+}
+
+/* ── Кнопки на очень узких экранах ──────────────────────────────────────── */
+/* Две кнопки в ряд («Позвонить» + «WhatsApp») при стандартных отступах
+   требуют больше ширины, чем есть в 320px, и растягивали страницу.
+   Уменьшаем внутренние отступы и разрешаем сжатие: текст при необходимости
+   переносится, но страница остаётся без горизонтальной прокрутки. */
+@media (max-width: 389px) {
+  .btn {
+    padding: 12px 14px;
+    gap: 7px;
+    font-size: 14.5px;
+  }
+  .btn-lg {
+    padding: 14px 18px;
+    font-size: 15px;
+  }
+  .contact-actions {
+    gap: 8px;
+  }
+
+  /* Длинное название категории («Техническое обслуживание») в верхней
+     строке карточки не помещается и растягивало страницу — разрешаем
+     перенос и слегка уменьшаем разрядку. */
+  .chip {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+  .service-card-top .chip {
+    white-space: normal;
+    text-align: right;
+    min-width: 0;
+  }
+}
+
+/* Кнопки внутри сеток не должны диктовать ширину колонки */
+.contact-actions > .btn,
+.final-cta-actions > .btn,
+.wizard-nav > .btn,
+.mobile-nav-contacts > .btn {
+  min-width: 0;
+  white-space: normal;
+}
+
+/* Акцентные вариации поверхностей: сохраняют тёплое свечение,
+   которое слой поверхностей иначе бы перекрыл. */
+.pricing-card-main,
+.selector,
+.aside-card-accent,
+.price-panel {
+  background:
+    radial-gradient(620px 220px at 0% 0%, rgba(255, 106, 26, 0.13), transparent 66%),
+    linear-gradient(180deg, var(--surface-2), var(--surface));
+}
+
+/* Фотолента после сетки карточек */
+.why-section .photo-band,
+.services-section .photo-band {
+  margin-top: 18px;
+}
+
+@media (min-width: 900px) {
+  .why-section .photo-band {
+    margin-top: 24px;
+  }
+}
+
+/* ── Категории услуг: две колонки вместо длинной простыни ───────────────── */
+@media (min-width: 900px) {
+  .category-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+}
+
+/* ── Фотолента: широкий кадр с подписью ─────────────────────────────────── */
+.photo-band {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.photo-band img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  filter: saturate(0.9) contrast(1.05);
+}
+
+.photo-band figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 46px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: linear-gradient(180deg, transparent, rgba(4, 5, 10, 0.94) 72%);
+}
+
+.photo-band strong {
+  font-family: var(--font-display);
+  font-size: clamp(17px, 3.4vw, 24px);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.photo-band span {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  max-width: 62ch;
+}
+
+@media (min-width: 900px) {
+  .photo-band img {
+    aspect-ratio: 21 / 8;
+  }
+  .photo-band figcaption {
+    padding: 60px 30px 26px;
+  }
+}
+
+/* ── Шаги: таймлайн вместо карточек ─────────────────────────────────────── */
+.steps {
+  position: relative;
+  gap: 0;
+}
+
+.step {
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  padding: 18px 0 18px 26px;
+  position: relative;
+}
+
+.step::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, var(--accent-line), rgba(255, 255, 255, 0.06));
+}
+
+.step::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 26px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(255, 106, 26, 0.16);
+}
+
+.step:last-child::before {
+  background: linear-gradient(180deg, var(--accent-line), transparent);
+}
+
+.step-num {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  opacity: 1;
+  margin-bottom: 8px;
+}
+
+.step-body h3 {
+  font-size: 18px;
+}
+
+@media (min-width: 700px) {
+  .steps {
+    grid-template-columns: 1fr;
+    max-width: 760px;
+  }
+  .step {
+    padding-left: 30px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Галерея: мозаика разного размера ───────────────────────────────────── */
+@media (min-width: 760px) {
+  .gallery {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 168px;
+    gap: 14px;
+  }
+  .gallery-item,
+  .gallery-item.is-wide {
+    grid-column: span 1;
+    grid-row: span 1;
+    border-radius: var(--radius);
+  }
+  .gallery-item img,
+  .gallery-item.is-wide img {
+    aspect-ratio: auto;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Крупный кадр: 2×2. Рядом два вертикальных, ниже два широких — мозаика
+     читается как подборка, а не как ряд одинаковых плиток. */
+  .gallery-item:nth-child(1) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  .gallery-item:nth-child(2),
+  .gallery-item:nth-child(3) {
+    grid-row: span 2;
+  }
+  .gallery-item:nth-child(4),
+  .gallery-item:nth-child(5) {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1200px) {
+  .gallery {
+    grid-auto-rows: 196px;
+  }
+}
+
+/* ── Отзывы: колонки и акцентный первый отзыв ───────────────────────────── */
+@media (min-width: 900px) {
+  .reviews-grid {
+    display: block;
+    columns: 2;
+    column-gap: 16px;
+  }
+  .reviews-grid .review-card {
+    break-inside: avoid;
+    margin-bottom: 16px;
+  }
+}
+
+.review-card:first-child {
+  border-color: var(--accent-line);
+  background:
+    radial-gradient(520px 200px at 0% 0%, rgba(255, 106, 26, 0.13), transparent 66%),
+    linear-gradient(180deg, var(--surface-2), var(--surface));
+}
+
+/* Акцентный отзыв: крупнее и светлее, но БЕЗ шрифта заголовков —
+   тексты отзывов бывают на казахском, где нужен полный набор глифов. */
+.review-card:first-child .review-text {
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ── Карта: рамка, которая читается на тёмном фоне ──────────────────────── */
+.location-map,
+.contacts-map {
+  box-shadow: var(--shadow-lg);
+}
+
+.map-link img {
+  filter: saturate(1.05) brightness(1.06) contrast(1.02);
+}
+
+.map-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 8, 12, 0.35), transparent 40%);
+  pointer-events: none;
+}
+
+.map-overlay {
+  z-index: 1;
+  background: rgba(7, 8, 12, 0.92);
+  border-color: var(--line-accent);
+  color: #ffd2b8;
+}
+
+.map-link:hover .map-overlay {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ── Секция «Почему мы»: холодный акцент на второй плитке ───────────────── */
+.why-card:nth-child(4n + 2) .why-icon {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--accent-2);
+}
+
+/* ── Вкладки и чипы: чуть более «приборные» ─────────────────────────────── */
+.chip {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10.5px;
+}
+
+.trust-item strong {
+  font-family: var(--font-display);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  font-size: 17px;
+}
+
+.trust-bar {
+  background: linear-gradient(180deg, var(--bg-elev), var(--bg-deep));
+}
+
+/* ── Финальный призыв: свет и объём ─────────────────────────────────────── */
+.final-cta {
+  background:
+    radial-gradient(1000px 420px at 50% 108%, rgba(255, 106, 26, 0.2), transparent 68%),
+    linear-gradient(180deg, var(--bg-deep), var(--bg));
+}
+
+/* ==========================================================================
+   ШРИФТ ДЛЯ ЗАГОЛОВКОВ — Manrope, размещён локально
+   --------------------------------------------------------------------------
+   Файлы лежат в public/fonts, а не подключаются с Google Fonts: сайт
+   остаётся самодостаточным, не зависит от чужого CDN и не требует
+   ослаблять Content-Security-Policy ради внешнего источника стилей.
+
+   Manrope используется ТОЛЬКО для заголовков, кнопок и цифр. Основной
+   текст остаётся на системном шрифте: он полностью покрывает казахские
+   буквы (ә, ғ, қ, ң, ө, ұ, ү, һ, і), которые встречаются в отзывах, —
+   а в сабсетах Manrope эти глифы отсутствуют, и смешанный рендер выглядел бы
+   рвано.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/manrope-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/manrope-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/manrope-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
 }

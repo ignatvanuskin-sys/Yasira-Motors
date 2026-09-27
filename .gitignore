@@ -1,0 +1,20 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+
+# Данные: в репозиторий не попадают — это персональные данные клиентов.
+data/*.json
+data/*.lock
+data/*.tmp
+data/*.corrupt-*
+!data/.gitkeep
+
+logs/
+*.log
+
+# Артефакты проверок и скриншоты
+qa-screenshots/
+.qa/
+.DS_Store
+Thumbs.db

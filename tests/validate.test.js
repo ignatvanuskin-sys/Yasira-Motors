@@ -19,8 +19,13 @@ test('normalizePhone отбраковывает мусор', () => {
   assert.equal(validate.normalizePhone('+1 202 555 0100'), null);
 });
 
-test('formatPhone возвращает читаемый номер', () => {
-  assert.equal(validate.formatPhone('+77770884436'), '+7 777 088 44 36');
+test('formatPhone возвращает читаемый номер с неразрывными пробелами', () => {
+  const NBSP = '\u00a0';
+  const formatted = validate.formatPhone('+77770884436');
+
+  assert.equal(formatted, `+7${NBSP}777${NBSP}088${NBSP}44${NBSP}36`);
+  // Обычных пробелов быть не должно: иначе номер переносится по строкам.
+  assert.equal(formatted.includes(' '), false);
 });
 
 test('clean убирает управляющие символы и лишние пробелы', () => {

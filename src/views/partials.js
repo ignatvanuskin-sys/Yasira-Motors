@@ -124,7 +124,14 @@ function sectionHead(kicker, title, text, options = {}) {
 function photoBand(photo) {
   return html`
     <figure class="photo-band">
-      <img src="/img/${photo.file}" alt="${photo.alt}" loading="lazy" decoding="async">
+      <img
+        src="/img/${photo.file}"
+        alt="${photo.alt}"
+        loading="lazy"
+        decoding="async"
+        width="1200"
+        height="600"
+      >
       <figcaption>
         <strong>${photo.title}</strong>
         <span>${photo.text}</span>

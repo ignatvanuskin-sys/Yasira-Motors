@@ -98,6 +98,11 @@
       var result = $('[data-selector-result]', root);
       if (!input || !button || !result) return;
 
+      // Результат подбора появляется асинхронно — скринридер должен
+      // узнать об этом без перемещения фокуса.
+      result.setAttribute('role', 'status');
+      result.setAttribute('aria-live', 'polite');
+
       function run() {
         var slug = input.value;
         if (!slug) {
@@ -219,6 +224,17 @@
       status.textContent = '';
     }
 
+    /** Переводит фокус на первое поле с ошибкой. */
+    function focusFirstError() {
+      var box = form.querySelector('.field-error:not([hidden])');
+      if (!box) return;
+      var field = box.getAttribute('data-error-for');
+      var target = field ? form.elements[field] : null;
+      if (target && target.focus) target.focus({ preventScroll: true });
+      var host = target && target.closest ? target.closest('.field') || target : box;
+      if (host.scrollIntoView) host.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+
     function loadSlots() {
       var date = dateInput.value;
       timeSelect.disabled = true;
@@ -289,7 +305,10 @@
         setError('phone', 'Укажите телефон полностью.');
         hasError = true;
       }
-      if (hasError) return;
+      if (hasError) {
+        focusFirstError();
+        return;
+      }
 
       submit.disabled = true;
       submit.textContent = 'Отправляем…';
@@ -369,6 +388,8 @@
       notes: '',
       calendarLoaded: false,
       requestId: null,
+      /* true после успешной отправки: снимает защиту от закрытия страницы */
+      submitted: false,
     };
 
     if (window.crypto && window.crypto.randomUUID) {
@@ -399,6 +420,42 @@
       status.textContent = '';
     }
 
+    /**
+     * Держит состояние записи в адресе страницы.
+     * Это даёт рабочую кнопку «назад», сохраняет шаг и дату при обновлении
+     * и позволяет дать клиенту ссылку на конкретный шаг записи.
+     */
+    function syncUrl() {
+      if (!window.history || !window.history.replaceState) return;
+      var url = new URL(window.location.href);
+      if (state.step > 1) url.searchParams.set('step', String(state.step));
+      else url.searchParams.delete('step');
+      if (state.date) url.searchParams.set('date', state.date);
+      else url.searchParams.delete('date');
+      window.history.replaceState(null, '', url.pathname + url.search);
+    }
+
+    /** Переводит фокус на первое поле с ошибкой — чтобы её не искали глазами. */
+    function focusFirstError() {
+      var box = wizard.querySelector('.field-error:not([hidden])');
+      if (!box) return;
+      var field = box.getAttribute('data-error-for');
+      var target = null;
+      if (field === 'serviceSlug') {
+        target =
+          wizard.querySelector('input[name="serviceSlug"]:checked') ||
+          wizard.querySelector('input[name="serviceSlug"]');
+      } else if (field) {
+        target = wizard.querySelector('[name="' + field + '"]');
+      }
+      if (!target) return;
+      if (target.focus) target.focus({ preventScroll: true });
+      var host = target.closest ? target.closest('.field, .service-picker') || target : target;
+      if (host.scrollIntoView) {
+        host.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    }
+
     /* Переключение шагов */
     function goTo(step) {
       state.step = step;
@@ -415,16 +472,12 @@
 
       if (step === 3 && !state.calendarLoaded) loadCalendar();
       if (step === 6) renderSummary();
+      syncUrl();
 
       var panel = panels[step - 1];
-      if (panel) {
-        var target = panel.scrollIntoView
-          ? panel
-          : null;
-        if (target && window.innerWidth < 900) {
-          var top = panel.getBoundingClientRect().top + window.pageYOffset - 90;
-          window.scrollTo({ top: top, behavior: 'smooth' });
-        }
+      if (panel && window.innerWidth < 900) {
+        var top = panel.getBoundingClientRect().top + window.pageYOffset - 90;
+        window.scrollTo({ top: top, behavior: 'smooth' });
       }
     }
 
@@ -648,7 +701,10 @@
     $$('[data-next]', wizard).forEach(function (button) {
       on(button, 'click', function () {
         var step = state.step;
-        if (!validateStep(step)) return;
+        if (!validateStep(step)) {
+          focusFirstError();
+          return;
+        }
         goTo(Number(button.getAttribute('data-next')));
       });
     });
@@ -672,6 +728,7 @@
       event.preventDefault();
       if (!validateStep(1) || !validateStep(3) || !validateStep(4) || !validateStep(5)) {
         goTo(state.serviceSlug ? (state.date ? (state.time ? 5 : 4) : 3) : 1);
+        focusFirstError();
         return;
       }
       state.brand = form.elements.brand.value.trim();
@@ -704,6 +761,9 @@
       })
         .then(function (data) {
           if (data && data.ok && data.booking) {
+            // Запись отправлена — снимаем защиту от закрытия страницы,
+            // иначе браузер спросит подтверждение при переходе на экран успеха.
+            state.submitted = true;
             window.location.href =
               '/booking/success?code=' + encodeURIComponent(data.booking.publicId);
             return;
@@ -717,6 +777,7 @@
             else if (data.errors.date) goTo(3);
             else if (data.errors.time) goTo(4);
             else goTo(5);
+            focusFirstError();
           }
 
           // Слот могли занять, пока клиент заполнял форму: обновляем данные.
@@ -740,7 +801,34 @@
         });
     });
 
-    goTo(state.serviceSlug ? 2 : 1);
+    /* Предупреждение о потере заполненной записи.
+       Показываем только когда клиент уже начал заполнять форму и ещё
+       не отправил её: иначе теряются автомобиль и контакты. */
+    on(window, 'beforeunload', function (event) {
+      if (state.submitted || state.step < 2) return undefined;
+      event.preventDefault();
+      event.returnValue = '';
+      return '';
+    });
+
+    /* Восстановление состояния из адреса: шаг и дата переживают обновление
+       страницы, а ссылкой на шаг можно поделиться. */
+    var params = new URLSearchParams(window.location.search);
+    var restoredDate = params.get('date') || '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(restoredDate)) state.date = restoredDate;
+
+    var initialStep = parseInt(params.get('step') || '1', 10);
+    if (!(initialStep >= 1 && initialStep <= 6)) initialStep = 1;
+    if (initialStep > 1 && !state.serviceSlug) initialStep = 1;
+    if (initialStep >= 4 && !state.date) initialStep = 3;
+    /* Шестой шаг не восстанавливаем: имя и телефон по ссылке не передаются,
+       и сводка была бы пустой. */
+    if (initialStep >= 6) initialStep = 5;
+
+    if (initialStep >= 3) loadCalendar();
+    if (state.date && initialStep >= 4) loadSlots();
+
+    goTo(initialStep);
   }
 
   /* ── Появление секций ───────────────────────────────────────────────── */

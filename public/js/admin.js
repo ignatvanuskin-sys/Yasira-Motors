@@ -17,12 +17,30 @@
     });
   }
 
+  /**
+   * Подтверждение перед необратимым действием.
+   * Отмена записи видна клиенту и не откатывается одним кликом,
+   * поэтому спрашиваем — но без лишних диалогов для обычных статусов.
+   */
+  function confirmDestructive(card, status) {
+    if (status !== 'CANCELLED') return true;
+    var nameNode = card ? card.querySelector('.admin-booking-main strong') : null;
+    var name = nameNode ? nameNode.textContent.trim() : '';
+    return window.confirm(
+      'Отменить запись' +
+        (name ? ' клиента ' + name : '') +
+        '?\n\nКлиент не получит автоматического уведомления — предупредите его по телефону.'
+    );
+  }
+
   function handleClick(button) {
     var id = button.getAttribute('data-id');
     var status = button.getAttribute('data-status');
     if (!id || !status) return;
 
     var card = button.closest('[data-booking-id]');
+    if (!confirmDestructive(card, status)) return;
+
     var buttons = card ? card.querySelectorAll('button') : [button];
 
     Array.prototype.forEach.call(buttons, function (b) {

@@ -344,7 +344,8 @@ async function main() {
     'Экран успеха содержит данные записи',
     successText.includes('Запись принята') &&
       successText.includes('YM-') &&
-      successText.includes('+7 700 111 22 33') &&
+      // Телефон выводится с неразрывными пробелами — нормализуем перед сверкой
+      successText.replace(/\u00a0/g, ' ').includes('+7 700 111 22 33') &&
       !/demo|mock|не сохранится|демонстрац/i.test(successText)
   );
 

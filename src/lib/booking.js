@@ -97,46 +97,58 @@ function minutesToTime(minutes) {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-const WEEKDAY_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-const WEEKDAY_FULL = [
-  'понедельник',
-  'вторник',
-  'среда',
-  'четверг',
-  'пятница',
-  'суббота',
-  'воскресенье',
-];
-const MONTH_GENITIVE = [
-  'января',
-  'февраля',
-  'марта',
-  'апреля',
-  'мая',
-  'июня',
-  'июля',
-  'августа',
-  'сентября',
-  'октября',
-  'ноября',
-  'декабря',
-];
+/* Форматирование дат — через Intl, а не через захардкоженные массивы
+   названий месяцев. Intl сам даёт правильные падежи русского языка
+   («28 сентября», «воскресенье»), не требует поддержки списков вручную
+   и корректно работает в любой локали. */
+const LOCALE = 'ru-RU';
+
+const humanFormatter = new Intl.DateTimeFormat(LOCALE, {
+  day: 'numeric',
+  month: 'long',
+});
+
+const fullFormatter = new Intl.DateTimeFormat(LOCALE, {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const weekdayShortFormatter = new Intl.DateTimeFormat(LOCALE, { weekday: 'short' });
 
 /**
  * «28 сентября» — для сводки записи и уведомлений.
  * @param {string} dateKey
  */
 function humanDate(dateKey) {
-  const date = parseDateKey(dateKey);
-  return `${date.getDate()} ${MONTH_GENITIVE[date.getMonth()]}`;
+  return humanFormatter.format(parseDateKey(dateKey));
 }
 
-/** «воскресенье, 28 сентября 2026» */
+/**
+ * «воскресенье, 28 сентября 2026».
+ * Годовой суффикс « г.» убираем: в интерфейсе он лишний.
+ * @param {string} dateKey
+ */
 function fullDate(dateKey) {
-  const date = parseDateKey(dateKey);
-  return `${WEEKDAY_FULL[isoDayOf(dateKey) - 1]}, ${date.getDate()} ${
-    MONTH_GENITIVE[date.getMonth()]
-  } ${date.getFullYear()}`;
+  return fullFormatter.format(parseDateKey(dateKey)).replace(/\s*г\.$/, '');
+}
+
+/**
+ * Короткое название дня недели для шапки календаря: «Пн».
+ * @param {Date} date
+ */
+function weekdayShort(date) {
+  const label = weekdayShortFormatter.format(date).replace(/\.$/, '');
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+/**
+ * Полное название дня недели.
+ * @param {string} dateKey
+ */
+function weekdayFull(dateKey) {
+  return new Intl.DateTimeFormat(LOCALE, { weekday: 'long' }).format(parseDateKey(dateKey));
 }
 
 /** «28.09.2026» — для уведомлений администратору. */
@@ -344,7 +356,7 @@ function calendar(now = new Date(), days = 14) {
     out.push({
       date: key,
       day: date.getDate(),
-      weekday: WEEKDAY_SHORT[isoDayOf(key) - 1],
+      weekday: weekdayShort(date),
       month: date.getMonth() + 1,
       isToday: i === 0,
       closed: schedule.closed || !window.ok,
@@ -639,7 +651,7 @@ module.exports = {
   humanDate,
   fullDate,
   numericDate,
-  weekdayFull: (dateKey) => WEEKDAY_FULL[isoDayOf(dateKey) - 1],
+  weekdayFull,
   daySchedule,
   slotTimes,
   dayAvailability,

@@ -537,7 +537,7 @@ function bookingSection() {
 
             <div class="field">
               <label for="qb-name">Имя</label>
-              <input type="text" id="qb-name" name="name" autocomplete="name" required placeholder="Как к вам обращаться">
+              <input type="text" id="qb-name" name="name" autocomplete="name" required placeholder="Как к вам обращаться…">
               <p class="field-error" data-error-for="name" hidden></p>
             </div>
 

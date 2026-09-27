@@ -128,24 +128,40 @@ function renderBooking(options = {}) {
               <div class="field-row">
                 <div class="field">
                   <label for="w-brand">Марка</label>
-                  <input type="text" id="w-brand" name="brand" placeholder="Toyota" autocomplete="off">
+                  <input
+                    type="text" id="w-brand" name="brand"
+                    placeholder="Например, Toyota"
+                    autocomplete="off" autocapitalize="words"
+                  >
                   <p class="field-error" data-error-for="brand" hidden></p>
                 </div>
                 <div class="field">
                   <label for="w-model">Модель</label>
-                  <input type="text" id="w-model" name="model" placeholder="Camry" autocomplete="off">
+                  <input
+                    type="text" id="w-model" name="model"
+                    placeholder="Например, Camry"
+                    autocomplete="off" autocapitalize="words"
+                  >
                   <p class="field-error" data-error-for="model" hidden></p>
                 </div>
               </div>
               <div class="field-row">
                 <div class="field">
                   <label for="w-year">Год выпуска</label>
-                  <input type="text" id="w-year" name="year" inputmode="numeric" placeholder="2020" maxlength="4">
+                  <input
+                    type="text" id="w-year" name="year"
+                    inputmode="numeric" placeholder="2020" maxlength="4"
+                    autocomplete="off" spellcheck="false"
+                  >
                   <p class="field-error" data-error-for="year" hidden></p>
                 </div>
                 <div class="field">
                   <label for="w-plate">Госномер <span class="muted">(необязательно)</span></label>
-                  <input type="text" id="w-plate" name="plate" placeholder="123 ABC 12" autocomplete="off">
+                  <input
+                    type="text" id="w-plate" name="plate"
+                    placeholder="Например, 123 ABC 12"
+                    autocomplete="off" spellcheck="false" autocapitalize="characters"
+                  >
                   <p class="field-error" data-error-for="plate" hidden></p>
                 </div>
               </div>
@@ -218,7 +234,11 @@ function renderBooking(options = {}) {
               </div>
               <div class="field">
                 <label for="w-notes">Комментарий <span class="muted">(необязательно)</span></label>
-                <textarea id="w-notes" name="notes" rows="3" placeholder="Опишите симптом: когда появился, на что обратить внимание"></textarea>
+                <textarea
+                  id="w-notes" name="notes" rows="3"
+                  placeholder="Опишите симптом: когда появился, на что обратить внимание…"
+                  autocomplete="off"
+                ></textarea>
               </div>
               <p class="form-legal">
                 Оставляя заявку, вы соглашаетесь на обработку контактных данных

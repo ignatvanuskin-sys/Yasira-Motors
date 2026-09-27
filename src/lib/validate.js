@@ -35,15 +35,19 @@ function normalizePhone(input) {
 
 /**
  * Форматирует номер для показа: +7 777 088 44 36
+ *
+ * Разделители — неразрывные пробелы: иначе номер переносится по строкам
+ * и в сводке записи, и в уведомлении администратору.
  * @param {string} normalized
  */
 function formatPhone(normalized) {
   const digits = String(normalized || '').replace(/\D/g, '');
   if (digits.length !== 11) return normalized || '';
-  return `+${digits[0]} ${digits.slice(1, 4)} ${digits.slice(4, 7)} ${digits.slice(
-    7,
-    9
-  )} ${digits.slice(9, 11)}`;
+  const nbsp = '\u00a0';
+  return (
+    `+${digits[0]}${nbsp}${digits.slice(1, 4)}${nbsp}${digits.slice(4, 7)}` +
+    `${nbsp}${digits.slice(7, 9)}${nbsp}${digits.slice(9, 11)}`
+  );
 }
 
 /** Имя: буквы (рус/каз/лат), дефис, апостроф, пробел. 2–60 символов. */

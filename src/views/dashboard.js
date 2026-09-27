@@ -250,10 +250,21 @@ function renderDashboard(data) {
                 <form class="admin-filter" method="get" action="/dashboard">
                   <input type="hidden" name="tab" value="${active}">
                   ${active === 'calendar'
-                    ? html`<input type="date" name="date" value="${data.date}">`
+                    ? html`<label class="sr-only" for="admin-date">Дата записей</label>
+                        <input type="date" id="admin-date" name="date" value="${data.date}">`
                     : html`<input type="hidden" name="date" value="${data.date}">`}
-                  <input type="search" name="q" value="${(data.filter && data.filter.query) || ''}" placeholder="Имя, телефон, авто, номер">
-                  <select name="status">
+                  <label class="sr-only" for="admin-q">Поиск по записям</label>
+                  <input
+                    type="search"
+                    id="admin-q"
+                    name="q"
+                    value="${(data.filter && data.filter.query) || ''}"
+                    placeholder="Имя, телефон, авто, номер…"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                  <label class="sr-only" for="admin-status">Статус записи</label>
+                  <select id="admin-status" name="status">
                     <option value="">Все статусы</option>
                     ${Object.entries(bookingLib.STATUS_LABELS).map(
                       ([value, label]) => html`
@@ -306,6 +317,7 @@ function renderDashboard(data) {
       </header>
 
       <div class="container">
+        <h1 class="sr-only">Панель управления YASIRA MOTORS</h1>
         <ul class="admin-stats">
           <li>
             <strong>${data.summary.todayCount}</strong>

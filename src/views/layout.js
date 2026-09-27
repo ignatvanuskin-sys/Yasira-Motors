@@ -61,7 +61,7 @@ function layout(page) {
 <meta name="description" content="${esc(page.description)}">
 <link rel="canonical" href="${esc(canonical)}">
 <meta name="robots" content="${page.noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'}">
-<meta name="theme-color" content="#0a0c10">
+<meta name="theme-color" content="#07080c">
 <meta name="format-detection" content="telephone=no">
 
 <meta property="og:type" content="website">
@@ -89,7 +89,7 @@ ${page.schema ? html`<script type="application/ld+json"${nonceHtml}>${raw(page.s
 
 <header class="site-header" id="site-header">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="${esc(b.name)} — на главную">
+    <a class="brand" href="/" aria-label="${esc(b.name)} — на главную" translate="no">
       <span class="brand-mark" aria-hidden="true">${icon('gauge', { size: 22, strokeWidth: 1.7 })}</span>
       <span class="brand-text">
         <span class="brand-name">YASIRA</span>
@@ -138,7 +138,7 @@ ${isRaw(page.body) ? page.body : raw(String(page.body || ''))}
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <div class="brand brand-static">
+      <div class="brand brand-static" translate="no">
         <span class="brand-mark" aria-hidden="true">${icon('gauge', { size: 22 })}</span>
         <span class="brand-text">
           <span class="brand-name">YASIRA</span>

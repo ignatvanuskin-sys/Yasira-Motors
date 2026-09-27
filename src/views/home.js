@@ -14,7 +14,6 @@ const { layout } = require('./layout');
 const {
   serviceCard,
   sectionHead,
-  photoBand,
   mapEmbed,
   reviewCard,
   galleryGrid,
@@ -165,6 +164,24 @@ function servicesSection() {
             'Выберите категорию, чтобы посмотреть подробности и записаться.'
         )}
 
+        <!-- Подбор услуги живёт внутри раздела услуг, а не отдельной секцией:
+             это тот же вопрос клиента «что мне нужно», заданный дважды. -->
+        <div class="selector selector-compact" id="selector" data-selector>
+          <label class="selector-label" for="selector-symptom">Не знаете, что выбрать?</label>
+          <div class="selector-control">
+            <select id="selector-symptom" data-selector-input>
+              <option value="">Опишите, что беспокоит</option>
+              ${SYMPTOM_MAP.map((s) => html`<option value="${s.slug}">${s.text}</option>`)}
+            </select>
+            <button class="btn btn-primary" type="button" data-selector-go>Подобрать</button>
+          </div>
+          <div class="selector-result" data-selector-result hidden></div>
+          <p class="selector-hint">
+            ${icon('info', { size: 16 })}
+            Это подсказка, а не диагноз: точную причину мастер определит после осмотра.
+          </p>
+        </div>
+
         <div class="popular-row">
           <h3 class="popular-title">Часто заказывают</h3>
           <div class="popular-grid">
@@ -207,44 +224,6 @@ function servicesSection() {
           <a class="btn btn-ghost" href="/services">
             Все услуги и цены ${icon('arrowRight', { size: 18 })}
           </a>
-        </div>
-      </div>
-    </section>
-  `;
-}
-
-/* ──────────────────────────── SMART SERVICE SELECTOR ─────────────────────── */
-
-function selectorSection() {
-  return html`
-    <section class="section section-tint selector-section" id="selector">
-      <div class="container">
-        ${sectionHead(
-          'Подбор услуги',
-          ['С чем приезжают', 'в сервис'],
-          'Опишите симптом — покажем, с какой услуги логично начать. ' +
-            'Это не диагноз: точную причину мастер определит на месте.'
-        )}
-
-        <div class="selector" data-selector>
-          <label class="selector-label" for="selector-symptom">Что вас беспокоит?</label>
-          <div class="selector-control">
-            <select id="selector-symptom" data-selector-input>
-              <option value="">Выберите симптом или задачу</option>
-              ${SYMPTOM_MAP.map(
-                (s) => html`<option value="${s.slug}">${s.text}</option>`
-              )}
-            </select>
-            <button class="btn btn-primary" type="button" data-selector-go>Подобрать</button>
-          </div>
-
-          <div class="selector-result" data-selector-result hidden></div>
-
-          <p class="selector-hint">
-            ${icon('info', { size: 16 })}
-            Формулировка «возможно, вам подойдёт» — это подсказка, а не диагноз.
-            Поставить точный диагноз можно только после осмотра автомобиля.
-          </p>
         </div>
       </div>
     </section>
@@ -306,15 +285,6 @@ function whySection() {
             `
           )}
         </div>
-
-        ${photoBand({
-          file: 'directions1.jpg',
-          alt: 'Склад масел и автохимии YASIRA MOTORS: бочки и канистры ADDINOL',
-          title: 'Масла и автохимия — на месте, а не «под заказ»',
-          text:
-            'Больше 1500 наименований масел, смазок и автохимии в наличии. ' +
-            'Поэтому расходники чаще всего меняют в тот же приезд, без ожидания поставки.',
-        })}
       </div>
     </section>
   `;
@@ -351,72 +321,6 @@ function howSection() {
         </ol>
         <div class="section-cta">
           <a class="btn btn-primary" href="/booking">Записаться на обслуживание</a>
-        </div>
-      </div>
-    </section>
-  `;
-}
-
-/* ────────────────────────────── PRICING / CATEGORIES ─────────────────────── */
-
-function pricingSection() {
-  return html`
-    <section class="section section-deep pricing-section" id="pricing">
-      <div class="container">
-        ${sectionHead(
-          'Стоимость',
-          ['Почему мы не публикуем', 'прайс «от и до»'],
-          'Цена ремонта зависит от марки, модели, года и состояния конкретного автомобиля. ' +
-            'Цифра, названная без осмотра, вводила бы в заблуждение — поэтому её здесь нет.'
-        )}
-
-        <div class="pricing-grid">
-          <article class="pricing-card pricing-card-main">
-            <h3>Как формируется цена</h3>
-            <ol class="pricing-steps">
-              <li>
-                ${icon('check', { size: 18 })}
-                <span>Вы описываете проблему и автомобиль — по телефону или в заявке.</span>
-              </li>
-              <li>
-                ${icon('check', { size: 18 })}
-                <span>Мастер проводит диагностику и определяет объём работ.</span>
-              </li>
-              <li>
-                ${icon('check', { size: 18 })}
-                <span>Вам называют стоимость и состав работ <strong>до</strong> начала ремонта.</span>
-              </li>
-              <li>
-                ${icon('check', { size: 18 })}
-                <span>Работы выполняются только после вашего согласования.</span>
-              </li>
-            </ol>
-            <div class="pricing-actions">
-              <a class="btn btn-primary" href="/booking">Записаться на диагностику</a>
-              <a class="btn btn-ghost" href="tel:${config.business.phone.replace(/[^\d+]/g, '')}">
-                ${icon('phone', { size: 18 })} Узнать цену
-              </a>
-            </div>
-          </article>
-
-          <aside class="pricing-card pricing-card-aside">
-            <h3>Ориентиры по времени</h3>
-            <ul class="pricing-times">
-              <li><span>Компьютерная диагностика</span><strong>от 30 мин</strong></li>
-              <li><span>Замена масла и фильтров</span><strong>от 40 мин</strong></li>
-              <li><span>Развал-схождение</span><strong>от 40 мин</strong></li>
-              <li><span>Шиномонтаж</span><strong>от 30 мин</strong></li>
-              <li><span>Ремонт ходовой части</span><strong>от 1 часа</strong></li>
-              <li><span>Ремонт двигателя / КПП</span><strong>от 1 дня</strong></li>
-            </ul>
-            <p class="pricing-note">
-              ${icon('info', { size: 16 })}
-              Время указано ориентировочно: точный срок мастер называет после осмотра.
-              Один из клиентов в отзыве на 2ГИС указал, что полная замена масла с салонным,
-              воздушным и масляным фильтрами обошлась примерно в 15 000 ₸ — это ориентир
-              из отзыва, а не действующий прайс.
-            </p>
-          </aside>
         </div>
       </div>
     </section>
@@ -680,10 +584,8 @@ function renderHome() {
     hero(),
     trustBar(),
     servicesSection(),
-    selectorSection(),
     whySection(),
     howSection(),
-    pricingSection(),
     gallerySection(),
     reviewsSection(),
     bookingSection(),

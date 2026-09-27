@@ -471,7 +471,7 @@
       });
 
       if (step === 3 && !state.calendarLoaded) loadCalendar();
-      if (step === 6) renderSummary();
+      if (step === 5) renderSummary();
       syncUrl();
 
       var panel = panels[step - 1];
@@ -627,11 +627,18 @@
     function renderSummary() {
       var service = $('input[name="serviceSlug"]:checked', wizard);
       var serviceTitle = '';
+      var unsure = false;
       if (service) {
         var label = service.closest('.service-option');
         var strong = label ? label.querySelector('strong') : null;
         serviceTitle = strong ? strong.textContent : service.value;
+        unsure = service.getAttribute('data-unsure') === 'true';
       }
+      /* Выбрано «не знаю, что сломалось»: клиент видит свою формулировку,
+         а администратору уходит конкретная услуга — они должны совпадать
+         в сводке, иначе возникнет недопонимание при звонке. */
+      if (unsure) serviceTitle = 'Не знаю, что сломалось (компьютерная диагностика)';
+
       var vehicle = [state.brand, state.model, state.year].filter(Boolean).join(' ');
 
       var rows = [
@@ -643,6 +650,7 @@
         ['Телефон', state.phone],
       ];
       if (state.plate) rows.splice(3, 0, ['Госномер', state.plate]);
+      if (state.notes) rows.splice(rows.length - 2, 0, ['Что беспокоит', state.notes]);
 
       var html = '';
       rows.forEach(function (row) {
@@ -669,15 +677,18 @@
         }
         state.serviceSlug = service.value;
       }
-      if (step === 3 && !state.date) {
-        setError('date', 'Выберите дату.');
-        return false;
+      /* Шаг 3 — дата И время: клиенту важен один ответ «когда», а не два экрана */
+      if (step === 3) {
+        if (!state.date) {
+          setError('date', 'Выберите дату.');
+          return false;
+        }
+        if (!state.time) {
+          setError('time', 'Выберите время.');
+          return false;
+        }
       }
-      if (step === 4 && !state.time) {
-        setError('time', 'Выберите время.');
-        return false;
-      }
-      if (step === 5) {
+      if (step === 4) {
         state.name = form.elements.name.value.trim();
         state.phone = form.elements.phone.value.trim();
         if (state.name.length < 2) {
@@ -694,6 +705,7 @@
         state.model = form.elements.model.value.trim();
         state.year = form.elements.year.value.trim();
         state.plate = form.elements.plate.value.trim();
+        state.notes = form.elements.notes.value.trim();
       }
       return true;
     }
@@ -727,7 +739,7 @@
     on(form, 'submit', function (event) {
       event.preventDefault();
       if (!validateStep(1) || !validateStep(3) || !validateStep(4) || !validateStep(5)) {
-        goTo(state.serviceSlug ? (state.date ? (state.time ? 5 : 4) : 3) : 1);
+        goTo(state.serviceSlug ? (state.date && state.time ? 4 : 3) : 1);
         focusFirstError();
         return;
       }
@@ -773,10 +785,11 @@
             Object.keys(data.errors).forEach(function (field) {
               setError(field, data.errors[field]);
             });
+            /* Возвращаем на шаг, где ошибка, а не просто в начало */
             if (data.errors.serviceSlug) goTo(1);
-            else if (data.errors.date) goTo(3);
-            else if (data.errors.time) goTo(4);
-            else goTo(5);
+            else if (data.errors.date || data.errors.time) goTo(3);
+            else if (data.errors.name || data.errors.phone) goTo(4);
+            else goTo(4);
             focusFirstError();
           }
 
@@ -818,15 +831,17 @@
     if (/^\d{4}-\d{2}-\d{2}$/.test(restoredDate)) state.date = restoredDate;
 
     var initialStep = parseInt(params.get('step') || '1', 10);
-    if (!(initialStep >= 1 && initialStep <= 6)) initialStep = 1;
+    if (!(initialStep >= 1 && initialStep <= 5)) initialStep = 1;
     if (initialStep > 1 && !state.serviceSlug) initialStep = 1;
     if (initialStep >= 4 && !state.date) initialStep = 3;
     /* Шестой шаг не восстанавливаем: имя и телефон по ссылке не передаются,
        и сводка была бы пустой. */
-    if (initialStep >= 6) initialStep = 5;
+    /* Пятый шаг — проверка: имя и телефон по ссылке не передаются,
+       восстанавливать его бессмысленно. */
+    if (initialStep >= 5) initialStep = 4;
 
     if (initialStep >= 3) loadCalendar();
-    if (state.date && initialStep >= 4) loadSlots();
+    if (state.date && initialStep >= 3) loadSlots();
 
     goTo(initialStep);
   }

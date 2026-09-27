@@ -1,14 +1,21 @@
 'use strict';
 
 /**
- * Страница онлайн-записи /booking — шестишаговый мастер.
+ * Страница онлайн-записи /booking.
  *
- * Разметка отдаётся целиком на сервере (работает без JS на первом шаге),
- * переключение шагов и загрузка слотов — на клиенте.
+ * Пять шагов: услуга → автомобиль → дата и время → контакты → проверка.
+ *
+ * Устройство взято с разобранного референса (kerey): шаг подписан явно
+ * («ШАГ 1 ИЗ 5 · УСЛУГА») и внутри шага стоит вопрос клиенту («Что нужно
+ * сделать?»), а не служебное название. Дата и время объединены в один шаг:
+ * клиенту важно «когда», а не два отдельных экрана. В шаге про автомобиль
+ * спрашиваем, что беспокоит, — мастер видит симптом до осмотра.
+ *
+ * Отличия, оставленные осознанно: выбор услуги сделан на радиокнопках
+ * с label, а не на div-ах — так работает клавиатура и скринридер.
  *
  * Экран успеха — отдельный адрес /booking/success?code=YM-00001,
- * поэтому он переживает перезагрузку страницы и не ломается при возврате
- * кнопкой «назад».
+ * поэтому он переживает перезагрузку страницы.
  */
 
 const { html, esc, raw } = require('../lib/html');
@@ -20,13 +27,25 @@ const { servicesByCategory } = require('../content/services');
 const seo = require('../lib/seo');
 
 const STEPS = [
-  { n: 1, label: 'Услуга' },
-  { n: 2, label: 'Автомобиль' },
-  { n: 3, label: 'Дата' },
-  { n: 4, label: 'Время' },
-  { n: 5, label: 'Контакты' },
-  { n: 6, label: 'Проверка' },
+  { n: 1, code: 'УСЛУГА', label: 'Услуга' },
+  { n: 2, code: 'АВТОМОБИЛЬ', label: 'Автомобиль' },
+  { n: 3, code: 'ДАТА И ВРЕМЯ', label: 'Дата и время' },
+  { n: 4, code: 'КОНТАКТЫ', label: 'Контакты' },
+  { n: 5, code: 'ПРОВЕРКА', label: 'Проверка' },
 ];
+
+/**
+ * Подпись и вопрос шага.
+ * @param {number} n
+ * @param {string} question
+ */
+function stepHead(n, question) {
+  const step = STEPS[n - 1];
+  return html`
+    <p class="wizard-step-code">ШАГ ${n} ИЗ ${STEPS.length} · ${step.code}</p>
+    <h3 class="wizard-question">${question}</h3>
+  `;
+}
 
 /**
  * @param {{preselectedService?:string}} options
@@ -42,11 +61,11 @@ function renderBooking(options = {}) {
           <span aria-hidden="true">/</span>
           <span aria-current="page">Запись на обслуживание</span>
         </nav>
-        <h1 class="page-title">Онлайн-запись в YASIRA MOTORS</h1>
+        <h1 class="page-title">Записаться в YASIRA MOTORS</h1>
         <p class="page-text">
-          Шесть коротких шагов. Обязательных полей минимум: услуга, дата и время,
-          имя и телефон. Марка и модель автомобиля помогут мастеру подготовиться,
-          но их можно не заполнять.
+          Пять коротких шагов. Обязательных полей минимум: услуга, дата и время,
+          имя и телефон. Марка и модель помогут мастеру подготовиться,
+          но без них можно обойтись.
         </p>
       </div>
     </section>
@@ -72,44 +91,59 @@ function renderBooking(options = {}) {
           <form class="wizard-form form" data-booking-form novalidate>
             <!-- ШАГ 1: услуга -->
             <fieldset class="wizard-panel" data-panel="1">
-              <legend class="wizard-panel-title">Выберите услугу</legend>
-              <p class="wizard-panel-hint">
-                Не уверены, что нужно? Выберите «Компьютерная диагностика» — мастер
-                определит причину и предложит работы.
-              </p>
-              <div class="service-picker">
-                ${servicesByCategory().map(
-                  (group) => html`
-                    <div class="service-picker-group">
-                      <h3 class="service-picker-title">${group.name}</h3>
-                      <div class="service-picker-items">
-                        ${group.items.map(
-                          (s) => html`
-                            <label class="service-option">
-                              <input
-                                type="radio"
-                                name="serviceSlug"
-                                value="${s.slug}"
-                                ${raw(options.preselectedService === s.slug ? 'checked' : '')}
-                              >
-                              <span class="service-option-body">
-                                <span class="service-option-icon" aria-hidden="true">${icon(s.icon, {
-                                  size: 22,
-                                })}</span>
-                                <span class="service-option-text">
-                                  <strong>${s.title}</strong>
-                                  <span>${s.summary}</span>
-                                  <span class="service-option-meta">${s.durationText}</span>
-                                </span>
+              <legend class="sr-only">Услуга</legend>
+              ${stepHead(1, 'Что нужно сделать?')}
+
+              <label class="service-option service-option-unsure">
+                <input
+                  type="radio"
+                  name="serviceSlug"
+                  value="kompyuternaya-diagnostika"
+                  data-unsure="true"
+                  ${raw(options.preselectedService === 'unsure' ? 'checked' : '')}
+                >
+                <span class="service-option-body">
+                  <span class="service-option-icon" aria-hidden="true">${icon('info', { size: 22 })}</span>
+                  <span class="service-option-text">
+                    <strong>Не знаю, что сломалось</strong>
+                    <span>Начнём с диагностики: мастер определит причину и предложит работы.</span>
+                    <span class="service-option-meta">Стоимость уточняется · приём от 30 мин</span>
+                  </span>
+                </span>
+              </label>
+
+              ${servicesByCategory().map(
+                (group) => html`
+                  <div class="service-picker-group">
+                    <h4 class="service-picker-title">${group.name}</h4>
+                    <div class="service-picker-items">
+                      ${group.items.map(
+                        (s) => html`
+                          <label class="service-option">
+                            <input
+                              type="radio"
+                              name="serviceSlug"
+                              value="${s.slug}"
+                              ${raw(options.preselectedService === s.slug ? 'checked' : '')}
+                            >
+                            <span class="service-option-body">
+                              <span class="service-option-icon" aria-hidden="true">${icon(s.icon, {
+                                size: 22,
+                              })}</span>
+                              <span class="service-option-text">
+                                <strong>${s.title}</strong>
+                                <span>${s.summary}</span>
+                                <span class="service-option-meta">Стоимость уточняется · приём ${s.durationText}</span>
                               </span>
-                            </label>
-                          `
-                        )}
-                      </div>
+                            </span>
+                          </label>
+                        `
+                      )}
                     </div>
-                  `
-                )}
-              </div>
+                  </div>
+                `
+              )}
+
               <p class="field-error" data-error-for="serviceSlug" hidden></p>
               <div class="wizard-nav">
                 <span></span>
@@ -121,10 +155,13 @@ function renderBooking(options = {}) {
 
             <!-- ШАГ 2: автомобиль -->
             <fieldset class="wizard-panel" data-panel="2" hidden>
-              <legend class="wizard-panel-title">Автомобиль</legend>
+              <legend class="sr-only">Автомобиль</legend>
+              ${stepHead(2, 'Данные автомобиля')}
               <p class="wizard-panel-hint">
-                Поля ниже необязательные — но с ними мастер подготовится заранее.
+                Заполните, если знаете. Без этих полей запись тоже примется —
+                всё уточним при звонке.
               </p>
+
               <div class="field-row">
                 <div class="field">
                   <label for="w-brand">Марка</label>
@@ -145,12 +182,13 @@ function renderBooking(options = {}) {
                   <p class="field-error" data-error-for="model" hidden></p>
                 </div>
               </div>
+
               <div class="field-row">
                 <div class="field">
-                  <label for="w-year">Год выпуска</label>
+                  <label for="w-year">Год выпуска <span class="muted">(необязательно)</span></label>
                   <input
                     type="text" id="w-year" name="year"
-                    inputmode="numeric" placeholder="2020" maxlength="4"
+                    inputmode="numeric" placeholder="Например, 2012" maxlength="4"
                     autocomplete="off" spellcheck="false"
                   >
                   <p class="field-error" data-error-for="year" hidden></p>
@@ -159,12 +197,22 @@ function renderBooking(options = {}) {
                   <label for="w-plate">Госномер <span class="muted">(необязательно)</span></label>
                   <input
                     type="text" id="w-plate" name="plate"
-                    placeholder="Например, 123 ABC 12"
+                    placeholder="Например, 123ABC02"
                     autocomplete="off" spellcheck="false" autocapitalize="characters"
                   >
                   <p class="field-error" data-error-for="plate" hidden></p>
                 </div>
               </div>
+
+              <div class="field">
+                <label for="w-notes">Что беспокоит? <span class="muted">(необязательно)</span></label>
+                <textarea
+                  id="w-notes" name="notes" rows="3"
+                  placeholder="Например: стук спереди справа на неровностях"
+                  autocomplete="off"
+                ></textarea>
+              </div>
+
               <div class="wizard-nav">
                 <button class="btn btn-ghost" type="button" data-back="1">
                   ${icon('arrowLeft', { size: 18 })} Назад
@@ -175,95 +223,96 @@ function renderBooking(options = {}) {
               </div>
             </fieldset>
 
-            <!-- ШАГ 3: дата -->
+            <!-- ШАГ 3: дата и время -->
             <fieldset class="wizard-panel" data-panel="3" hidden>
-              <legend class="wizard-panel-title">Выберите дату</legend>
+              <legend class="sr-only">Дата и время</legend>
+              ${stepHead(3, 'Когда вам удобно?')}
               <p class="wizard-panel-hint">
-                Запись открыта на ${config.booking.horizonDays} дней вперёд.
-                Серые дни — выходные или нет свободного времени.
+                Запись открыта на ${config.booking.horizonDays} дней вперёд. Серые дни —
+                выходные или всё занято.
               </p>
+
               <div class="calendar" data-calendar aria-live="polite">
                 <p class="calendar-loading">Загружаем доступные даты…</p>
               </div>
+
+              <div class="slots-block">
+                <p class="wizard-subhead" data-slots-hint>
+                  Сначала выберите дату — покажем свободное время.
+                </p>
+                <div class="slots" data-slots aria-live="polite">
+                  <p class="slots-loading">Свободное время появится после выбора даты.</p>
+                </div>
+              </div>
+
               <p class="field-error" data-error-for="date" hidden></p>
+              <p class="field-error" data-error-for="time" hidden></p>
+
               <div class="wizard-nav">
                 <button class="btn btn-ghost" type="button" data-back="2">
                   ${icon('arrowLeft', { size: 18 })} Назад
                 </button>
-                <button class="btn btn-primary" type="button" data-next="4" data-requires="date">
+                <button class="btn btn-primary" type="button" data-next="4">
                   Далее ${icon('arrowRight', { size: 18 })}
                 </button>
               </div>
             </fieldset>
 
-            <!-- ШАГ 4: время -->
+            <!-- ШАГ 4: контакты -->
             <fieldset class="wizard-panel" data-panel="4" hidden>
-              <legend class="wizard-panel-title">Выберите время</legend>
-              <p class="wizard-panel-hint" data-slots-hint>
-                Показываем только свободное время выбранной даты.
-              </p>
-              <div class="slots" data-slots aria-live="polite">
-                <p class="slots-loading">Сначала выберите дату.</p>
-              </div>
-              <p class="field-error" data-error-for="time" hidden></p>
-              <div class="wizard-nav">
-                <button class="btn btn-ghost" type="button" data-back="3">
-                  ${icon('arrowLeft', { size: 18 })} Назад
-                </button>
-                <button class="btn btn-primary" type="button" data-next="5" data-requires="time">
-                  Далее ${icon('arrowRight', { size: 18 })}
-                </button>
-              </div>
-            </fieldset>
-
-            <!-- ШАГ 5: контакты -->
-            <fieldset class="wizard-panel" data-panel="5" hidden>
-              <legend class="wizard-panel-title">Как с вами связаться</legend>
+              <legend class="sr-only">Контакты</legend>
+              ${stepHead(4, 'Как с вами связаться?')}
               <p class="wizard-panel-hint">
-                Администратор позвонит, чтобы подтвердить запись и назвать стоимость.
+                Нужны только имя и телефон. Администратор позвонит, чтобы подтвердить
+                запись и назвать стоимость.
               </p>
+
               <div class="field">
                 <label for="w-name">Имя</label>
-                <input type="text" id="w-name" name="name" autocomplete="name" required placeholder="Как к вам обращаться">
+                <input
+                  type="text" id="w-name" name="name"
+                  autocomplete="name" required
+                  placeholder="Как к вам обращаться"
+                >
                 <p class="field-error" data-error-for="name" hidden></p>
               </div>
+
               <div class="field">
                 <label for="w-phone">Телефон</label>
-                <input type="tel" id="w-phone" name="phone" autocomplete="tel" required placeholder="+7 777 000 00 00" data-phone-input>
+                <input
+                  type="tel" id="w-phone" name="phone"
+                  autocomplete="tel" required
+                  placeholder="+7 777 000 00 00" data-phone-input
+                >
                 <p class="field-error" data-error-for="phone" hidden></p>
               </div>
-              <div class="field">
-                <label for="w-notes">Комментарий <span class="muted">(необязательно)</span></label>
-                <textarea
-                  id="w-notes" name="notes" rows="3"
-                  placeholder="Опишите симптом: когда появился, на что обратить внимание…"
-                  autocomplete="off"
-                ></textarea>
-              </div>
+
               <p class="form-legal">
                 Оставляя заявку, вы соглашаетесь на обработку контактных данных
                 для подтверждения записи.
               </p>
+
               <div class="wizard-nav">
-                <button class="btn btn-ghost" type="button" data-back="4">
+                <button class="btn btn-ghost" type="button" data-back="3">
                   ${icon('arrowLeft', { size: 18 })} Назад
                 </button>
-                <button class="btn btn-primary" type="button" data-next="6" data-validate-contact>
+                <button class="btn btn-primary" type="button" data-next="5">
                   Далее ${icon('arrowRight', { size: 18 })}
                 </button>
               </div>
             </fieldset>
 
-            <!-- ШАГ 6: проверка -->
-            <fieldset class="wizard-panel" data-panel="6" hidden>
-              <legend class="wizard-panel-title">Проверьте запись</legend>
+            <!-- ШАГ 5: проверка -->
+            <fieldset class="wizard-panel" data-panel="5" hidden>
+              <legend class="sr-only">Проверка</legend>
+              ${stepHead(5, 'Проверьте запись')}
               <div class="summary" data-summary></div>
               <p class="form-legal">
                 Отправляя заявку, вы подтверждаете, что данные указаны верно.
                 Запись окончательно подтвердит администратор по телефону.
               </p>
               <div class="wizard-nav">
-                <button class="btn btn-ghost" type="button" data-back="5">
+                <button class="btn btn-ghost" type="button" data-back="4">
                   ${icon('arrowLeft', { size: 18 })} Изменить данные
                 </button>
                 <button class="btn btn-primary btn-lg" type="submit" data-submit>
@@ -312,9 +361,9 @@ function renderBooking(options = {}) {
       </div>
     </section>
 
-    <section class="section section-muted">
+    <section class="section section-tint">
       <div class="container narrow">
-        ${sectionHead('Если что-то изменилось', 'Перенос и отмена записи')}
+        ${sectionHead('Если что-то изменилось', ['Перенос', 'и отмена записи'])}
         <p class="page-text">
           Запись можно перенести или отменить — без штрафов. Позвоните по телефону
           ${b.phone} или напишите в WhatsApp, назовите имя и удобное время.
@@ -446,4 +495,4 @@ function renderBookingSuccess(options) {
   });
 }
 
-module.exports = { renderBooking, renderBookingSuccess };
+module.exports = { renderBooking, renderBookingSuccess, STEPS, stepHead };

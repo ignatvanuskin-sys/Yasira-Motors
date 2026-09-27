@@ -299,8 +299,9 @@ async function main() {
   const slotCount = await cdp.evaluate(page, `document.querySelectorAll('.slot').length`);
   step('Слоты времени загружены', slotsReady && slotCount > 0, `${slotCount} слотов`);
 
+  // Шаг 3 объединяет дату и время, поэтому дальше идёт шаг 4 (контакты)
   await cdp.evaluate(page, `document.querySelector('.slot').click()`);
-  await cdp.evaluate(page, `document.querySelector('[data-next="5"]').click()`);
+  await cdp.evaluate(page, `document.querySelector('[data-next="4"]').click()`);
 
   await cdp.evaluate(
     page,
@@ -317,7 +318,7 @@ async function main() {
       return true;
     })()`
   );
-  await cdp.evaluate(page, `document.querySelector('[data-next="6"]').click()`);
+  await cdp.evaluate(page, `document.querySelector('[data-next="5"]').click()`);
 
   const summaryText = await cdp.evaluate(page, `document.querySelector('[data-summary]').innerText`);
   step(

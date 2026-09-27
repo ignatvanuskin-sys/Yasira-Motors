@@ -4422,3 +4422,97 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 30px 70px -34px rgba(0, 0, 0, 0.95);
 }
+
+/* ── Шаги записи: подпись шага и вопрос клиенту ─────────────────────────── */
+/* Приём с референса: вместо служебного названия панели — «ШАГ 2 ИЗ 5 ·
+   АВТОМОБИЛЬ» и вопрос, на который клиент отвечает. Так понятно,
+   где он находится и что от него нужно. */
+.wizard-step-code {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+
+.wizard-question {
+  font-size: clamp(21px, 4.6vw, 27px);
+  margin: 0 0 10px;
+  letter-spacing: -0.03em;
+}
+
+.wizard-subhead {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+/* Блок времени внутри шага «Дата и время» */
+.slots-block {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+/* Вариант «не знаю, что сломалось» — заметнее остальных услуг:
+   это спасательный круг для клиента, который не разбирается в ремонте. */
+.service-option-unsure {
+  display: block;
+  margin-bottom: 22px;
+}
+
+.service-option-unsure .service-option-body {
+  border-color: var(--accent-line);
+  background:
+    radial-gradient(420px 140px at 100% 0%, rgba(255, 106, 26, 0.12), transparent 70%),
+    rgba(6, 8, 11, 0.5);
+}
+
+.service-option-unsure .service-option-icon {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.service-option-unsure input:checked + .service-option-body {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 106, 26, 0.16);
+}
+
+.service-picker-group + .service-picker-group {
+  margin-top: 20px;
+}
+
+/* Лента шагов: пять пунктов вместо шести — на узком экране помещаются
+   подписи целиком */
+@media (max-width: 389px) {
+  .wizard-step {
+    padding: 7px 9px;
+  }
+}
+
+/* ── Подбор услуги внутри раздела услуг ─────────────────────────────────── */
+/* Компактнее отдельной секции: он теперь отвечает на вопрос «не знаю,
+   что выбрать» в том же блоке, где перечислены услуги, а не повторяет его
+   ещё одной секцией с тем же смыслом. */
+.selector-compact {
+  margin-bottom: 34px;
+  padding: 18px;
+}
+
+.selector-compact .selector-label {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.selector-compact .selector-hint {
+  margin-top: 12px;
+}
+
+@media (min-width: 900px) {
+  .selector-compact {
+    padding: 22px 24px;
+    margin-bottom: 40px;
+  }
+}

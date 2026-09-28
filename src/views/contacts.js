@@ -37,7 +37,7 @@ function renderContacts() {
       </div>
     </section>
 
-    <section class="section section-tint">
+    <section class="section section-soft">
       <div class="container">
         <div class="contacts-layout">
           <div class="contacts-info">
@@ -119,21 +119,21 @@ function renderContacts() {
       </div>
     </section>
 
-    <section class="section section-deep">
+    <section class="section">
       <div class="container">
         ${sectionHead('Отзывы', ['Нас оценивают', 'на двух площадках'])}
         ${ratingBlock()}
       </div>
     </section>
 
-    <section class="section section-tint">
+    <section class="section section-soft">
       <div class="container narrow">
         ${sectionHead('Частые вопросы', ['Что спрашивают', 'перед звонком'])}
         ${faqList(FAQ)}
       </div>
     </section>
 
-    <section class="section section-band final-cta">
+    <section class="section section-dark final-cta">
       <div class="container narrow final-cta-inner">
         <h2 class="final-cta-title">
           <span class="ttl-line">Остались</span>

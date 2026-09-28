@@ -87,45 +87,51 @@ function hero() {
   const b = config.business;
   return html`
     <section class="hero">
-      <div class="hero-media" aria-hidden="true">
-        <img
-          src="/img/directions2.jpg"
-          alt=""
-          width="1200"
-          height="800"
-          fetchpriority="high"
-          decoding="async"
-        >
-      </div>
       <div class="container hero-inner">
-        <p class="hero-eyebrow" translate="no">YASIRA MOTORS</p>
-        <h1 class="hero-title">
-          <span class="ttl-line">Автосервис</span>
-          <span class="ttl-line is-accent">в Актау</span>
-        </h1>
-        <p class="hero-lead">
-          Диагностика, ТО и ремонт легковых и грузовых автомобилей.
-        </p>
-        <p class="hero-note">
-          Сначала находим причину — согласовываем стоимость — выполняем работу.
-        </p>
+        <div class="hero-text">
+          <p class="hero-eyebrow" translate="no">YASIRA MOTORS</p>
+          <h1 class="hero-title">
+            <span class="ttl-line">Автосервис</span>
+            <span class="ttl-line is-accent">в Актау</span>
+          </h1>
+          <p class="hero-lead">
+            Диагностика, ТО и ремонт легковых и грузовых автомобилей.
+          </p>
+          <p class="hero-note">
+            Сначала находим причину — согласовываем стоимость — выполняем работу.
+          </p>
 
-        ${actionPair({ whatsappText: config.waText.general })}
+          ${actionPair({ whatsappText: config.waText.general })}
 
-        <ul class="hero-facts">
-          <li>
-            <strong>${b.rating} ★ в 2ГИС</strong>
-            <span>${b.ratingsCount} оценок</span>
-          </li>
-          <li>
-            <strong>${b.yandexRating.toFixed(1)} ★ в Яндексе</strong>
-            <span>${b.yandexRatingsCount} оценок</span>
-          </li>
-          <li>
-            <strong>${b.addressShort}</strong>
-            <span>${b.addressExtra} · ${b.city}</span>
-          </li>
-        </ul>
+          <ul class="hero-facts">
+            <li>
+              <strong>${b.rating} ★ в 2ГИС</strong>
+              <span>${b.ratingsCount} оценок</span>
+            </li>
+            <li>
+              <strong>${b.yandexRating.toFixed(1)} ★ в Яндексе</strong>
+              <span>${b.yandexRatingsCount} оценок</span>
+            </li>
+            <li>
+              <strong>${b.addressShort}</strong>
+              <span>${b.addressExtra} · ${b.city}</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Фотография сервиса отдельным крупным кадром, а не фоном
+             под текстом: клиент должен сразу увидеть реальный бокс. -->
+        <figure class="hero-photo">
+          <img
+            src="/img/directions2.jpg"
+            alt="Мастер YASIRA MOTORS за работой в боксе"
+            width="1200"
+            height="800"
+            fetchpriority="high"
+            decoding="async"
+          >
+          <figcaption>Наш бокс · ${b.addressShort}</figcaption>
+        </figure>
       </div>
     </section>
   `;
@@ -146,7 +152,7 @@ function trustSection() {
   ];
 
   return html`
-    <section class="section section-deep" id="about">
+    <section class="section" id="about">
       <div class="container">
         ${sectionHead(
           'Почему нам доверяют',
@@ -161,7 +167,7 @@ function trustSection() {
 
 function servicesSection() {
   return html`
-    <section class="section section-tint" id="services">
+    <section class="section section-soft" id="services">
       <div class="container">
         ${sectionHead(
           'Услуги',
@@ -198,7 +204,7 @@ function servicesSection() {
 function symptomsSection() {
   const waText = `${config.waText.diagnose} `;
   return html`
-    <section class="section section-deep symptoms-section">
+    <section class="section symptoms-section">
       <div class="container">
         <div class="symptoms-layout">
           <div>
@@ -226,7 +232,7 @@ function symptomsSection() {
 
 function processSection() {
   return html`
-    <section class="section section-tint">
+    <section class="section section-soft">
       <div class="container">
         ${sectionHead(
           'Как проходит обслуживание',
@@ -240,7 +246,7 @@ function processSection() {
 
 function gallerySection() {
   return html`
-    <section class="section section-deep">
+    <section class="section">
       <div class="container">
         ${sectionHead(
           'Фотографии',
@@ -260,7 +266,7 @@ function reviewsSection() {
   const shown = REVIEWS.filter((review) => review.text).slice(0, 4);
 
   return html`
-    <section class="section section-tint" id="reviews">
+    <section class="section section-soft" id="reviews">
       <div class="container">
         ${sectionHead(
           'Отзывы',
@@ -286,7 +292,7 @@ function reviewsSection() {
 
 function faqSection() {
   return html`
-    <section class="section section-deep" id="faq">
+    <section class="section" id="faq">
       <div class="container narrow">
         ${sectionHead('Частые вопросы', ['Что спрашивают', 'перед звонком'])}
         ${faqList(FAQ)}
@@ -300,7 +306,7 @@ function contactsSection() {
   const [mainPhone, ...otherPhones] = b.phoneList;
 
   return html`
-    <section class="section section-tint" id="contacts">
+    <section class="section section-soft" id="contacts">
       <div class="container">
         ${sectionHead('Как нас найти', [b.addressShort, b.addressExtra])}
         <div class="contacts-layout">
@@ -362,7 +368,7 @@ function contactsSection() {
 
 function finalCta() {
   return html`
-    <section class="section section-band final-cta">
+    <section class="section section-dark final-cta">
       <div class="container narrow final-cta-inner">
         <h2 class="final-cta-title">
           <span class="ttl-line">Нужен ремонт</span>

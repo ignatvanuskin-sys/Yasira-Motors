@@ -64,7 +64,7 @@ function renderServiceDetail(slug) {
       </div>
     </section>
 
-    <section class="section section-tint">
+    <section class="section section-soft">
       <div class="container">
         <div class="two-col">
           <div>
@@ -83,7 +83,7 @@ function renderServiceDetail(slug) {
       </div>
     </section>
 
-    <section class="section section-deep">
+    <section class="section">
       <div class="container narrow">
         ${sectionHead(
           'Стоимость',
@@ -102,7 +102,7 @@ function renderServiceDetail(slug) {
 
     ${service.faq && service.faq.length
       ? html`
-          <section class="section section-tint">
+          <section class="section section-soft">
             <div class="container narrow">
               ${sectionHead('Вопросы по работе', ['Что ещё', 'спрашивают'])}
               <div class="faq-list">
@@ -125,7 +125,7 @@ function renderServiceDetail(slug) {
 
     ${related.length
       ? html`
-          <section class="section section-tint">
+          <section class="section section-soft">
             <div class="container">
               ${sectionHead('Рядом по смыслу', ['Другие работы', 'по этому направлению'])}
               <ul class="check-list">
@@ -140,7 +140,7 @@ function renderServiceDetail(slug) {
         `
       : ''}
 
-    <section class="section section-band final-cta">
+    <section class="section section-dark final-cta">
       <div class="container narrow final-cta-inner">
         <h2 class="final-cta-title">
           <span class="ttl-line">Нужна эта работа?</span>

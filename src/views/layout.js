@@ -54,7 +54,7 @@ function layout(page) {
 <meta name="description" content="${page.description}">
 <link rel="canonical" href="${canonical}">
 ${page.noindex ? html`<meta name="robots" content="noindex, follow">` : html`<meta name="robots" content="index, follow">`}
-<meta name="theme-color" content="#07080c">
+<meta name="theme-color" content="#ffffff">
 <meta name="format-detection" content="telephone=no">
 
 <meta property="og:type" content="website">

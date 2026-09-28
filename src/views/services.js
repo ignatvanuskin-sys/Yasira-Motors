@@ -70,7 +70,7 @@ function renderServices() {
     ${CATEGORIES.map((category) => {
       const items = SERVICES.filter((service) => serviceSlugsOf(category).includes(service.slug));
       return html`
-        <section class="section section-tint" id="${category.slug}">
+        <section class="section section-soft" id="${category.slug}">
           <div class="container">
             ${sectionHead(
               category.title,
@@ -92,14 +92,14 @@ function renderServices() {
       `;
     })}
 
-    <section class="section section-deep">
+    <section class="section">
       <div class="container narrow">
         ${sectionHead('Частые вопросы', ['Что спрашивают', 'перед звонком'])}
         ${faqList(FAQ)}
       </div>
     </section>
 
-    <section class="section section-band final-cta">
+    <section class="section section-dark final-cta">
       <div class="container narrow final-cta-inner">
         <h2 class="final-cta-title">
           <span class="ttl-line">Не нашли нужную</span>

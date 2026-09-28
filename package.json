@@ -12,7 +12,9 @@
     "qa": "node scripts/qa.js",
     "audit": "node scripts/audit.js",
     "typecheck": "tsc --noEmit",
-    "images": "node scripts/optimize-images.mjs"
+    "images": "node scripts/optimize-images.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "og": "node scripts/make-og.js"
   },
   "dependencies": {
     "lucide-react": "^1.48.0",

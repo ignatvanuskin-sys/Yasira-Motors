@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>YASIRA MOTORS — карточка для соцсетей</title>
+    <!--
+      Шаблон для генерации public/og.jpg. Это НЕ страница сайта: файл лежит
+      в scripts/ и в сборку не попадает. Рендерится в headless Chrome
+      скриптом scripts/make-og.js, поэтому здесь работают настоящие шрифты
+      проекта — их подставляет браузер, а не растеризатор SVG.
+
+      Пути начинаются с /public/, потому что генератор поднимает статический
+      сервер на корне репозитория, а не на out/.
+    -->
+    <style>
+      @font-face {
+        font-family: "Manrope";
+        font-weight: 400 800;
+        font-display: block;
+        src: url("/public/fonts/manrope-cyrillic.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Manrope";
+        font-weight: 400 800;
+        font-display: block;
+        src: url("/public/fonts/manrope-latin.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Oswald";
+        font-weight: 600;
+        font-display: block;
+        src: url("/public/fonts/oswald-cyrillic-600.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Oswald";
+        font-weight: 600;
+        font-display: block;
+        src: url("/public/fonts/oswald-latin-600.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url("/public/fonts/jetbrains-mono-cyrillic-500.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url("/public/fonts/jetbrains-mono-latin-500.woff2") format("woff2");
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+
+      body {
+        background-color: #0a0a0c;
+        color: #f4f4f6;
+        font-family: "Manrope", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .photo,
+      .grid,
+      .spot {
+        position: absolute;
+        inset: 0;
+      }
+
+      .photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 50% 45%;
+      }
+
+      /* Затемнение слева направо: под текстом почти чёрное, снимок
+         проступает справа, где стоит логотип */
+      .photo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          #0a0a0c 0%,
+          #0a0a0c 32%,
+          rgb(10 10 12 / 0.92) 64%,
+          rgb(10 10 12 / 0.58) 100%
+        );
+      }
+
+      .grid {
+        opacity: 0.16;
+        background-image:
+          linear-gradient(to right, #3a3b42 1px, transparent 1px),
+          linear-gradient(to bottom, #3a3b42 1px, transparent 1px);
+        background-size: 68px 68px;
+        -webkit-mask-image: radial-gradient(ellipse 70% 60% at 40% 45%, #000 20%, transparent 100%);
+        mask-image: radial-gradient(ellipse 70% 60% at 40% 45%, #000 20%, transparent 100%);
+      }
+
+      .spot {
+        background-image: radial-gradient(
+          62% 68% at 30% 0%,
+          rgb(224 31 38 / 0.42),
+          rgb(224 31 38 / 0.12) 45%,
+          transparent 72%
+        );
+      }
+
+      .card {
+        position: relative;
+        display: flex;
+        height: 100%;
+        align-items: center;
+        gap: 44px;
+        padding: 64px 72px;
+      }
+
+      .left {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .right {
+        display: flex;
+        flex: 0 0 292px;
+        justify-content: center;
+      }
+
+      .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #8b8b95;
+      }
+
+      .eyebrow b {
+        color: #f2434a;
+        font-weight: 500;
+      }
+
+      h1 {
+        margin-top: 22px;
+        font-family: "Oswald", "Arial Narrow", sans-serif;
+        font-weight: 600;
+        font-size: 72px;
+        line-height: 1.03;
+        letter-spacing: -0.012em;
+        text-transform: uppercase;
+      }
+
+      .facts {
+        margin-top: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+
+      .fact {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        font-size: 21px;
+        color: #dedee3;
+      }
+
+      .star {
+        font-size: 21px;
+        color: #f2434a;
+      }
+
+      .addr {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 15px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #8b8b95;
+      }
+
+      .phone {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        letter-spacing: 0.06em;
+        color: #f2434a;
+      }
+
+      /* Официальный лок-ап: «YASIRA» сверху, знак в середине, «MOTORS» снизу */
+      .lock {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .wordmark {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        font-size: 42px;
+        line-height: 1;
+        color: #e01f26;
+      }
+
+      .mark {
+        width: 132px;
+        height: 132px;
+        margin-top: 18px;
+      }
+
+      .motors {
+        margin-top: 18px;
+        padding-left: 0.34em;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.34em;
+        color: #dedee3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="photo"><img src="/public/images/opt/workshop-lifts.webp" alt="" /></div>
+    <div class="grid"></div>
+    <div class="spot"></div>
+
+    <div class="card">
+      <div class="left">
+        <p class="eyebrow"><b>YASIRA MOTORS</b> / Легковой автосервис / Актау</p>
+        <h1>Ремонт и обслуживание автомобилей</h1>
+        <div class="facts">
+          <p class="fact">
+            <span class="star">★</span> 4,9 в 2ГИС · 478 оценок · Лучший автосервис 2GIS Awards 2026
+          </p>
+          <p class="fact">
+            <span class="addr">25-й микрорайон, 52/2</span>
+            <span class="phone">+7 777 088 44 24</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="lock">
+          <span class="wordmark">YASIRA</span>
+          <svg class="mark" viewBox="0 0 48 48" role="img" aria-label="Знак YASIRA MOTORS">
+            <rect width="48" height="48" rx="7" fill="#e01f26" />
+            <g fill="#ffffff" stroke="#101013" stroke-width="1.1">
+              <rect x="20.7" y="24.6" width="6.6" height="16.8" rx="3.3" transform="rotate(0 24 24)" />
+              <rect x="20.7" y="24.6" width="6.6" height="16.8" rx="3.3" transform="rotate(120 24 24)" />
+              <rect x="20.7" y="24.6" width="6.6" height="16.8" rx="3.3" transform="rotate(240 24 24)" />
+            </g>
+          </svg>
+          <span class="motors">MOTORS</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

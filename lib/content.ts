@@ -271,7 +271,7 @@ export const photos: Photo[] = [
     caption: "Ремонтный цех: несколько постов, автомобили на подъёмниках",
     span: "md:col-span-2 lg:col-span-4 lg:row-span-3",
     w: 1440,
-    h: 820,
+    h: 754,
   },
   {
     src: "/images/opt/facade.webp",
@@ -279,7 +279,7 @@ export const photos: Photo[] = [
     caption: "Фасад: 25-й микрорайон, 52/2",
     span: "lg:col-span-2 lg:row-span-1",
     w: 1400,
-    h: 935,
+    h: 860,
   },
   {
     src: "/images/opt/oil-store.webp",
@@ -287,7 +287,7 @@ export const photos: Photo[] = [
     caption: "Магазин масел и автохимии на территории",
     span: "lg:col-span-2 lg:row-span-1",
     w: 1440,
-    h: 826,
+    h: 760,
   },
   {
     src: "/images/opt/engine-bay.webp",
@@ -295,7 +295,7 @@ export const photos: Photo[] = [
     caption: "Моторный отсек после обслуживания",
     span: "lg:col-span-2 lg:row-span-1",
     w: 1400,
-    h: 1050,
+    h: 966,
   },
   {
     src: "/images/opt/align-lx570.webp",
@@ -303,7 +303,7 @@ export const photos: Photo[] = [
     caption: "Lexus LX570 на стенде развал-схождения",
     span: "lg:col-span-2 lg:row-span-2",
     w: 1400,
-    h: 933,
+    h: 858,
   },
   {
     src: "/images/opt/liftoil-lc200.webp",
@@ -311,7 +311,7 @@ export const photos: Photo[] = [
     caption: "Toyota Land Cruiser 200: замена масла на смотровой канаве",
     span: "lg:col-span-2 lg:row-span-2",
     w: 1400,
-    h: 1050,
+    h: 966,
   },
   {
     src: "/images/opt/hiace-lift.webp",
@@ -319,7 +319,7 @@ export const photos: Photo[] = [
     caption: "Работы в цеху",
     span: "lg:col-span-2 lg:row-span-2",
     w: 1400,
-    h: 933,
+    h: 858,
   },
   {
     src: "/images/opt/oil-pour.webp",
@@ -327,7 +327,7 @@ export const photos: Photo[] = [
     caption: "Замена масла: масла подбираются по марке автомобиля",
     span: "lg:col-span-2 lg:row-span-2",
     w: 1400,
-    h: 1185,
+    h: 1090,
   },
   {
     src: "/images/opt/mechanic-bay.webp",
@@ -335,7 +335,7 @@ export const photos: Photo[] = [
     caption: "Диагностика и осмотр автомобиля",
     span: "lg:col-span-2 lg:row-span-2",
     w: 1400,
-    h: 1077,
+    h: 991,
   },
   {
     src: "/images/opt/align-stand.webp",
@@ -343,7 +343,7 @@ export const photos: Photo[] = [
     caption: "Стенд развал-схождения",
     span: "lg:col-span-2 lg:row-span-2",
     w: 1199,
-    h: 1200,
+    h: 1104,
   },
 ];
 
@@ -351,6 +351,6 @@ export const photos: Photo[] = [
 export const heroPhoto = {
   src: "/images/opt/workshop-lifts.webp",
   width: 1440,
-  height: 820,
+  height: 754,
   alt: "Ремонтный цех YASIRA MOTORS в Актау: автомобили на подъёмниках, мастер за работой",
 };

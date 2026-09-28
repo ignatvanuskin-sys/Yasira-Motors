@@ -1,65 +1,92 @@
-// One-off image pipeline: resize + convert real 2GIS photos to WebP, build OG image.
+// Пайплайн изображений: обрезка водяного знака + ресайз + WebP.
+// Запуск: npm run images
+//
+// Два исправления против прежней версии.
+//
+// 1. Источники. Скрипт читал public/images/*.jpg, но оригиналы лежат в
+//    assets/photos — в public/images осталась только папка opt с готовыми
+//    webp. То есть запустить обработку заново было нечем: скрипт молча
+//    возвращал пустой отчёт. Теперь источник — assets/photos.
+//
+// 2. Водяной знак. Все исходники пришли из карточки 2ГИС и несут в правом
+//    нижнем углу чужой логотип. Он занимает примерно 94–99 % высоты,
+//    поэтому снизу срезается 8 % — с запасом.
+//
+// Набор обрабатываемых файлов берётся из lib/content.ts, а не из всего
+// каталога: из шестнадцати фотографий на сайте используются десять,
+// остальные незачем тащить в сборку.
+//
+// Карточку для соцсетей этот скрипт не собирает — ею занимается
+// scripts/make-og.js. Раньше og.jpg делался здесь оверлеем на SVG, и это
+// давало две проблемы: два скрипта писали один файл, а текст рендерился
+// системным Arial, потому что растеризатор не знает шрифтов проекта.
 import sharp from "sharp";
-import { readdir, mkdir, writeFile } from "node:fs/promises";
+import { readFile, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 
-const SRC = "public/images";
+const SRC = "assets/photos";
 const OUT = "public/images/opt";
+const CONTENT = "lib/content.ts";
 
 const HERO_W = 1800;
 const FULL_W = 1400;
+const WATERMARK_CROP = 0.08;
+
+/** Имена фотографий, на которые ссылается content.ts. */
+async function usedPhotoNames() {
+  const text = await readFile(CONTENT, "utf8");
+  const names = new Set();
+  for (const match of text.matchAll(/\/images\/opt\/([\w-]+)\.webp/g)) names.add(match[1]);
+  return [...names].sort();
+}
 
 await mkdir(OUT, { recursive: true });
 
-const files = (await readdir(SRC)).filter((f) => f.toLowerCase().endsWith(".jpg"));
-const report = [];
-
-for (const file of files) {
-  const src = path.join(SRC, file);
-  const base = file.replace(/\.jpg$/i, "");
-  const meta = await sharp(src).metadata();
-
-  const isHeroish = base === "workshop-lifts" || base === "oil-store";
-  const width = Math.min(isHeroish ? HERO_W : FULL_W, meta.width ?? FULL_W);
-
-  const out = path.join(OUT, `${base}.webp`);
-  const info = await sharp(src)
-    .rotate()
-    .resize({ width, withoutEnlargement: true })
-    .webp({ quality: 80, effort: 5 })
-    .toFile(out);
-
-  report.push({ file: base, from: `${meta.width}x${meta.height}`, to: `${info.width}x${info.height}`, kb: Math.round(info.size / 1024) });
+const names = await usedPhotoNames();
+if (names.length === 0) {
+  console.error(`Не нашёл ни одной ссылки на /images/opt/*.webp в ${CONTENT}`);
+  process.exitCode = 1;
 }
 
-// Branded OG image (1200x630) built from the real workshop photo.
-const ogBase = path.join(SRC, "workshop-lifts.jpg");
-const ogMeta = await sharp(ogBase).metadata();
-const coverW = 1200;
-const coverH = 630;
+const report = [];
+const sizes = [];
 
-const overlay = Buffer.from(`
-<svg width="${coverW}" height="${coverH}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="g" x1="0" y1="${coverH}" x2="${coverW * 0.9}" y2="0">
-      <stop offset="0%" stop-color="#080809" stop-opacity="0.96"/>
-      <stop offset="55%" stop-color="#0B0B0D" stop-opacity="0.82"/>
-      <stop offset="100%" stop-color="#0B0B0D" stop-opacity="0.25"/>
-    </linearGradient>
-  </defs>
-  <rect width="${coverW}" height="${coverH}" fill="url(#g)"/>
-  <rect x="72" y="196" width="64" height="5" fill="#D8202B"/>
-  <text x="72" y="300" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700" fill="#FFFFFF" letter-spacing="1">YASIRA MOTORS</text>
-  <text x="72" y="356" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="400" fill="#C9C9CE">Автосервис в Актау — 25-й микрорайон, 52/2</text>
-  <text x="72" y="430" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#F2A93B">★ 4.9 в 2ГИС · Лучший автосервис 2GIS Awards 2026</text>
-</svg>`);
+for (const name of names) {
+  const src = path.join(SRC, `${name}.jpg`);
+  if (!existsSync(src)) {
+    console.warn(`нет исходника: ${src}`);
+    continue;
+  }
 
-await sharp(ogBase)
-  .rotate()
-  .resize({ width: coverW, height: coverH, fit: "cover", position: "centre" })
-  .composite([{ input: overlay, blend: "over" }])
-  .jpeg({ quality: 86, mozjpeg: true })
-  .toFile("public/og.jpg");
+  const meta = await sharp(src).metadata();
+  // При EXIF-повороте на 90° ширина и высота меняются местами, а extract
+  // работает уже по повёрнутому изображению — иначе рамка обрезки уедет.
+  const swapped = (meta.orientation ?? 1) >= 5;
+  const width0 = swapped ? meta.height : meta.width;
+  const height0 = swapped ? meta.width : meta.height;
+
+  const keepH = Math.round(height0 * (1 - WATERMARK_CROP));
+  const isHeroish = name === "workshop-lifts" || name === "oil-store";
+  const targetW = Math.min(isHeroish ? HERO_W : FULL_W, width0);
+
+  const info = await sharp(src)
+    .rotate()
+    .extract({ left: 0, top: 0, width: width0, height: keepH })
+    .resize({ width: targetW, withoutEnlargement: true })
+    .webp({ quality: 80, effort: 5 })
+    .toFile(path.join(OUT, `${name}.webp`));
+
+  report.push({
+    file: name,
+    from: `${width0}x${height0}`,
+    cutOff: `${height0 - keepH}px снизу`,
+    to: `${info.width}x${info.height}`,
+    kb: Math.round(info.size / 1024),
+  });
+  sizes.push([name, info.width, info.height]);
+}
 
 console.log(JSON.stringify(report, null, 1));
-console.log("og.jpg", ogMeta.width + "x" + ogMeta.height, "->", coverW + "x" + coverH);
+console.log("\nразмеры для lib/content.ts:");
+for (const [name, w, h] of sizes) console.log(`  ${name}: ${w}x${h}`);

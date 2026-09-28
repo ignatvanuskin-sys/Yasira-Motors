@@ -1,7 +1,7 @@
-import fs from "node:fs";
+﻿import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { advantages, photos, process, reviews, serviceGroups } from "@/lib/content";
+import { advantages, photos, process, reviews, serviceGroups, symptoms } from "@/lib/content";
 import {
   address,
   company,
@@ -25,6 +25,8 @@ import { getOpenState, toMinutes } from "@/lib/schedule";
 
 const ROOT = path.resolve(__dirname, "..");
 const publicFile = (src: string) => path.join(ROOT, "public", src.replace(/^\//, ""));
+/** Чтение исходника по пути относительно корня проекта. */
+const readSource = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 
 /** Все исходники приложения — для сквозных проверок содержимого. */
 function appSources(): { file: string; text: string }[] {
@@ -328,11 +330,76 @@ describe("фотографии", () => {
   });
 });
 
-describe("тёмная карта", () => {
-  const readFile = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
+describe("быстрый путь к обращению", () => {
+  it("каждый симптом ведёт в WhatsApp с готовым сообщением", () => {
+    expect(symptoms.length).toBeGreaterThanOrEqual(5);
+    for (const symptom of symptoms) {
+      const url = new URL(whatsappLink(phone.whatsapp, symptom.text));
+      expect(url.hostname).toBe("wa.me");
+      expect(url.pathname).toBe(`/${phone.whatsapp}`);
+      const text = url.searchParams.get("text") ?? "";
+      expect(text.length, `короткое сообщение для «${symptom.label}»`).toBeGreaterThan(50);
+      expect(text).toContain("YASIRA MOTORS");
+      // Сообщение — вопрос клиента, а не обещание сервиса
+      expect(text).not.toMatch(/гаранти|точно определ|диагноз/i);
+    }
+  });
 
+  it("подписи симптомов уникальны и не превращаются в запись", () => {
+    const labels = symptoms.map((s) => s.label);
+    expect(new Set(labels).size).toBe(labels.length);
+    for (const symptom of symptoms) {
+      expect(`${symptom.label} ${symptom.text}`).not.toMatch(/запис/i);
+      expect(symptom.label.trim().length).toBeGreaterThan(5);
+    }
+  });
+
+  it("первый экран показывает, можно ли звонить сейчас", () => {
+    const hero = readSource("components/Hero.tsx");
+    expect(hero).toContain("OpenStatus");
+    expect(hero).toContain('variant="label"');
+  });
+
+  it("финальный призыв даёт крупный кликабельный номер и статус работы", () => {
+    const cta = readSource("components/FinalCta.tsx");
+    expect(cta).toContain("tel:${phone.tel}");
+    expect(cta).toContain("OpenStatus");
+  });
+});
+
+describe("заголовочный шрифт", () => {
+  it("заголовки набраны отдельным шрифтом, отличным от текстового", () => {
+    const css = readSource("app/globals.css");
+    expect(css).toContain("--font-display");
+    expect(css).toMatch(/\.display\s*\{[\s\S]*?font-family:\s*var\(--font-display\)/);
+  });
+
+  it("шрифты хостятся у нас, а не тянутся со стороннего CDN", () => {
+    const css = readSource("app/globals.css");
+    expect(css).not.toContain("fonts.googleapis.com");
+    expect(css).not.toContain("fonts.gstatic.com");
+    for (const file of [
+      "oswald-cyrillic-600.woff2",
+      "oswald-latin-600.woff2",
+      "manrope-cyrillic.woff2",
+      "jetbrains-mono-cyrillic-500.woff2",
+    ]) {
+      expect(fs.existsSync(publicFile(`/fonts/${file}`)), `нет файла ${file}`).toBe(true);
+    }
+  });
+
+  it("у заголовков есть запас строки для диакритики (буква Й)", () => {
+    // При line-height ниже 1 у Oswald срезается краткая над «Й»
+    const css = readSource("app/globals.css");
+    const display = css.match(/\.display\s*\{([\s\S]*?)\}/)?.[1] ?? "";
+    const lineHeight = Number(display.match(/line-height:\s*([\d.]+)/)?.[1] ?? "0");
+    expect(lineHeight).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("тёмная карта", () => {
   it("CSP разрешает кадр карты и не расширяет права на скрипты", () => {
-    const config = JSON.parse(readFile("vercel.json"));
+    const config = JSON.parse(readSource("vercel.json"));
     const csp = config.headers[0].headers.find(
       (h: { key: string }) => h.key === "Content-Security-Policy",
     ).value as string;
@@ -348,7 +415,7 @@ describe("тёмная карта", () => {
   });
 
   it("карта использует координаты компании и встроенный эмбед OSM", () => {
-    const map = readFile("components/MapPanel.tsx");
+    const map = readSource("components/MapPanel.tsx");
     expect(map).toContain("openstreetmap.org/export/embed.html");
     expect(map).toContain("address.lat");
     expect(map).toContain("address.lng");
@@ -359,7 +426,7 @@ describe("тёмная карта", () => {
   });
 
   it("тёмная тема карты сделана фильтром, а не платным провайдером", () => {
-    const css = readFile("app/globals.css");
+    const css = readSource("app/globals.css");
     expect(css).toContain(".map-dark");
     expect(css).toMatch(/invert\(0?\.92\)/);
   });
@@ -475,3 +542,4 @@ describe("SEO-данные", () => {
     expect(group.offices).toContain("Актау");
   });
 });
+

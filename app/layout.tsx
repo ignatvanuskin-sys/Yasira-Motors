@@ -87,14 +87,16 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // React 19 сам вставляет <link rel="preload"> и дедуплицирует их —
   // вручную разметку писать не нужно, иначе preload дублируется в head.
+  /*
+    Предзагружаем только то, что видно в первом кадре: заголовочный Oswald
+    (самый крупный текст) и текстовый Manrope, которым набран абзац под
+    заголовком — он же элемент LCP. Моноширинный идёт через @font-face:
+    его подписи мелкие, подмена шрифта там почти незаметна.
+  */
+  preload("/fonts/oswald-cyrillic-600.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  preload("/fonts/oswald-latin-600.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   preload("/fonts/manrope-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   preload("/fonts/manrope-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
-  // Моноширинный виден на первом экране (строка бренда), поэтому тоже предзагружаем
-  preload("/fonts/jetbrains-mono-cyrillic-500.woff2", {
-    as: "font",
-    type: "font/woff2",
-    crossOrigin: "anonymous",
-  });
 
   return (
     <html lang="ru">

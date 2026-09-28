@@ -1,7 +1,7 @@
 import { Phone } from "lucide-react";
-import { CallButton, WhatsAppButton } from "@/components/Actions";
 import { Reveal } from "@/components/Reveal";
 import { Section, SectionHead } from "@/components/Section";
+import { SymptomChips } from "@/components/SymptomChips";
 import { serviceGroups } from "@/lib/content";
 import { links, phone } from "@/lib/site";
 
@@ -69,15 +69,8 @@ export function Services() {
         ))}
       </ul>
 
-      <div className="mt-6 flex flex-col gap-4 rounded-card border border-line bg-night-850 p-5 md:flex-row md:items-center md:justify-between md:p-6">
-        <p className="text-[15.5px] leading-relaxed text-fog-300">
-          Не знаете, какая услуга нужна? Позвоните — подскажем, с чего начать.
-        </p>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <CallButton label={`Позвонить ${phone.display}`} />
-          <WhatsAppButton />
-        </div>
-      </div>
+      {/* Самый короткий путь к обращению: выбор симптома вместо выбора услуги */}
+      <SymptomChips />
 
       <p className="mt-4 text-[13px] text-fog-500">
         На территории также работают автомойка, детейлинг и кафе для клиентов — по отзывам

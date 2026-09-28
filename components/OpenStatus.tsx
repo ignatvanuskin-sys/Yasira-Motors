@@ -9,9 +9,19 @@ import { schedule, scheduleSummary } from "@/lib/site";
  *
  * Индикатор вспомогательный: любая ошибка (например, неподдерживаемая
  * таймзона) не должна ронять страницу, поэтому всё завёрнуто в try/catch
- * и есть нейтральная заглушка до гидратации.
+ * и есть нейтральная заглушка до гидратации — в ней ровно тот же текст,
+ * что и в статике, чтобы не было подёргивания.
+ *
+ * variant="label" — моноширинная метка: используется в первом экране,
+ * где вся служебная строка набрана моно-капсом.
  */
-export function OpenStatus({ className = "" }: { className?: string }) {
+export function OpenStatus({
+  className = "",
+  variant = "default",
+}: {
+  className?: string;
+  variant?: "default" | "label";
+}) {
   const [state, setState] = useState<OpenState | null>(null);
 
   useEffect(() => {
@@ -28,22 +38,27 @@ export function OpenStatus({ className = "" }: { className?: string }) {
     return () => window.clearInterval(timer);
   }, []);
 
+  const isLabel = variant === "label";
+  const base = isLabel
+    ? "label inline-flex items-center gap-2"
+    : "inline-flex items-center gap-2 text-sm font-semibold";
+
   if (!state) {
     return (
-      <span className={`inline-flex items-center gap-2 text-sm text-fog-400 ${className}`}>
-        <span className="h-2 w-2 rounded-full bg-night-700" aria-hidden="true" />
-        График работы: {scheduleSummary}
+      <span className={`${base} ${isLabel ? "text-fog-500" : "text-fog-400"} ${className}`}>
+        <span className="h-2 w-2 shrink-0 rounded-full bg-night-700" aria-hidden="true" />
+        {isLabel ? scheduleSummary : `График работы: ${scheduleSummary}`}
       </span>
     );
   }
 
   return (
     <span
-      className={`inline-flex items-center gap-2 text-sm font-semibold ${
-        state.open ? "text-emerald-400" : "text-fog-400"
+      className={`${base} ${
+        state.open ? "text-emerald-400" : isLabel ? "text-fog-500" : "text-fog-400"
       } ${className}`}
     >
-      <span className="relative flex h-2 w-2">
+      <span className="relative flex h-2 w-2 shrink-0">
         {state.open ? (
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
         ) : null}

@@ -1,5 +1,6 @@
 import { ArrowDown, MapPin, Star } from "lucide-react";
 import { CallButton, WhatsAppButton } from "@/components/Actions";
+import { OpenStatus } from "@/components/OpenStatus";
 import { heroPhoto } from "@/lib/content";
 import { address, links, phone, rating } from "@/lib/site";
 
@@ -49,7 +50,9 @@ export function Hero() {
           {address.city}
         </p>
 
-        <h1 className="display mt-5 text-[clamp(2rem,min(6.6vw,8.6vh),4.6rem)] text-fog-100">
+        {/* Oswald узкий, поэтому кегль можно поднять: строки остаются
+            компактными и не заходят глубоко на светлую часть снимка */}
+        <h1 className="display mt-5 text-[clamp(2.2rem,min(7.8vw,9.8vh),5.6rem)] text-fog-100">
           <span className="block">YASIRA MOTORS</span>
           <span className="block">Ремонт и обслуживание</span>
           <span className="display-outline block">автомобилей в Актау</span>
@@ -79,7 +82,9 @@ export function Hero() {
             </span>
           </a>
           <span aria-hidden="true" className="hidden h-4 w-px bg-line-strong sm:block" />
-          <span className="label">Пн–Сб 09:00–19:00 · Вс 10:00–17:00</span>
+          {/* Живой статус вместо статичных часов: человек сразу видит,
+              можно ли звонить сейчас */}
+          <OpenStatus variant="label" />
         </div>
       </div>
 

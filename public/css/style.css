@@ -4382,8 +4382,8 @@ body {
 /* Ссылка на карточку 2ГИС поверх карты */
 .map-embed-link {
   position: absolute;
-  left: 14px;
-  bottom: 14px;
+  right: 14px;
+  top: 14px;
   display: inline-flex;
   align-items: center;
   gap: 8px;

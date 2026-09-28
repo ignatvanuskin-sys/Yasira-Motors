@@ -73,7 +73,7 @@ function hero() {
             <span>рейтинг в 2ГИС<br>${b.ratingsCount} оценок</span>
           </li>
           <li>
-            <strong>09:00–20:00</strong>
+            <strong>09:00–19:00</strong>
             <span>Пн–Сб, график работы<br>воскресенье: 10:00–17:00</span>
           </li>
           <li>
@@ -500,7 +500,7 @@ function locationSection() {
                 <span class="info-icon" aria-hidden="true">${icon('clock', { size: 20 })}</span>
                 <div>
                   <strong>Часы работы</strong>
-                  <span>Пн–Сб: 09:00–20:00</span>
+                  <span>Пн–Сб: 09:00–19:00</span>
                   <span>Вс: 10:00–17:00</span>
                 </div>
               </li>
@@ -508,11 +508,12 @@ function locationSection() {
                 <span class="info-icon" aria-hidden="true">${icon('phone', { size: 20 })}</span>
                 <div>
                   <strong>Телефоны</strong>
-                  <span><a href="tel:${b.phone.replace(/[^\d+]/g, '')}">${b.phone}</a></span>
-                  <span class="muted">
-                    <a href="tel:${b.phone2.replace(/[^\d+]/g, '')}">${b.phone2}</a> ·
-                    <a href="tel:${b.phone3.replace(/[^\d+]/g, '')}">${b.phone3}</a>
-                  </span>
+                  ${b.phoneList.map(
+                    (entry) => html`<span>
+                      <a href="tel:${entry.number.replace(/[^\d+]/g, '')}">${entry.number}</a>
+                      <span class="muted"> — ${entry.role}</span>
+                    </span>`
+                  )}
                 </div>
               </li>
               <li>

@@ -70,14 +70,23 @@ test('сетка слотов соответствует графику рабо
   const slots = booking.slotTimes(monday);
   const schedule = booking.daySchedule(monday);
 
+  /* Ожидания считаются из конфига, а не вписаны числами.
+     Иначе правка графика в одном месте ломает тест, который проверяет
+     не конкретные часы, а согласованность сетки с расписанием. */
+  const expected = config.hoursForDay(booking.isoDayOf(monday));
+  assert.ok(expected, 'для понедельника в конфиге должен быть график');
+
   assert.equal(schedule.closed, false);
-  assert.equal(schedule.open, '09:00');
-  assert.equal(schedule.close, '20:00');
+  assert.equal(schedule.open, expected.open);
+  assert.equal(schedule.close, expected.close);
   assert.ok(slots.length > 0);
-  assert.equal(slots[0], '09:00');
+  assert.equal(slots[0], expected.open);
   // Последний слот + шаг не выходит за закрытие
   const last = slots[slots.length - 1];
-  assert.ok(booking.timeToMinutes(last) + config.booking.slotMinutes <= booking.timeToMinutes('20:00'));
+  assert.ok(
+    booking.timeToMinutes(last) + config.booking.slotMinutes <=
+      booking.timeToMinutes(expected.close)
+  );
   // Слоты идут с шагом и по возрастанию
   for (let i = 1; i < slots.length; i += 1) {
     assert.equal(

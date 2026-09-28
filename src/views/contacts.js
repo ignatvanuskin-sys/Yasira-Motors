@@ -48,7 +48,7 @@ function renderContacts() {
               <span class="info-icon" aria-hidden="true">${icon('clock', { size: 22 })}</span>
               <div>
                 <strong>Часы работы</strong>
-                <span>Пн–Сб: 09:00–20:00</span>
+                <span>Пн–Сб: 09:00–19:00</span>
                 <span>Вс: 10:00–17:00</span>
                 <span class="muted">В праздничные дни возможны изменения</span>
               </div>
@@ -57,11 +57,12 @@ function renderContacts() {
               <span class="info-icon" aria-hidden="true">${icon('phone', { size: 22 })}</span>
               <div>
                 <strong>Телефоны</strong>
-                <span><a href="tel:${b.phone.replace(/[^\d+]/g, '')}">${b.phone}</a></span>
-                <span>
-                  <a href="tel:${b.phone2.replace(/[^\d+]/g, '')}">${b.phone2}</a> ·
-                  <a href="tel:${b.phone3.replace(/[^\d+]/g, '')}">${b.phone3}</a>
-                </span>
+                ${b.phoneList.map(
+                  (entry) => html`<span>
+                    <a href="tel:${entry.number.replace(/[^\d+]/g, '')}">${entry.number}</a>
+                    <span class="muted"> — ${entry.role}</span>
+                  </span>`
+                )}
               </div>
             </li>
             <li>
@@ -145,7 +146,7 @@ function renderContacts() {
     title: `Контакты — ${config.business.name}, автосервис в Актау`,
     description:
       'YASIRA MOTORS: Актау, 25-й микрорайон, 52/2. Телефон +7 777 088 44 36. ' +
-      'Пн–Сб 09:00–20:00, Вс 10:00–17:00. WhatsApp, Instagram, маршрут до сервиса.',
+      'Пн–Сб 09:00–19:00, Вс 10:00–17:00. WhatsApp, Instagram, маршрут до сервиса.',
     path: '/contacts',
     activePath: '/contacts',
     schema: seo.schemaScript({

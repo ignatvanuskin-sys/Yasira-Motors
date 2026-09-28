@@ -97,17 +97,27 @@ const config = {
     phone: str('BUSINESS_PHONE', '+7 777 088 44 36'),
     phone2: str('BUSINESS_PHONE_2', '+7 777 088 44 24'),
     phone3: str('BUSINESS_PHONE_3', '+7 777 088 44 08'),
+    /* Номера с назначением — так подписаны телефоны в карточке 2ГИС.
+       По подписи клиент понимает, куда звонить, вместо трёх одинаковых цифр. */
+    phoneList: [
+      { number: str('BUSINESS_PHONE', '+7 777 088 44 36'), role: 'магазин' },
+      { number: str('BUSINESS_PHONE_2', '+7 777 088 44 24'), role: 'СТО' },
+      { number: str('BUSINESS_PHONE_3', '+7 777 088 44 08'), role: 'СТО' },
+      { number: str('BUSINESS_PHONE_4', '+7 777 088 44 33'), role: 'детейлинг' },
+    ],
     whatsapp: str('BUSINESS_WHATSAPP', '77770884436'),
     email: str('BUSINESS_EMAIL', 'info@yasira.kz'),
     emailSales: str('BUSINESS_EMAIL_SALES', 'magazine@yasira.kz'),
     instagram: str('BUSINESS_INSTAGRAM', 'https://instagram.com/yasira_motors'),
     twoGis: str('BUSINESS_2GIS', 'https://2gis.kz/aktau/firm/70000001029237438'),
     site: 'https://yasira.kz/',
-    hours: parseHours(str('BUSINESS_HOURS', '1-6|09:00|20:00;7|10:00|17:00')),
-    hoursText: str('BUSINESS_HOURS_TEXT', 'Пн–Сб 09:00–20:00 · Вс 10:00–17:00'),
-    /* Подтверждено карточкой 2GIS на 27.09.2026 */
+    /* Сверено с карточкой 2ГИС 28.09.2026: Пн–Сб 09:00–19:00, Вс 10:00–17:00.
+       Ранее стояло 09:00–20:00 по стороннему справочнику — это было неверно. */
+    hours: parseHours(str('BUSINESS_HOURS', '1-6|09:00|19:00;7|10:00|17:00')),
+    hoursText: str('BUSINESS_HOURS_TEXT', 'Пн–Сб 09:00–19:00 · Вс 10:00–17:00'),
+    /* Подтверждено карточкой 2GIS на 28.09.2026 */
     rating: num('BUSINESS_RATING', 4.9),
-    ratingsCount: num('BUSINESS_RATINGS_COUNT', 477),
+    ratingsCount: num('BUSINESS_RATINGS_COUNT', 478),
     reviewsCount: num('BUSINESS_REVIEWS_COUNT', 107),
     photosCount: num('BUSINESS_PHOTOS_COUNT', 54),
     awards: str('BUSINESS_AWARDS', '2GIS Awards 2026 · Лучший автосервис'),

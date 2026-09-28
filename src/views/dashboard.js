@@ -189,7 +189,7 @@ function renderDashboard(data) {
                   </div>
                   <div class="field">
                     <label for="s-close">Закрытие</label>
-                    <input type="time" id="s-close" name="close" value="${day.close || '20:00'}">
+                    <input type="time" id="s-close" name="close" value="${day.close || '19:00'}">
                   </div>
                   <div class="field">
                     <label for="s-capacity">Приёмка, авто</label>

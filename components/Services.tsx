@@ -2,6 +2,7 @@ import { Phone } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { Section, SectionHead } from "@/components/Section";
 import { SymptomChips } from "@/components/SymptomChips";
+import { RubricMarquee } from "@/components/fx/RubricMarquee";
 import { serviceGroups } from "@/lib/content";
 import { links, phone } from "@/lib/site";
 
@@ -72,7 +73,11 @@ export function Services() {
       {/* Самый короткий путь к обращению: выбор симптома вместо выбора услуги */}
       <SymptomChips />
 
-      <p className="mt-4 text-[13px] text-fog-500">
+      {/* Полный перечень рубрик, заявленных компанией в 2ГИС: выше показаны
+          направления, здесь — весь список целиком */}
+      <RubricMarquee />
+
+      <p className="mt-6 text-[13px] text-fog-500">
         На территории также работают автомойка, детейлинг и кафе для клиентов — по отзывам
         клиентов в{" "}
         <a

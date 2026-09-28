@@ -1,6 +1,7 @@
-import { ArrowDown, MapPin, Star } from "lucide-react";
+import { ArrowDown, Star } from "lucide-react";
 import { CallButton, WhatsAppButton } from "@/components/Actions";
 import { OpenStatus } from "@/components/OpenStatus";
+import { GridBackdrop, Spotlight } from "@/components/fx/backdrops";
 import { heroPhoto } from "@/lib/content";
 import { address, links, phone, rating } from "@/lib/site";
 
@@ -39,6 +40,16 @@ export function Hero() {
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-gradient-to-t from-night-950 via-night-950/92 to-night-950/55 lg:bg-gradient-to-r lg:from-night-950 lg:from-32% lg:via-night-950/85 lg:via-70% lg:to-night-950/12"
+      />
+
+      {/* Чертёжная сетка — только на широком экране: на телефоне она
+          читалась бы как шум поверх фотографии */}
+      <GridBackdrop className="hidden lg:block" />
+
+      {/* Прожектор падает сверху слева, откуда начинается заголовок */}
+      <Spotlight
+        opacity={0.7}
+        className="top-0 left-0 h-[78%] w-[92%] lg:h-full lg:w-[62%]"
       />
 
       <div className="shell relative z-10 flex flex-1 flex-col justify-end pt-[104px]">

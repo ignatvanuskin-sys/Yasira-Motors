@@ -1,4 +1,5 @@
 import { Phone } from "lucide-react";
+import { Beams } from "@/components/fx/backdrops";
 import { CallButton, WhatsAppButton } from "@/components/Actions";
 import { OpenStatus } from "@/components/OpenStatus";
 import { Reveal } from "@/components/Reveal";
@@ -23,6 +24,9 @@ export function FinalCta() {
                   "radial-gradient(620px 220px at 6% 0%, rgba(224,31,38,0.20), transparent 68%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 40%)",
               }}
             />
+
+            {/* Лучи идут вдоль всего блока и уводят взгляд к кнопкам */}
+            <Beams lines={12} className="opacity-70" />
 
             <div className="relative grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-12">
               <div>

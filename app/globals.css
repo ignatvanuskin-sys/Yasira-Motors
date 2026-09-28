@@ -422,6 +422,133 @@
   border-radius: 2px;
 }
 
+/* ------------------------------------------------------------------
+   Эффекты уровня Aceternity — нативные SVG/CSS, без библиотеки анимаций
+   ------------------------------------------------------------------ */
+
+/*
+  Прожектор в первом экране. Анимируются только opacity (задана инлайном)
+  и transform — оба рисуются на композиторе, макет не пересчитывается.
+*/
+.spotlight {
+  transform-origin: 50% 0%;
+  animation: spotlight-in 1.5s var(--ease-out-soft) both;
+}
+
+@keyframes spotlight-in {
+  from {
+    transform: translate3d(0, -9%, 0) scale(0.9);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/*
+  Луч: по кривой бежит короткий штрих. `pathLength="1"` на стороне SVG
+  превращает stroke-dashoffset в доли длины пути, поэтому геометрию
+  не нужно измерять в JS. Анимируется свойство отрисовки.
+*/
+.beam-path {
+  animation-name: beam-travel;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes beam-travel {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+
+/*
+  Линия, прорисовывающаяся по прокрутке. Растёт clip-path — свойство
+  отрисовки, высота и положение не меняются.
+  Без поддержки animation-timeline остаётся только дорожка: линия читается
+  как разделитель, подсветка — украшение.
+*/
+.tracing-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 21px;
+  width: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-line);
+  /* На широком экране шаги стоят в строку — вертикальная линия там не нужна */
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .tracing-track {
+    display: block;
+  }
+}
+
+.tracing-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-brand-600) 55%,
+    var(--color-brand-400)
+  );
+  clip-path: inset(0 0 100% 0);
+}
+
+@supports (animation-timeline: view()) {
+  .tracing-track::after {
+    animation: tracing-fill linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 60%;
+  }
+}
+
+@keyframes tracing-fill {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/*
+  Свечение под курсором. Рисуется фоновым градиентом самого элемента,
+  а не псевдоэлементом поверх содержимого: так не приходится поднимать
+  текст по z-index и эффект не может перекрыть кнопку внутри карточки.
+  Координаты кладёт GlowGroup одной записью CSS-переменной на кадр.
+*/
+@media (hover: hover) and (pointer: fine) {
+  [data-glow]:hover,
+  [data-glow]:focus-within {
+    background-image: radial-gradient(
+      280px circle at var(--gx, 50%) var(--gy, 0%),
+      rgb(224 31 38 / 0.16),
+      transparent 68%
+    );
+  }
+}
+
+/*
+  Лента рубрик: две дорожки навстречу. Трек сдвигается ровно на половину
+  своей ширины, где стоит точная копия набора.
+*/
+.marquee-group {
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+
+.marquee-group .marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -431,6 +558,27 @@
     transform: none !important;
     transition: none !important;
   }
+
+  /*
+    Бесконечные анимации нужно именно выключать, а не ускорять: общее правило
+    ниже ставит длительность 0.001ms, и при `animation-iteration-count: infinite`
+    элемент начинает прокручивать тысячи циклов в секунду — это и мигание,
+    и постоянная перерисовка. Поэтому здесь animation: none, а не duration.
+  */
+  .spotlight,
+  .beam-path,
+  .marquee-track,
+  .animate-bounce {
+    animation: none !important;
+  }
+
+  /* Линия шагов остаётся видимой целиком: она читается как разделитель,
+     а не как украшение */
+  .tracing-track::after {
+    animation: none !important;
+    clip-path: inset(0 0 0 0);
+  }
+
   *,
   *::before,
   *::after {

@@ -2,25 +2,28 @@
   "name": "yasira-motors",
   "version": "2.0.0",
   "private": true,
-  "description": "YASIRA MOTORS — сайт автосервиса в Актау: услуги, отзывы, контакты, карта",
-  "main": "server.js",
-  "engines": {
-    "node": ">=18"
-  },
+  "description": "YASIRA MOTORS — сайт автосервиса в Актау",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "lint": "node scripts/lint.js",
-    "typecheck": "node scripts/typecheck.js",
-    "test": "node --test",
-    "build": "node scripts/build.js",
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "node scripts/serve.js",
     "qa": "node scripts/qa.js",
-    "qa:shots": "node scripts/qa-shots.js"
+    "typecheck": "tsc --noEmit",
+    "images": "node scripts/optimize-images.mjs"
   },
-  "keywords": [
-    "автосервис",
-    "актау",
-    "yasira-motors"
-  ],
-  "license": "UNLICENSED"
+  "dependencies": {
+    "lucide-react": "^1.48.0",
+    "next": "^16.3.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  }
 }

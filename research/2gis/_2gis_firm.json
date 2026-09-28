@@ -1,0 +1,2211 @@
+{
+  "catalog": {
+    "meta": {
+      "api_version": "2.0.3686940",
+      "code": 403,
+      "error": {
+        "message": "Authorization error (key is blocked, please contact api@2gis.ru)",
+        "type": "apiKeyIsBlocked"
+      },
+      "issue_date": "20190201"
+    }
+  },
+  "catalogStatus": 200,
+  "photoStatus": 200,
+  "photos": {
+    "albums": [
+      {
+        "count": 54,
+        "id": "all",
+        "name": "Все"
+      },
+      {
+        "count": 6,
+        "id": "outside",
+        "name": "Снаружи"
+      },
+      {
+        "count": 7,
+        "id": "interior",
+        "name": "Внутри"
+      },
+      {
+        "count": 39,
+        "id": "services",
+        "name": "Услуги"
+      },
+      {
+        "count": 1,
+        "id": "entrance",
+        "name": "Вход"
+      },
+      {
+        "count": 37,
+        "id": "owner",
+        "name": "От владельца"
+      },
+      {
+        "count": 17,
+        "id": "user",
+        "name": "От посетителей"
+      }
+    ],
+    "items": [
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Bektur Rakhmet",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2026-09-03T10:19:08+00:00",
+        "emojis": [],
+        "id": "30258560335939616",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-09-03T10:19:10+00:00",
+        "owner": {
+          "avatar": "https://i2.photo.2gis.com/images/profile/844424978200502_efc3.jpg",
+          "id": "21899522",
+          "name": "Bektur Rakhmet",
+          "public_id": "90fd6af2881441bd8af772ced1358657"
+        },
+        "photo": {
+          "height": 1024,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/photo-gallery/6a82376c-1f45-4a39-bf6d-c7fda803a189_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/photo-gallery/6a82376c-1f45-4a39-bf6d-c7fda803a189_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/photo-gallery/6a82376c-1f45-4a39-bf6d-c7fda803a189.jpg",
+          "width": 1536
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Bektur Rakhmet",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2026-09-03T16:58:41+00:00",
+        "emojis": [],
+        "id": "30258560335939615",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-09-03T16:58:44+00:00",
+        "owner": {
+          "avatar": "https://i2.photo.2gis.com/images/profile/844424978200502_efc3.jpg",
+          "id": "21899522",
+          "name": "Bektur Rakhmet",
+          "public_id": "90fd6af2881441bd8af772ced1358657"
+        },
+        "photo": {
+          "height": 4377,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/photo-gallery/4c2de162-fd38-44e6-8777-74f8c28e5106_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/photo-gallery/4c2de162-fd38-44e6-8777-74f8c28e5106_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/photo-gallery/4c2de162-fd38-44e6-8777-74f8c28e5106.jpg",
+          "width": 6565
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:50+00:00",
+        "emojis": [],
+        "id": "27584547766338674",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i2.photo.2gis.com/images/branch/196/27584547766338674_bfae_232x232.jpg",
+            "328x170": "https://i2.photo.2gis.com/images/branch/196/27584547766338674_bfae_328x170.jpg"
+          },
+          "url": "https://i2.photo.2gis.com/images/branch/196/27584547766338674_bfae.jpg",
+          "width": 1228
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:50+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:56:37+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547766338675",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i8.photo.2gis.com/images/branch/196/27584547766338675_fabf_232x232.jpg",
+            "328x170": "https://i8.photo.2gis.com/images/branch/196/27584547766338675_fabf_328x170.jpg"
+          },
+          "url": "https://i8.photo.2gis.com/images/branch/196/27584547766338675_fabf.jpg",
+          "width": 1800
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:51+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "fire",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:55:15+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547766338682",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 780,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/images/branch/196/27584547766338682_4f82_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/images/branch/196/27584547766338682_4f82_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/images/branch/196/27584547766338682_4f82.jpg",
+          "width": 1040
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:52+00:00",
+        "emojis": [],
+        "id": "27584547766338680",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/images/branch/196/27584547766338680_3018_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/images/branch/196/27584547766338680_3018_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/images/branch/196/27584547766338680_3018.jpg",
+          "width": 1054
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:36:46+00:00",
+        "emojis": [],
+        "id": "27584547756141621",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i7.photo.2gis.com/images/branch/196/27584547756141621_2028_232x232.jpg",
+            "328x170": "https://i7.photo.2gis.com/images/branch/196/27584547756141621_2028_328x170.jpg"
+          },
+          "url": "https://i7.photo.2gis.com/images/branch/196/27584547756141621_2028.jpg",
+          "width": 1321
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Галина Двойных",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2018-11-21T07:33:16+00:00",
+        "emojis": [],
+        "id": "27584547753407927",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2018-11-21T07:47:27+00:00",
+        "owner": {
+          "avatar": null,
+          "id": "14111763",
+          "name": "Галина Двойных",
+          "public_id": "373dac83e3054f33bc7bd5a16fec9d2b"
+        },
+        "photo": {
+          "height": 1102,
+          "preview_urls": {
+            "232x232": "https://i6.photo.2gis.com/images/branch/196/27584547753407927_4145_232x232.jpg",
+            "328x170": "https://i6.photo.2gis.com/images/branch/196/27584547753407927_4145_328x170.jpg"
+          },
+          "url": "https://i6.photo.2gis.com/images/branch/196/27584547753407927_4145.jpg",
+          "width": 1920
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:39:32+00:00",
+        "emojis": [],
+        "id": "27584547756141689",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i1.photo.2gis.com/images/branch/196/27584547756141689_34b7_232x232.jpg",
+            "328x170": "https://i1.photo.2gis.com/images/branch/196/27584547756141689_34b7_328x170.jpg"
+          },
+          "url": "https://i1.photo.2gis.com/images/branch/196/27584547756141689_34b7.jpg",
+          "width": 1555
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Alexandr Alexandr",
+          "type": "text",
+          "url": null,
+          "value": "Фотография из отзывов"
+        },
+        "creation_time": "2025-11-17T05:21:08+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:56:26+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "30258560272974509",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2025-11-17T05:21:23+00:00",
+        "owner": {
+          "avatar": null,
+          "id": "60111183",
+          "name": "Alexandr Alexandr",
+          "public_id": "780b8b945e8a45fba35c88d3a414acef"
+        },
+        "photo": {
+          "height": 4032,
+          "preview_urls": {
+            "232x232": "https://i9.photo.2gis.com/photo-gallery/27d94221-3295-46de-9a66-4044a1225fd8_232x232.jpg",
+            "328x170": "https://i9.photo.2gis.com/photo-gallery/27d94221-3295-46de-9a66-4044a1225fd8_328x170.jpg"
+          },
+          "url": "https://i9.photo.2gis.com/photo-gallery/27d94221-3295-46de-9a66-4044a1225fd8.jpg",
+          "width": 3024
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:37:52+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "fire",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:56:20+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547756141647",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:38:07+00:00",
+        "owner": null,
+        "photo": {
+          "height": 810,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/images/branch/196/27584547756141647_b753_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/images/branch/196/27584547756141647_b753_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/images/branch/196/27584547756141647_b753.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:33:39+00:00",
+        "emojis": [],
+        "id": "27584547756141539",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i0.photo.2gis.com/images/branch/196/27584547756141539_75eb_232x232.jpg",
+            "328x170": "https://i0.photo.2gis.com/images/branch/196/27584547756141539_75eb_328x170.jpg"
+          },
+          "url": "https://i0.photo.2gis.com/images/branch/196/27584547756141539_75eb.jpg",
+          "width": 1554
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:12+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "prayer",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:57:00+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547766338631",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1080,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/images/branch/196/27584547766338631_7350_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/images/branch/196/27584547766338631_7350_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/images/branch/196/27584547766338631_7350.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:34:51+00:00",
+        "emojis": [],
+        "id": "27584547756141566",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/images/branch/196/27584547756141566_1174_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/images/branch/196/27584547756141566_1174_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/images/branch/196/27584547756141566_1174.jpg",
+          "width": 1600
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:26:22+00:00",
+        "emojis": [],
+        "id": "27584547756141294",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i6.photo.2gis.com/images/branch/196/27584547756141294_d1bb_232x232.jpg",
+            "328x170": "https://i6.photo.2gis.com/images/branch/196/27584547756141294_d1bb_328x170.jpg"
+          },
+          "url": "https://i6.photo.2gis.com/images/branch/196/27584547756141294_d1bb.jpg",
+          "width": 1199
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Olzhas Surlubaev",
+          "type": "text",
+          "url": null,
+          "value": "Фотография из отзывов"
+        },
+        "creation_time": "2025-10-22T09:13:58+00:00",
+        "emojis": [
+          {
+            "count": 2,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T05:04:00+00:00",
+                "owner": {
+                  "id": "74749359",
+                  "name": "Olzhas Surlubaev",
+                  "photo_preview_urls": {
+                    "1920x": "https://i2.photo.2gis.com/images/profile/30258560236999557_4d55_1920x.jpg",
+                    "320x": "https://i2.photo.2gis.com/images/profile/30258560236999557_4d55_320x.jpg",
+                    "640x": "https://i2.photo.2gis.com/images/profile/30258560236999557_4d55_640x.jpg",
+                    "64x64": "https://i2.photo.2gis.com/images/profile/30258560236999557_4d55_64x64.jpg",
+                    "url": "https://i2.photo.2gis.com/images/profile/30258560236999557_4d55.jpg"
+                  },
+                  "public_id": "f18dd03c0e044d46afaa7c0de76e43b1"
+                }
+              },
+              {
+                "creation_time": "2026-08-23T04:57:28+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "30258560268276867",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2025-10-22T09:14:17+00:00",
+        "owner": {
+          "avatar": "https://i2.photo.2gis.com/images/profile/30258560236999557_4d55.jpg",
+          "id": "74749359",
+          "name": "Olzhas Surlubaev",
+          "public_id": "f18dd03c0e044d46afaa7c0de76e43b1"
+        },
+        "photo": {
+          "height": 4032,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/photo-gallery/c9e6e8af-1e33-4fb5-af1b-f9278d10cd8d_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/photo-gallery/c9e6e8af-1e33-4fb5-af1b-f9278d10cd8d_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/photo-gallery/c9e6e8af-1e33-4fb5-af1b-f9278d10cd8d.jpg",
+          "width": 3024
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Ruslan Denikay",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2019-04-20T09:14:52+00:00",
+        "emojis": [],
+        "id": "27584547757918554",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:50:28+00:00",
+        "owner": {
+          "avatar": "https://i7.photo.2gis.com/images/profile/844424951643046_9b9d.jpg",
+          "id": "11252272",
+          "name": "Ruslan Denikay",
+          "public_id": "89b6ad3ff8ec41ddad121444a73f131f"
+        },
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i8.photo.2gis.com/images/branch/196/27584547757918554_a048_232x232.jpg",
+            "328x170": "https://i8.photo.2gis.com/images/branch/196/27584547757918554_a048_328x170.jpg"
+          },
+          "url": "https://i8.photo.2gis.com/images/branch/196/27584547757918554_a048.jpg",
+          "width": 1796
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Галина Двойных",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2018-11-21T07:35:23+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:57:38+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547753407986",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2018-11-21T17:08:59+00:00",
+        "owner": {
+          "avatar": null,
+          "id": "14111763",
+          "name": "Галина Двойных",
+          "public_id": "373dac83e3054f33bc7bd5a16fec9d2b"
+        },
+        "photo": {
+          "height": 1094,
+          "preview_urls": {
+            "232x232": "https://i9.photo.2gis.com/images/branch/196/27584547753407986_8f37_232x232.jpg",
+            "328x170": "https://i9.photo.2gis.com/images/branch/196/27584547753407986_8f37_328x170.jpg"
+          },
+          "url": "https://i9.photo.2gis.com/images/branch/196/27584547753407986_8f37.jpg",
+          "width": 1920
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:44+00:00",
+        "emojis": [],
+        "id": "27584547766338665",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:51:20+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i2.photo.2gis.com/images/branch/196/27584547766338665_41ef_232x232.jpg",
+            "328x170": "https://i2.photo.2gis.com/images/branch/196/27584547766338665_41ef_328x170.jpg"
+          },
+          "url": "https://i2.photo.2gis.com/images/branch/196/27584547766338665_41ef.jpg",
+          "width": 1600
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Konstantin Dvoinykh",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2018-09-18T04:40:50+00:00",
+        "emojis": [],
+        "id": "27584547751896781",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2023-06-23T07:44:28+00:00",
+        "owner": {
+          "avatar": null,
+          "id": "14007391",
+          "name": "Konstantin Dvoinykh",
+          "public_id": "2cf2ccf670424c63b6c2dbaa1ebadd57"
+        },
+        "photo": {
+          "height": 1080,
+          "preview_urls": {
+            "232x232": "https://i6.photo.2gis.com/images/geo/196/27584547751896781_5537_232x232.jpg",
+            "328x170": "https://i6.photo.2gis.com/images/geo/196/27584547751896781_5537_328x170.jpg"
+          },
+          "url": "https://i6.photo.2gis.com/images/geo/196/27584547751896781_5537.jpg",
+          "width": 1920
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Ayan Shadiyarov",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2026-09-14T07:50:28+00:00",
+        "emojis": [],
+        "id": "30258560338199668",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-09-14T07:50:34+00:00",
+        "owner": {
+          "avatar": null,
+          "id": "91276406",
+          "name": "Ayan Shadiyarov",
+          "public_id": "92f4900adc8a4ccbbfc0d2a203cb8042"
+        },
+        "photo": {
+          "height": 4032,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/photo-gallery/108e7092-db91-48cc-9e67-28930fb350e7_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/photo-gallery/108e7092-db91-48cc-9e67-28930fb350e7_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/photo-gallery/108e7092-db91-48cc-9e67-28930fb350e7.jpg",
+          "width": 3024
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:39:06+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:57:54+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547756141677",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 810,
+          "preview_urls": {
+            "232x232": "https://i6.photo.2gis.com/images/branch/196/27584547756141677_fb19_232x232.jpg",
+            "328x170": "https://i6.photo.2gis.com/images/branch/196/27584547756141677_fb19_328x170.jpg"
+          },
+          "url": "https://i6.photo.2gis.com/images/branch/196/27584547756141677_fb19.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Қанат М",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2021-11-04T13:22:57+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:58:12+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "30258560065650008",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2021-11-11T07:48:52+00:00",
+        "owner": {
+          "avatar": "https://i2.photo.2gis.com/images/profile/30258560271441103_44c9.jpg",
+          "id": "30072524",
+          "name": "Қанат М",
+          "public_id": "f5f1ae92153943a5873151a68f77eb43"
+        },
+        "photo": {
+          "height": 3024,
+          "preview_urls": {
+            "232x232": "https://i2.photo.2gis.com/images/branch/0/30258560065650008_1547_232x232.jpg",
+            "328x170": "https://i2.photo.2gis.com/images/branch/0/30258560065650008_1547_328x170.jpg"
+          },
+          "url": "https://i2.photo.2gis.com/images/branch/0/30258560065650008_1547.jpg",
+          "width": 4032
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Konstantin Dvoinykh",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2018-06-28T17:14:20+00:00",
+        "emojis": [],
+        "id": "27584547748739366",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2018-10-15T10:23:03+00:00",
+        "owner": {
+          "avatar": null,
+          "id": "14007391",
+          "name": "Konstantin Dvoinykh",
+          "public_id": "2cf2ccf670424c63b6c2dbaa1ebadd57"
+        },
+        "photo": {
+          "height": 622,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/images/branch/196/27584547748739366_09f3_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/images/branch/196/27584547748739366_09f3_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/images/branch/196/27584547748739366_09f3.jpg",
+          "width": 1280
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:38+00:00",
+        "emojis": [],
+        "id": "27584547766338659",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:50:28+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i7.photo.2gis.com/images/branch/196/27584547766338659_a99c_232x232.jpg",
+            "328x170": "https://i7.photo.2gis.com/images/branch/196/27584547766338659_a99c_328x170.jpg"
+          },
+          "url": "https://i7.photo.2gis.com/images/branch/196/27584547766338659_a99c.jpg",
+          "width": 900
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:49+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:58:44+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547766338673",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:51:30+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/images/branch/196/27584547766338673_078f_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/images/branch/196/27584547766338673_078f_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/images/branch/196/27584547766338673_078f.jpg",
+          "width": 899
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:34+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:58:48+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547766338655",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:50:31+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i8.photo.2gis.com/images/branch/196/27584547766338655_6bba_232x232.jpg",
+            "328x170": "https://i8.photo.2gis.com/images/branch/196/27584547766338655_6bba_328x170.jpg"
+          },
+          "url": "https://i8.photo.2gis.com/images/branch/196/27584547766338655_6bba.jpg",
+          "width": 900
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:27:48+00:00",
+        "emojis": [],
+        "id": "27584547756141368",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2019-03-05T06:51:33+00:00",
+        "owner": null,
+        "photo": {
+          "height": 875,
+          "preview_urls": {
+            "232x232": "https://i2.photo.2gis.com/images/branch/196/27584547756141368_5a0e_232x232.jpg",
+            "328x170": "https://i2.photo.2gis.com/images/branch/196/27584547756141368_5a0e_328x170.jpg"
+          },
+          "url": "https://i2.photo.2gis.com/images/branch/196/27584547756141368_5a0e.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:29:40+00:00",
+        "emojis": [],
+        "id": "27584547756141429",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:16:37+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1069,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/images/branch/196/27584547756141429_0210_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/images/branch/196/27584547756141429_0210_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/images/branch/196/27584547756141429_0210.jpg",
+          "width": 1069
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:28:28+00:00",
+        "emojis": [],
+        "id": "27584547756141390",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 875,
+          "preview_urls": {
+            "232x232": "https://i2.photo.2gis.com/images/branch/196/27584547756141390_89d3_232x232.jpg",
+            "328x170": "https://i2.photo.2gis.com/images/branch/196/27584547756141390_89d3_328x170.jpg"
+          },
+          "url": "https://i2.photo.2gis.com/images/branch/196/27584547756141390_89d3.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Галина Двойных",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2018-11-21T07:34:33+00:00",
+        "emojis": [],
+        "id": "27584547753407975",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2018-11-21T17:08:54+00:00",
+        "owner": {
+          "avatar": null,
+          "id": "14111763",
+          "name": "Галина Двойных",
+          "public_id": "373dac83e3054f33bc7bd5a16fec9d2b"
+        },
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i0.photo.2gis.com/images/branch/196/27584547753407975_125c_232x232.jpg",
+            "328x170": "https://i0.photo.2gis.com/images/branch/196/27584547753407975_125c_328x170.jpg"
+          },
+          "url": "https://i0.photo.2gis.com/images/branch/196/27584547753407975_125c.jpg",
+          "width": 1600
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:57+00:00",
+        "emojis": [],
+        "id": "27584547766338692",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2024-04-08T05:58:14+00:00",
+        "owner": null,
+        "photo": {
+          "height": 780,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/images/branch/196/27584547766338692_2674_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/images/branch/196/27584547766338692_2674_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/images/branch/196/27584547766338692_2674.jpg",
+          "width": 1040
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:35:44+00:00",
+        "emojis": [],
+        "id": "27584547756141587",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i6.photo.2gis.com/images/branch/196/27584547756141587_ac5c_232x232.jpg",
+            "328x170": "https://i6.photo.2gis.com/images/branch/196/27584547756141587_ac5c_328x170.jpg"
+          },
+          "url": "https://i6.photo.2gis.com/images/branch/196/27584547756141587_ac5c.jpg",
+          "width": 960
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:49+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:59:30+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547766338671",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i1.photo.2gis.com/images/branch/196/27584547766338671_8b31_232x232.jpg",
+            "328x170": "https://i1.photo.2gis.com/images/branch/196/27584547766338671_8b31_328x170.jpg"
+          },
+          "url": "https://i1.photo.2gis.com/images/branch/196/27584547766338671_8b31.jpg",
+          "width": 1800
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:37+00:00",
+        "emojis": [],
+        "id": "27584547766338657",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i8.photo.2gis.com/images/branch/196/27584547766338657_0f72_232x232.jpg",
+            "328x170": "https://i8.photo.2gis.com/images/branch/196/27584547766338657_0f72_328x170.jpg"
+          },
+          "url": "https://i8.photo.2gis.com/images/branch/196/27584547766338657_0f72.jpg",
+          "width": 1600
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Bektur Rakhmet",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от пользователя"
+        },
+        "creation_time": "2026-09-03T16:58:40+00:00",
+        "emojis": [],
+        "id": "30258560335939622",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-09-03T16:58:44+00:00",
+        "owner": {
+          "avatar": "https://i2.photo.2gis.com/images/profile/844424978200502_efc3.jpg",
+          "id": "21899522",
+          "name": "Bektur Rakhmet",
+          "public_id": "90fd6af2881441bd8af772ced1358657"
+        },
+        "photo": {
+          "height": 3391,
+          "preview_urls": {
+            "232x232": "https://i1.photo.2gis.com/photo-gallery/4c17189c-0fb0-43bd-bd50-e39f9bb2fd35_232x232.jpg",
+            "328x170": "https://i1.photo.2gis.com/photo-gallery/4c17189c-0fb0-43bd-bd50-e39f9bb2fd35_328x170.jpg"
+          },
+          "url": "https://i1.photo.2gis.com/photo-gallery/4c17189c-0fb0-43bd-bd50-e39f9bb2fd35.jpg",
+          "width": 5086
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:32:50+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T04:59:40+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547756141512",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:16:37+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i7.photo.2gis.com/images/branch/196/27584547756141512_a954_232x232.jpg",
+            "328x170": "https://i7.photo.2gis.com/images/branch/196/27584547756141512_a954_328x170.jpg"
+          },
+          "url": "https://i7.photo.2gis.com/images/branch/196/27584547756141512_a954.jpg",
+          "width": 1559
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Алмас Икембаев",
+          "type": "text",
+          "url": null,
+          "value": "Фотография из отзывов"
+        },
+        "creation_time": "2026-04-07T19:09:05+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T05:00:35+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "30258560305203838",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-04-14T03:27:52+00:00",
+        "owner": {
+          "avatar": "https://i5.photo.2gis.com/images/profile/844424967427755_a9c3.jpg",
+          "id": "12580470",
+          "name": "Алмас Икембаев",
+          "public_id": "d6598661b7004894b5bf9afa01ffcc65"
+        },
+        "photo": {
+          "height": 1920,
+          "preview_urls": {
+            "232x232": "https://i6.photo.2gis.com/photo-gallery/32f43e3b-cd71-45ac-be5d-3c6bf41f3e39_232x232.jpg",
+            "328x170": "https://i6.photo.2gis.com/photo-gallery/32f43e3b-cd71-45ac-be5d-3c6bf41f3e39_328x170.jpg"
+          },
+          "url": "https://i6.photo.2gis.com/photo-gallery/32f43e3b-cd71-45ac-be5d-3c6bf41f3e39.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "user",
+          "icon": "https://i.photo.2gis.com/logo/2gis.svg",
+          "provider_icon": "https://cachizer1.2gis.com/photo-providers/c4728d87-8e84-4621-b27a-e91b4f530ae3.png?w={width}&h={height}",
+          "title": "Денис Кушнир",
+          "type": "text",
+          "url": null,
+          "value": "Фотография из отзывов"
+        },
+        "creation_time": "2026-06-10T15:11:32+00:00",
+        "emojis": [],
+        "id": "30258560318831231",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-06-10T15:14:53+00:00",
+        "owner": {
+          "avatar": "https://i8.photo.2gis.com/images/profile/30258560208870140_ee30.jpg",
+          "id": "30917546",
+          "name": "Денис Кушнир",
+          "public_id": "f083f238bfa34fe7ad3801e91f3a161a"
+        },
+        "photo": {
+          "height": 4000,
+          "preview_urls": {
+            "232x232": "https://i7.photo.2gis.com/photo-gallery/edb32b26-a11c-4279-bc1f-03d1056b0cf0_232x232.jpg",
+            "328x170": "https://i7.photo.2gis.com/photo-gallery/edb32b26-a11c-4279-bc1f-03d1056b0cf0_328x170.jpg"
+          },
+          "url": "https://i7.photo.2gis.com/photo-gallery/edb32b26-a11c-4279-bc1f-03d1056b0cf0.jpg",
+          "width": 3000
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:42+00:00",
+        "emojis": [],
+        "id": "27584547766338663",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:50:28+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i0.photo.2gis.com/images/branch/196/27584547766338663_7209_232x232.jpg",
+            "328x170": "https://i0.photo.2gis.com/images/branch/196/27584547766338663_7209_328x170.jpg"
+          },
+          "url": "https://i0.photo.2gis.com/images/branch/196/27584547766338663_7209.jpg",
+          "width": 1600
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:31:19+00:00",
+        "emojis": [],
+        "id": "27584547756141468",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 810,
+          "preview_urls": {
+            "232x232": "https://i9.photo.2gis.com/images/branch/196/27584547756141468_62ef_232x232.jpg",
+            "328x170": "https://i9.photo.2gis.com/images/branch/196/27584547756141468_62ef_328x170.jpg"
+          },
+          "url": "https://i9.photo.2gis.com/images/branch/196/27584547756141468_62ef.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:27:33+00:00",
+        "emojis": [],
+        "id": "27584547756141350",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 875,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/images/branch/196/27584547756141350_7ab5_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/images/branch/196/27584547756141350_7ab5_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/images/branch/196/27584547756141350_7ab5.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:40:19+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T05:03:47+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547756141720",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:50:28+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1003,
+          "preview_urls": {
+            "232x232": "https://i6.photo.2gis.com/images/branch/196/27584547756141720_bfc8_232x232.jpg",
+            "328x170": "https://i6.photo.2gis.com/images/branch/196/27584547756141720_bfc8_328x170.jpg"
+          },
+          "url": "https://i6.photo.2gis.com/images/branch/196/27584547756141720_bfc8.jpg",
+          "width": 980
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:20+00:00",
+        "emojis": [],
+        "id": "27584547766338643",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 792,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/images/branch/196/27584547766338643_56e3_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/images/branch/196/27584547766338643_56e3_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/images/branch/196/27584547766338643_56e3.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:16+00:00",
+        "emojis": [],
+        "id": "27584547766338638",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2024-04-08T05:58:14+00:00",
+        "owner": null,
+        "photo": {
+          "height": 785,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/images/branch/196/27584547766338638_9623_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/images/branch/196/27584547766338638_9623_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/images/branch/196/27584547766338638_9623.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:29:12+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T05:03:58+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547756141412",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:16:37+00:00",
+        "owner": null,
+        "photo": {
+          "height": 876,
+          "preview_urls": {
+            "232x232": "https://i3.photo.2gis.com/images/branch/196/27584547756141412_69e8_232x232.jpg",
+            "328x170": "https://i3.photo.2gis.com/images/branch/196/27584547756141412_69e8_328x170.jpg"
+          },
+          "url": "https://i3.photo.2gis.com/images/branch/196/27584547756141412_69e8.jpg",
+          "width": 1080
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:30:36+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T05:04:13+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547756141448",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:16:37+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i5.photo.2gis.com/images/branch/196/27584547756141448_caf9_232x232.jpg",
+            "328x170": "https://i5.photo.2gis.com/images/branch/196/27584547756141448_caf9_328x170.jpg"
+          },
+          "url": "https://i5.photo.2gis.com/images/branch/196/27584547756141448_caf9.jpg",
+          "width": 1418
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:31:52+00:00",
+        "emojis": [
+          {
+            "count": 1,
+            "id": "green_heart",
+            "is_liked": false,
+            "items": [
+              {
+                "creation_time": "2026-08-23T05:04:16+00:00",
+                "owner": {
+                  "id": "103708584",
+                  "name": "Игорь Сафронов",
+                  "photo_preview_urls": {
+                    "1920x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_1920x.jpg",
+                    "320x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_320x.jpg",
+                    "640x": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_640x.jpg",
+                    "64x64": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97_64x64.jpg",
+                    "url": "https://i8.photo.2gis.com/images/profile/30258560334009416_1d97.jpg"
+                  },
+                  "public_id": "46b1492a4a5444ab8ae4005c778b4ea8"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "27584547756141484",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2020-01-20T12:16:37+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/images/branch/196/27584547756141484_0c2c_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/images/branch/196/27584547756141484_0c2c_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/images/branch/196/27584547756141484_0c2c.jpg",
+          "width": 1600
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2019-02-20T13:34:25+00:00",
+        "emojis": [],
+        "id": "27584547756141553",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2026-08-01T07:14:00+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i4.photo.2gis.com/images/branch/196/27584547756141553_f968_232x232.jpg",
+            "328x170": "https://i4.photo.2gis.com/images/branch/196/27584547756141553_f968_328x170.jpg"
+          },
+          "url": "https://i4.photo.2gis.com/images/branch/196/27584547756141553_f968.jpg",
+          "width": 1200
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      },
+      {
+        "copyright": {
+          "code": "2gis_owner",
+          "icon": "https://i.photo.2gis.com/logo/owner.svg",
+          "provider_icon": "https://cachizer3.2gis.com/photo-providers/8277b861-94b5-4745-8909-3ee24cd7ca8d.png?w={width}&h={height}",
+          "title": "Фотография от владельца",
+          "type": "text",
+          "url": null,
+          "value": "Фотография от владельца"
+        },
+        "creation_time": "2020-01-20T12:38:50+00:00",
+        "emojis": [],
+        "id": "27584547766338672",
+        "is_discovery": false,
+        "is_pinned": false,
+        "is_similar_media_search_enabled": true,
+        "is_visible": true,
+        "media_type": "photo",
+        "modification_time": "2024-04-08T05:58:14+00:00",
+        "owner": null,
+        "photo": {
+          "height": 1200,
+          "preview_urls": {
+            "232x232": "https://i8.photo.2gis.com/images/branch/196/27584547766338672_dd39_232x232.jpg",
+            "328x170": "https://i8.photo.2gis.com/images/branch/196/27584547766338672_dd39_328x170.jpg"
+          },
+          "url": "https://i8.photo.2gis.com/images/branch/196/27584547766338672_dd39.jpg",
+          "width": 1600
+        },
+        "pinned_position": null,
+        "real_object_type": "branch",
+        "status": "active"
+      }
+    ],
+    "next_page_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3OTExOTk4ODcsImFsYnVtX2lkIjoiYWxsIiwibGFzdF9waG90b19pZCI6Mjc1ODQ1NDc3NjYzMzg2NzIsImxhc3RfZWxlbWVudF9pbmRleCI6NDksImlzX2Zyb21fYnVpbGRpbmciOmZhbHNlLCJkaXNjb3ZlcnlfcGhvdG9faWQiOm51bGwsIm1peGVkX3ZpZGVvX2lkIjpudWxsLCJzaW1pbGFyX21lZGlhX2lkIjpudWxsfQ.DMtmN-SbLT7ynC0hboAMvJNd8_uWrRbUZZLIWPt1jIA"
+  }
+}

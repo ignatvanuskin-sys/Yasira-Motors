@@ -16,6 +16,7 @@ const http = require("node:http");
 const path = require("node:path");
 
 const cdp = require("./lib/cdp");
+const { createStaticServer, listen } = require("./lib/static-server");
 
 const ROOT = path.resolve(__dirname, "..", "out");
 const SHOTS = path.resolve(__dirname, "..", "qa-screenshots");
@@ -39,31 +40,7 @@ const MIME = {
   ".xml": "application/xml; charset=utf-8",
 };
 
-function createServer() {
-  return http.createServer((req, res) => {
-    const url = new URL(req.url, "http://127.0.0.1");
-    let filePath = path.join(ROOT, decodeURIComponent(url.pathname));
-
-    if (!filePath.startsWith(ROOT)) {
-      res.writeHead(403).end("forbidden");
-      return;
-    }
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
-      filePath = path.join(filePath, "index.html");
-    }
-    if (!fs.existsSync(filePath)) {
-      res.writeHead(404, { "content-type": "text/html; charset=utf-8" });
-      res.end("<h1>404</h1>");
-      return;
-    }
-
-    res.writeHead(200, {
-      "content-type": MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream",
-      "cache-control": "no-store",
-    });
-    fs.createReadStream(filePath).pipe(res);
-  });
-}
+/* Сервер и заголовки — общий модуль scripts/lib/static-server.js */
 
 const VIEWPORTS = [
   { label: "desktop-1440", width: 1440, height: 900, shots: true },
@@ -293,9 +270,9 @@ async function main() {
     base = EXTERNAL.replace(/\/+$/, "");
     console.log(`Проверяем задеплоенный сайт: ${base}`);
   } else {
-    server = createServer();
-    await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
-    base = `http://127.0.0.1:${server.address().port}`;
+    server = createStaticServer(ROOT);
+    const port = await listen(server);
+    base = `http://127.0.0.1:${port}`;
     console.log(`Статический сервер: ${base}`);
   }
 

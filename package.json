@@ -7,7 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "preview": "node scripts/serve.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "qa": "node scripts/qa.js",
+    "audit": "node scripts/audit.js",
     "typecheck": "tsc --noEmit",
     "images": "node scripts/optimize-images.mjs"
   },
@@ -22,8 +25,10 @@
     "@types/node": "^26.6.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "axe-core": "^4.13.0",
     "sharp": "^0.35.5",
     "tailwindcss": "^4.3.3",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { Section, SectionHead } from "@/components/Section";
 import { photos, type Photo } from "@/lib/content";
@@ -10,7 +10,16 @@ export function Gallery() {
   const [index, setIndex] = useState<number | null>(null);
   const isOpen = index !== null;
 
-  const close = useCallback(() => setIndex(null), []);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  /** Превью, по которому кликнули — туда вернём фокус после закрытия. */
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  const close = useCallback(() => {
+    setIndex(null);
+    window.requestAnimationFrame(() => triggerRef.current?.focus());
+  }, []);
+
   const move = useCallback((dir: -1 | 1) => {
     setIndex((current) => {
       if (current === null) return current;
@@ -18,14 +27,46 @@ export function Gallery() {
     });
   }, []);
 
+  const open = (i: number, trigger: HTMLElement) => {
+    triggerRef.current = trigger;
+    setIndex(i);
+  };
+
   useEffect(() => {
     if (!isOpen) return;
     document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") {
+        close();
+        return;
+      }
       if (e.key === "ArrowRight") move(1);
       if (e.key === "ArrowLeft") move(-1);
+
+      // Ловушка фокуса: диалог модальный, Tab не должен уходить на страницу
+      if (e.key === "Tab") {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        const focusable = Array.from(
+          dialog.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+          ),
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
+
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
@@ -59,13 +100,15 @@ export function Gallery() {
           <li key={photo.src} className={photo.span}>
             <button
               type="button"
-              onClick={() => setIndex(i)}
+              onClick={(event) => open(i, event.currentTarget)}
               className="group relative block h-full w-full overflow-hidden rounded-card border border-line bg-night-850"
               aria-label={`Открыть фото: ${photo.caption}`}
             >
               <img
                 src={photo.src}
                 alt={photo.alt}
+                width={photo.w}
+                height={photo.h}
                 loading="lazy"
                 decoding="async"
                 className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,0.68,0.24,1)] group-hover:scale-[1.035] sm:aspect-[16/10] lg:aspect-auto lg:h-full"
@@ -92,6 +135,7 @@ export function Gallery() {
 
       {index !== null && current ? (
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label={current.caption}
@@ -106,6 +150,7 @@ export function Gallery() {
               </span>
             </p>
             <button
+              ref={closeRef}
               type="button"
               onClick={close}
               className="inline-flex h-11 w-11 items-center justify-center rounded-ctl border border-line bg-night-850 text-fog-100"

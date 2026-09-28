@@ -74,8 +74,13 @@ export function Reviews() {
         </div>
       </div>
 
+      {/* Лента прокручивается: tabIndex нужен, чтобы её можно было
+          прокрутить с клавиатуры. role не переопределяем — иначе <li>
+          перестают считаться элементами списка. */}
       <ul
         ref={railRef}
+        tabIndex={0}
+        aria-label="Отзывы клиентов из 2ГИС — прокручивается по горизонтали"
         className="no-scrollbar -mx-5 mt-9 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-5 pb-2 md:-mx-8 md:px-8"
       >
         {reviews.map((review) => (

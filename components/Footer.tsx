@@ -1,5 +1,15 @@
 import { Logo } from "@/components/Logo";
-import { address, company, email, links, nav, phone, phones, scheduleSummary } from "@/lib/site";
+import {
+  address,
+  company,
+  email,
+  links,
+  nav,
+  phone,
+  phones,
+  scheduleSummary,
+  whatsappLink,
+} from "@/lib/site";
 
 export function Footer() {
   return (
@@ -57,14 +67,14 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a
-                  href={`https://wa.me/${phone.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center transition-colors hover:text-fog-100"
-                >
-                  WhatsApp: {phone.display}
-                </a>
+                  <a
+                    href={whatsappLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-[44px] items-center transition-colors hover:text-fog-100"
+                  >
+                    WhatsApp: {phone.display}
+                  </a>
               </li>
               <li>
                 <a

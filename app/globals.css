@@ -51,8 +51,10 @@
   --color-fog-100: #f4f4f6;
   --color-fog-200: #dedee3;
   --color-fog-300: #bcbcc4;
-  --color-fog-400: #9a9aa4;
-  --color-fog-500: #75757f;
+  /* fog-400/500 подобраны так, чтобы выдержать WCAG AA (4.5:1)
+     на самой светлой поверхности сайта (#202024), а не только на фоне. */
+  --color-fog-400: #a4a4ae;
+  --color-fog-500: #8b8b95;
 
   --color-brand-400: #f2434a;
   --color-brand-500: #e01f26;
@@ -77,7 +79,9 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 76px;
+    /* Единственный источник отступа для анкоров: шапка 70px + запас.
+       Дублировать его через scroll-mt у секций нельзя — отступы складываются. */
+    scroll-padding-top: 84px;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }

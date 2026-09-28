@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { MobileBar } from "@/components/MobileBar";
 import { RevealScript } from "@/components/RevealScript";
@@ -7,7 +8,7 @@ import { structuredData } from "@/lib/seo";
 import "./globals.css";
 
 const description =
-  "Автосервис в Актау: компьютерная диагностика, ТО и замена масла, ремонт двигателя, АКПП, МКПП, ходовой части и электрики, развал-схождение, шиномонтаж. 25-й микрорайон, 52/2. Рейтинг 4,9 в 2ГИС. Телефон +7 777 088 44 36.";
+  "Автосервис в Актау: диагностика, ТО и замена масла, ремонт двигателя, АКПП, МКПП, ходовой и развал-схождение. 25-й микрорайон, 52/2. ★ 4,9 в 2ГИС. Тел. +7 777 088 44 36";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -106,6 +107,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <Header />
         <main className="grow">{children}</main>
+        {/* Подвал — вне <main>: это отдельная область страницы, а не часть контента */}
+        <Footer />
         <MobileBar />
         <RevealScript />
       </body>

@@ -27,3 +27,4 @@ cache/
 tsconfig.tsbuildinfo
 .vercel
 .env*
+qa-reports/

@@ -246,6 +246,9 @@ export type Photo = {
   caption: string;
   /** Классы размещения в мозаике (desktop, 6 колонок). */
   span: string;
+  /** Реальные размеры файла — чтобы браузер резервировал место до загрузки. */
+  w: number;
+  h: number;
 };
 
 export const photos: Photo[] = [
@@ -254,60 +257,80 @@ export const photos: Photo[] = [
     alt: "Ремонтный цех YASIRA MOTORS в Актау: автомобили на двухстоечных подъёмниках",
     caption: "Ремонтный цех: несколько постов, автомобили на подъёмниках",
     span: "md:col-span-2 lg:col-span-4 lg:row-span-3",
+    w: 1440,
+    h: 820,
   },
   {
     src: "/images/opt/facade.webp",
     alt: "Фасад здания YASIRA MOTORS на 25-м микрорайоне, 52/2 в Актау",
     caption: "Фасад: 25-й микрорайон, 52/2",
     span: "lg:col-span-2 lg:row-span-1",
+    w: 1400,
+    h: 935,
   },
   {
     src: "/images/opt/oil-store.webp",
     alt: "Магазин масел и автохимии YASIRA MOTORS: стеллажи с моторными маслами",
     caption: "Магазин масел и автохимии на территории",
     span: "lg:col-span-2 lg:row-span-1",
+    w: 1440,
+    h: 826,
   },
   {
     src: "/images/opt/engine-bay.webp",
     alt: "Моторный отсек Toyota после работ в YASIRA MOTORS",
     caption: "Моторный отсек после обслуживания",
     span: "lg:col-span-2 lg:row-span-1",
+    w: 1400,
+    h: 1050,
   },
   {
     src: "/images/opt/align-lx570.webp",
     alt: "Lexus LX570 на стенде развал-схождения в YASIRA MOTORS",
     caption: "Lexus LX570 на стенде развал-схождения",
     span: "lg:col-span-2 lg:row-span-2",
+    w: 1400,
+    h: 933,
   },
   {
     src: "/images/opt/liftoil-lc200.webp",
     alt: "Toyota Land Cruiser 200 на смотровой канаве: замена масла, аппарат для откачки масла",
     caption: "Toyota Land Cruiser 200: замена масла на смотровой канаве",
     span: "lg:col-span-2 lg:row-span-2",
+    w: 1400,
+    h: 1050,
   },
   {
     src: "/images/opt/hiace-lift.webp",
     alt: "Мастер YASIRA MOTORS у Toyota Hiace на подъёмнике",
     caption: "Работы в цеху",
     span: "lg:col-span-2 lg:row-span-2",
+    w: 1400,
+    h: 933,
   },
   {
     src: "/images/opt/oil-pour.webp",
     alt: "Мастер заливает моторное масло ADDINOL в двигатель автомобиля",
     caption: "Замена масла: масла подбираются по марке автомобиля",
     span: "lg:col-span-2 lg:row-span-2",
+    w: 1400,
+    h: 1185,
   },
   {
     src: "/images/opt/mechanic-bay.webp",
     alt: "Мастер YASIRA MOTORS осматривает автомобиль с открытым капотом",
     caption: "Диагностика и осмотр автомобиля",
     span: "lg:col-span-2 lg:row-span-2",
+    w: 1400,
+    h: 1077,
   },
   {
     src: "/images/opt/align-stand.webp",
     alt: "Стенд развал-схождения SILLAN в цеху YASIRA MOTORS",
     caption: "Стенд развал-схождения",
     span: "lg:col-span-2 lg:row-span-2",
+    w: 1199,
+    h: 1200,
   },
 ];
 

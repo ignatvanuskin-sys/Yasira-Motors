@@ -14,7 +14,7 @@ export function Section({
   return (
     <section
       id={id}
-      className={`scroll-mt-24 py-16 md:py-24 ${bordered ? "border-t border-line-soft" : ""} ${className}`}
+      className={`py-16 md:py-24 ${bordered ? "border-t border-line-soft" : ""} ${className}`}
     >
       <div className="shell">{children}</div>
     </section>

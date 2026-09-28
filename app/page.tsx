@@ -1,7 +1,6 @@
 import { Advantages } from "@/components/Advantages";
 import { Contacts } from "@/components/Contacts";
 import { FinalCta } from "@/components/FinalCta";
-import { Footer } from "@/components/Footer";
 import { Gallery } from "@/components/Gallery";
 import { Hero } from "@/components/Hero";
 import { Process } from "@/components/Process";
@@ -19,7 +18,6 @@ export default function HomePage() {
       <Gallery />
       <Contacts />
       <FinalCta />
-      <Footer />
     </>
   );
 }

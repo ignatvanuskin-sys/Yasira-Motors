@@ -47,12 +47,15 @@ export function Hero() {
 
             {/* Индикаторы доверия */}
             <dl className="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3">
+              {/* Внутри <dl> допустимы только dt/dd (и div-обёртки) — подписи живут в dd */}
               <div className="bg-night-900 px-4 py-4">
                 <dt className="text-[12.5px] leading-none text-fog-500">Рейтинг в 2ГИС</dt>
                 <dd className="mt-2.5 text-[16px] leading-none font-bold text-fog-100">
                   {rating.value.toString().replace(".", ",")} из 5
+                  <span className="mt-2 block text-[12.5px] leading-snug font-normal text-fog-500">
+                    {rating.count} оценок
+                  </span>
                 </dd>
-                <p className="mt-2 text-[12.5px] text-fog-500">{rating.count} оценок</p>
               </div>
 
               <div className="bg-night-900 px-4 py-4">
@@ -62,8 +65,10 @@ export function Hero() {
                 </dt>
                 <dd className="mt-2.5 text-[16px] leading-tight font-bold text-fog-100">
                   {address.microDistrict}
+                  <span className="mt-2 block text-[12.5px] leading-snug font-normal text-fog-500">
+                    Актау, {address.floor}
+                  </span>
                 </dd>
-                <p className="mt-2 text-[12.5px] text-fog-500">Актау, {address.floor}</p>
               </div>
 
               <div className="bg-night-900 px-4 py-4">
@@ -73,8 +78,10 @@ export function Hero() {
                 </dt>
                 <dd className="mt-2.5 text-[16px] leading-none font-bold text-fog-100">
                   09:00–19:00
+                  <span className="mt-2 block text-[12.5px] leading-snug font-normal text-fog-500">
+                    Вс 10:00–17:00
+                  </span>
                 </dd>
-                <p className="mt-2 text-[12.5px] text-fog-500">Вс 10:00–17:00</p>
               </div>
             </dl>
 

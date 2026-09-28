@@ -1,10 +1,12 @@
 import { company } from "@/lib/site";
 
 /**
- * Логотип: фирменный знак (красный квадрат + три белых луча) и надпись.
- * Знак воспроизведён вектором по фирменному блоку компании с её фотографий,
- * поэтому он остаётся чётким на любом размере и не тянет лишний вес.
- * Когда появится официальный файл логотипа — достаточно заменить разметку здесь.
+ * Знак: красный квадрат и три белых лепестка с тёмным контуром.
+ *
+ * Геометрия сверена с официальным файлом логотипа компании: три скруглённых
+ * луча — вниз, влево-вверх и вправо-вверх — сходятся в центре, каждый с
+ * собственной обводкой. Расхождений с фирменным блоком нет, поэтому знак
+ * остаётся вектором: он чёткий на любом размере и весит около 2 КБ.
  */
 export function LogoMark({ className = "h-9 w-9" }: { className?: string }) {
   return (
@@ -19,6 +21,18 @@ export function LogoMark({ className = "h-9 w-9" }: { className?: string }) {
   );
 }
 
+/**
+ * Логотип в двух раскладках.
+ *
+ * `stacked` повторяет официальный файл один в один: «YASIRA» сверху, знак
+ * в середине, «MOTORS» снизу с разрядкой. Именно в таком порядке собран
+ * фирменный блок компании, поэтому в подвале стоит он.
+ *
+ * `inline` — горизонтальная раскладка для шапки. В официальном файле её нет:
+ * он отдан вертикальным, а высота шапки — 62 пикселя, три строки туда не
+ * встают. Знак, начертание и цвета внутри сохранены официальные, меняется
+ * только взаимное расположение.
+ */
 export function Logo({
   className = "",
   stacked = false,
@@ -29,27 +43,43 @@ export function Logo({
   tone?: "light" | "dark";
 }) {
   const motorsTone = tone === "light" ? "text-fog-200" : "text-night-900";
+  const hiddenName = (
+    <span className="sr-only">
+      {company.name} — {company.descriptionShort}
+    </span>
+  );
 
-  return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <LogoMark className={stacked ? "h-11 w-11" : "h-9 w-9"} />
-      <span className={stacked ? "flex flex-col leading-none" : "flex items-baseline gap-1.5"}>
-        <span
-          className={`font-wordmark font-bold text-brand-500 ${
-            stacked ? "text-[21px] leading-none" : "text-[19px] leading-none"
-          }`}
-        >
+  if (stacked) {
+    return (
+      <span className={`inline-flex flex-col items-center ${className}`}>
+        <span className="font-wordmark text-[26px] leading-none font-bold text-brand-500">
           YASIRA
         </span>
+        <LogoMark className="mt-3 h-16 w-16" />
+        {/* Разрядка добавляет пробел и после последней буквы — сдвигаем
+            надпись влево на ту же величину, иначе середина съезжает */}
         <span
-          className={`font-bold ${motorsTone} ${
-            stacked ? "mt-1 text-[12px] leading-none tracking-[0.3em]" : "text-[12px] leading-none tracking-[0.22em]"
-          }`}
+          className={`mt-3 pl-[0.34em] text-[13px] leading-none font-bold tracking-[0.34em] ${motorsTone}`}
         >
           MOTORS
         </span>
+        {hiddenName}
       </span>
-      <span className="sr-only">{company.name} — {company.descriptionShort}</span>
+    );
+  }
+
+  return (
+    <span className={`inline-flex items-center gap-2.5 ${className}`}>
+      <LogoMark className="h-9 w-9" />
+      <span className="flex items-baseline gap-1.5">
+        <span className="font-wordmark text-[19px] leading-none font-bold text-brand-500">
+          YASIRA
+        </span>
+        <span className={`text-[12px] leading-none font-bold tracking-[0.22em] ${motorsTone}`}>
+          MOTORS
+        </span>
+      </span>
+      {hiddenName}
     </span>
   );
 }

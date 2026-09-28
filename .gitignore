@@ -25,3 +25,5 @@ qa-screenshots/
 # Служебный кэш Next.js (telemetry) — создаётся в каталоге запуска
 cache/
 tsconfig.tsbuildinfo
+.vercel
+.env*

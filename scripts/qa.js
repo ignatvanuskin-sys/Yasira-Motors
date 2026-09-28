@@ -20,6 +20,8 @@ const cdp = require("./lib/cdp");
 const ROOT = path.resolve(__dirname, "..", "out");
 const SHOTS = path.resolve(__dirname, "..", "qa-screenshots");
 const SHOTS_ONLY = process.argv.includes("--shots-only");
+/** Необязательный аргумент-URL — проверка уже задеплоенного сайта. */
+const EXTERNAL = process.argv.slice(2).find((arg) => /^https?:\/\//.test(arg));
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -284,11 +286,18 @@ const TOUCH_CHECK = `
 `;
 
 async function main() {
-  const server = createServer();
-  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
-  const port = server.address().port;
-  const base = `http://127.0.0.1:${port}`;
-  console.log(`Статический сервер: ${base}`);
+  let server = null;
+  let base = EXTERNAL;
+
+  if (EXTERNAL) {
+    base = EXTERNAL.replace(/\/+$/, "");
+    console.log(`Проверяем задеплоенный сайт: ${base}`);
+  } else {
+    server = createServer();
+    await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+    base = `http://127.0.0.1:${server.address().port}`;
+    console.log(`Статический сервер: ${base}`);
+  }
 
   const browser = await cdp.launch({ port: 9333, width: 1440, height: 900 });
   const report = { base, viewports: [], consoleErrors: [] };
@@ -402,7 +411,7 @@ async function main() {
     console.log(total ? `\nВсего замечаний: ${total}` : "\nЗамечаний нет.");
   } finally {
     await browser.close();
-    server.close();
+    if (server) server.close();
   }
 }
 

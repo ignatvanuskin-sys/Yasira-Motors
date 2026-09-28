@@ -11,10 +11,20 @@
  * Если данные меняются — правится только этот файл.
  */
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://yasira-motors.kz").replace(
-  /\/+$/,
-  "",
-);
+/**
+ * Базовый адрес сайта для canonical, Open Graph, sitemap и robots.
+ *
+ * Приоритет:
+ *  1. NEXT_PUBLIC_SITE_URL — задаётся вручную, когда подключён рабочий домен;
+ *  2. VERCEL_PROJECT_PRODUCTION_URL — Vercel подставляет сам, поэтому сразу
+ *     после деплоя canonical совпадает с реально работающим адресом;
+ *  3. запасной вариант для локальной сборки.
+ */
+const fallbackHost = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "https://yasira-motors.kz";
+
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? fallbackHost).replace(/\/+$/, "");
 
 export const company = {
   name: "YASIRA MOTORS",

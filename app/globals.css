@@ -84,6 +84,16 @@
     scroll-padding-top: 84px;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /*
+      scrollbar-gutter сознательно НЕ используется: stable резервирует место
+      только справа и уводит контент на 15px влево от центра (проверено
+      замером на 1280/1440/1920), а both-edges не применяется.
+      Без него при блокировке скролла полоса прокрутки пропадает и контент
+      под оверлеем смещается на её ширину — незаметно, потому что лайтбокс
+      и меню закрывают экран целиком.
+    */
+    /* Страховка от горизонтального сдвига при overscroll на iOS */
+    overscroll-behavior-x: none;
   }
 
   body {
@@ -95,7 +105,30 @@
     font-weight: 450;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /*
+      overflow-x: hidden превращает body в отдельный скролл-контейнер
+      (CSS вынуждает overflow-y: auto) — это ломает sticky и путает
+      scroll-padding. overflow-x: clip обрезает по горизонтали, не создавая
+      контейнер прокрутки. hidden оставлен как фолбэк для старых Safari.
+    */
     overflow-x: hidden;
+  }
+
+  @supports (overflow: clip) {
+    body {
+      overflow-x: clip;
+    }
+  }
+
+  /*
+    Двойной тап по кнопке звонка/WhatsApp на телефоне не должен
+    масштабировать страницу. Pinch-zoom при этом остаётся доступным.
+  */
+  button,
+  [role="button"],
+  a[href^="tel:"],
+  a[href*="wa.me"] {
+    touch-action: manipulation;
   }
 
   h1,
@@ -171,19 +204,42 @@
   border-radius: var(--radius-card);
 }
 
-/* Scroll-reveal (progressive enhancement: visible without JS) */
-[data-reveal] {
+/*
+  Scroll-reveal.
+  Скрываем блоки только под классом .js, который выставляет inline-скрипт
+  до первой отрисовки. Если JS выключен или упал — контент виден сразу,
+  страница не может остаться пустой.
+*/
+.js [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 16px, 0);
   transition:
     opacity 0.5s var(--ease-out-soft),
     transform 0.5s var(--ease-out-soft);
-  will-change: opacity, transform;
 }
 
-[data-reveal].is-visible {
+.js [data-reveal].is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* Запас места под фиксированную нижнюю панель: высота панели плюс
+   отступ под домашний индикатор iPhone. */
+@utility pb-mobile-bar {
+  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  @media (min-width: 768px) {
+    padding-bottom: 0;
+  }
+}
+
+/* Модальные слои не должны «протаскивать» скролл на страницу под собой */
+@utility overscroll-lock {
+  overscroll-behavior: contain;
+}
+
+/* Нижний отступ с учётом домашнего индикатора iPhone */
+@utility pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
 }
 
 .no-scrollbar {

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { preload } from "react-dom";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { MobileBar } from "@/components/MobileBar";
@@ -9,6 +10,9 @@ import "./globals.css";
 
 const description =
   "Автосервис в Актау: диагностика, ТО и замена масла, ремонт двигателя, АКПП, МКПП, ходовой и развал-схождение. 25-й микрорайон, 52/2. ★ 4,9 в 2ГИС. Тел. +7 777 088 44 36";
+
+/** Предпросмотрные деплои Vercel не должны попадать в индекс поисковиков. */
+const isPreview = process.env.VERCEL_ENV === "preview";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -54,13 +58,23 @@ export const metadata: Metadata = {
     description,
     images: ["/og.jpg"],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
-  },
+  robots: isPreview
+    ? { index: false, follow: false }
+    : {
+        index: true,
+        follow: true,
+        googleBot: { index: true, follow: true, "max-image-preview": "large" },
+      },
   category: "automotive",
   formatDetection: { telephone: true, address: true },
+  icons: {
+    // PNG-фолбэк нужен Safari до 16 — он не умеет SVG-фавиконы
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
+      { url: "/icon-32.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {
@@ -71,34 +85,27 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // React 19 сам вставляет <link rel="preload"> и дедуплицирует их —
+  // вручную разметку писать не нужно, иначе preload дублируется в head.
+  preload("/fonts/manrope-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  preload("/fonts/manrope-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+
   return (
     <html lang="ru">
       <head>
-        <link
-          rel="preload"
-          href="/fonts/manrope-cyrillic.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/manrope-latin.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <noscript>
-          {/* Без JS контент не должен оставаться скрытым из-за анимации появления */}
-          <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
-        </noscript>
+        {/*
+          Класс js ставится до первой отрисовки. Анимация появления скрывает
+          блоки только при работающем JS: если скрипты не загрузились, контент
+          виден сразу — страница не может остаться пустой.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         <script
           type="application/ld+json"
           // Данные только подтверждённые: адрес, телефон, график, рубрики.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData()) }}
         />
       </head>
-      <body className="flex min-h-screen flex-col pb-[68px] md:pb-0">
+      <body className="flex min-h-screen flex-col pb-mobile-bar">
         <a
           href="#services"
           className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[80] focus:rounded-ctl focus:bg-brand-500 focus:px-4 focus:py-2 focus:font-semibold focus:text-white"

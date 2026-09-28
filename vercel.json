@@ -10,15 +10,17 @@
         { "key": "X-Frame-Options", "value": "DENY" },
         {
           "key": "Permissions-Policy",
-          "value": "geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()"
+          "value": "geolocation=(), microphone=(), camera=(), payment=(), usb=(), browsing-topics=()"
         },
         {
           "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
+          "value": "max-age=63072000; includeSubDomains"
         },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
+        { "key": "Cross-Origin-Resource-Policy", "value": "same-origin" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://*.2gis.com https://*.2gis.kz; manifest-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'none'; worker-src 'none'; frame-src https://*.2gis.com https://*.2gis.kz; manifest-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
         }
       ]
     },
@@ -38,7 +40,7 @@
       ]
     },
     {
-      "source": "/(og.jpg|icon.svg|icon-192.png|icon-512.png|apple-icon.png)",
+      "source": "/(og.jpg|icon.svg|icon-32.png|icon-192.png|icon-512.png|apple-icon.png)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
     }
   ]

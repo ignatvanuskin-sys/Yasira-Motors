@@ -43,9 +43,11 @@ const MIME = {
 /* Сервер и заголовки — общий модуль scripts/lib/static-server.js */
 
 const VIEWPORTS = [
+  { label: "desktop-1920", width: 1920, height: 1080, shots: true },
   { label: "desktop-1440", width: 1440, height: 900, shots: true },
   { label: "desktop-1280", width: 1280, height: 800, shots: false },
   { label: "desktop-1024", width: 1024, height: 768, shots: true },
+  { label: "mobile-414", width: 414, height: 896, shots: false },
   { label: "mobile-390", width: 390, height: 844, shots: true },
   { label: "mobile-375", width: 375, height: 812, shots: true },
   { label: "mobile-360", width: 360, height: 800, shots: false },
@@ -110,6 +112,21 @@ const CHECKS = `
         detail: "scrollWidth=" + doc.scrollWidth + " viewport=" + vw,
         offenders: offenders.slice(0, 8),
       });
+    }
+
+    // 1b. Центрирование контента: когда оболочка уже уже экрана,
+    //     отступы слева и справа обязаны совпадать (иначе лейаут «съезжает»)
+    const shell = document.querySelector(".shell");
+    if (shell) {
+      const box = shell.getBoundingClientRect();
+      const gapLeft = box.left;
+      const gapRight = vw - box.right;
+      if (box.width < vw - 2 && Math.abs(gapLeft - gapRight) > 1) {
+        issues.push({
+          id: "not-centered",
+          detail: "левый отступ " + Math.round(gapLeft) + "px, правый " + Math.round(gapRight) + "px",
+        });
+      }
     }
 
     // 2. Обрезанный текст: содержимое шире контейнера при скрытом переполнении

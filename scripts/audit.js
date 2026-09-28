@@ -28,13 +28,21 @@ const REPORTS = path.resolve(__dirname, "..", "qa-reports");
 const EXTERNAL = process.argv.slice(2).find((arg) => /^https?:\/\//.test(arg));
 const axeSource = require("axe-core").source;
 
-/** Наблюдатели LCP/CLS ставятся до первой отрисовки. */
+/**
+ * Наблюдатели LCP/CLS/TBT/INP ставятся до первой отрисовки — иначе события
+ * уже прошедших взаимодействий не собрать.
+ */
 const PERF_HOOK = `
-  window.__perf = { lcp: 0, cls: 0 };
+  window.__perf = { lcp: 0, cls: 0, tbt: 0, maxEvent: 0 };
   try {
     new PerformanceObserver((list) => {
       for (const e of list.getEntries()) {
-        if (e.startTime > window.__perf.lcp) window.__perf.lcp = e.startTime;
+        if (e.startTime > window.__perf.lcp) {
+          window.__perf.lcp = e.startTime;
+          window.__perf.lcpElement = e.element
+            ? e.element.tagName + (e.element.className ? '.' + String(e.element.className).split(' ')[0] : '')
+            : null;
+        }
       }
     }).observe({ type: 'largest-contentful-paint', buffered: true });
   } catch (e) {}
@@ -45,6 +53,51 @@ const PERF_HOOK = `
       }
     }).observe({ type: 'layout-shift', buffered: true });
   } catch (e) {}
+  try {
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) {
+        if (e.duration > 50) window.__perf.tbt += e.duration - 50;
+      }
+    }).observe({ type: 'longtask', buffered: true });
+  } catch (e) {}
+  try {
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) {
+        if (e.duration > window.__perf.maxEvent) window.__perf.maxEvent = e.duration;
+      }
+    }).observe({ type: 'event', buffered: true, durationThreshold: 40 });
+  } catch (e) {}
+`;
+
+/**
+ * Пользовательские действия: по ним Chrome считает INP.
+ *
+ * Перед первым кликом замораживаем LCP и CLS: лайтбокс показывает картинку
+ * крупнее, чем на первом экране, и без этого он становится новым кандидатом
+ * в LCP — метрика загрузки превращалась бы в метрику взаимодействия.
+ */
+const PERF_INTERACTIONS = `
+  (async () => {
+    window.__perf.lcpAtLoad = window.__perf.lcp;
+    window.__perf.lcpElementAtLoad = window.__perf.lcpElement || null;
+    window.__perf.clsAtLoad = window.__perf.cls;
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    const trigger = document.querySelector("header button[aria-controls='mobile-menu']");
+    if (trigger) {
+      trigger.click();
+      await wait(250);
+      trigger.click();
+      await wait(250);
+    }
+    const tile = document.querySelector('#gallery button');
+    if (tile) {
+      tile.click();
+      await wait(350);
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      await wait(250);
+    }
+    return true;
+  })()
 `;
 
 const AXE_OPTIONS = {
@@ -238,9 +291,20 @@ async function main() {
         if (sitemapHost && sitemapHost !== canonicalHost) {
           record("warning", "host-mismatch", `canonical ${canonicalHost} и sitemap ${sitemapHost} расходятся`);
         }
-        if (EXTERNAL && hostOf(EXTERNAL) !== canonicalHost) {
+        if (/^(localhost|127\.0\.0\.1)/.test(canonicalHost)) {
+          // Локальная сборка собственный адрес не знает — это ожидаемо.
+          // Публиковать такую сборку нельзя: на продакшене это ошибка.
           record(
-            "warning",
+            EXTERNAL ? "error" : "warning",
+            "canonical-localhost",
+            `canonical указывает на localhost (${canonicalHost}) — сборка без NEXT_PUBLIC_SITE_URL`,
+          );
+        }
+        if (EXTERNAL && hostOf(EXTERNAL) !== canonicalHost) {
+          // Неверный canonical в продакшене — прямая потеря позиций: поисковик
+          // будет считать основной страницу на другом хосте.
+          record(
+            "error",
             "canonical-host",
             `canonical указывает на ${canonicalHost}, а сайт открыт на ${hostOf(EXTERNAL)}`,
           );
@@ -533,11 +597,14 @@ async function main() {
       for (const href of links.external || []) {
         if (href.includes(own)) continue;
         try {
-          const res = await fetch(href, { method: "GET", redirect: "follow" });
-          if (res.status >= 400) record("error", "external-status", `${href} → ${res.status}`);
-          else if (!EXTERNAL) console.log(`      ${res.status} ${href.slice(0, 72)}`);
+          const res = await fetchExternal(href);
+          if (res.status >= 500) record("error", "external-status", `${href} → ${res.status}`);
+          else if (res.status >= 400) {
+            // 403/404 у соцсетей часто означают защиту от ботов, а не битую ссылку
+            record("warning", "external-status", `${href} → ${res.status} (проверить вручную)`);
+          } else console.log(`      ${res.status} ${href.slice(0, 72)}`);
         } catch (error) {
-          record("warning", "external-fetch", `${href} не отвечает: ${error.message}`);
+          record("warning", "external-fetch", `${href} не отвечает из Node: ${error.message}`);
         }
       }
     });
@@ -611,18 +678,25 @@ async function main() {
       await cdp.setViewport(page, 390, 844);
       await cdp.navigate(page, `${base}/`);
 
+      await cdp.evaluate(page, `(async () => { await new Promise((r) => setTimeout(r, 2500)); return true; })()`);
+      await cdp.evaluate(page, PERF_INTERACTIONS);
       const perf = await cdp.evaluate(
         page,
         `(async () => {
-           await new Promise((r) => setTimeout(r, 2500));
+           await new Promise((r) => setTimeout(r, 600));
            const nav = performance.getEntriesByType('navigation')[0] || {};
            const paints = performance.getEntriesByType('paint');
            const fcp = paints.find((p) => p.name === 'first-contentful-paint');
            const perf = window.__perf || null;
+           const lcpValue = perf ? (perf.lcpAtLoad || perf.lcp) : 0;
            return {
              fcp: fcp ? Math.round(fcp.startTime) : null,
-             lcp: perf && perf.lcp ? Math.round(perf.lcp) : null,
-             cls: perf ? Math.round(perf.cls * 1000) / 1000 : null,
+             lcp: lcpValue ? Math.round(lcpValue) : null,
+             lcpElement: perf ? (perf.lcpElementAtLoad || perf.lcpElement || null) : null,
+             cls: perf ? Math.round((perf.clsAtLoad !== undefined ? perf.clsAtLoad : perf.cls) * 1000) / 1000 : null,
+             tbt: perf ? Math.round(perf.tbt) : null,
+             maxEvent: perf ? Math.round(perf.maxEvent) : null,
+             ttfb: Math.round(nav.responseStart || 0),
              domContentLoaded: Math.round(nav.domContentLoadedEventEnd || 0),
              load: Math.round(nav.loadEventEnd || 0),
              transferKB: Math.round((nav.transferSize || 0) / 1024),
@@ -639,7 +713,8 @@ async function main() {
       });
 
       console.log(
-        `      FCP ${perf.fcp}ms · LCP ${perf.lcp}ms · CLS ${perf.cls} · load ${perf.load}ms · HTML ${perf.transferKB}KB`,
+        `      TTFB ${perf.ttfb}ms · FCP ${perf.fcp}ms · LCP ${perf.lcp}ms (${perf.lcpElement ?? "н/д"}) · ` +
+          `CLS ${perf.cls} · TBT ${perf.tbt}ms · макс. событие ${perf.maxEvent}ms · load ${perf.load}ms · HTML ${perf.transferKB}KB`,
       );
       // Отсутствие метрики — это тоже проблема: значит, замер не состоялся
       if (perf.lcp === null) record("error", "lcp-missing", "LCP не измерен — проверка не состоялась");
@@ -651,6 +726,21 @@ async function main() {
       else if (perf.cls > 0.05) record("warning", "cls", `CLS ${perf.cls} — желательно ниже 0.05`);
 
       if (perf.fcp === null) record("warning", "fcp-missing", "FCP не измерен");
+
+      // TBT — лабораторный прокси для INP: длинные задачи блокируют отклик
+      if (perf.tbt === null) record("warning", "tbt-missing", "TBT не измерен");
+      else if (perf.tbt > 300) record("error", "tbt", `TBT ${perf.tbt}ms на Slow 4G — интерфейс заметно тормозит`);
+      else if (perf.tbt > 150) record("warning", "tbt", `TBT ${perf.tbt}ms — есть длинные задачи`);
+
+      // Максимальная длительность обработки события после кликов
+      if (perf.maxEvent !== null && perf.maxEvent > 200) {
+        record(
+          "warning",
+          "inp",
+          `самое долгое взаимодействие ${perf.maxEvent}ms (порог «хорошо» для INP — 200ms)`,
+        );
+      }
+      if (perf.ttfb > 800) record("warning", "ttfb", `TTFB ${perf.ttfb}ms`);
     });
   } finally {
     if (consoleErrors.length) {
@@ -697,6 +787,27 @@ function match(text, re) {
 async function fetchText(url) {
   const res = await fetch(url);
   return res.text();
+}
+
+/**
+ * Внешние ссылки проверяем с браузерным User-Agent и одной повторной попыткой:
+ * соцсети и справочники часто рвут соединение при частых запросах, и одиночный
+ * сбой давал ложное «ссылка не работает».
+ */
+const LINK_CHECK_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+
+async function fetchExternal(url, attempts = 2) {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fetch(url, { redirect: "follow", headers: { "user-agent": LINK_CHECK_UA } });
+    } catch (error) {
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, 900));
+    }
+  }
+  throw lastError;
 }
 
 /** Вырезает блок `export const NAME = [...]` из исходника, чтобы не путать

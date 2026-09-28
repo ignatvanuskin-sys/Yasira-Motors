@@ -97,7 +97,9 @@ export function Reviews() {
                 </span>
               </div>
 
-              <p className="mt-4 grow text-[14.5px] leading-relaxed text-fog-200">«{review.text}»</p>
+              <p lang={review.lang} className="mt-4 grow text-[14.5px] leading-relaxed text-fog-200">
+                «{review.text}»
+              </p>
 
               <footer className="mt-5 border-t border-line-soft pt-3.5">
                 <p className="text-[14.5px] font-bold text-fog-100">{review.author}</p>

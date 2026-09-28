@@ -24,4 +24,9 @@ await sharp(Buffer.from(mark(180, 0))).png().toFile("app/apple-icon.png");
 await sharp(Buffer.from(mark(192, 36))).png().toFile("public/icon-192.png");
 await sharp(Buffer.from(mark(512, 96))).png().toFile("public/icon-512.png");
 
-console.log("Готово: app/apple-icon.png, public/icon-192.png, public/icon-512.png");
+// PNG-фавикон: Safari до 16 не умеет SVG-иконки.
+await sharp(Buffer.from(mark(32, 6))).png().toFile("public/icon-32.png");
+
+console.log(
+  "Готово: app/apple-icon.png, public/icon-32.png, public/icon-192.png, public/icon-512.png",
+);

@@ -110,7 +110,7 @@ export function Header() {
       <div
         id="mobile-menu"
         hidden={!open}
-        className="shell border-t border-line bg-night-950/98 pb-6 lg:hidden"
+        className="overscroll-lock shell border-t border-line bg-night-950/98 pb-6 lg:hidden"
       >
         <nav aria-label="Разделы страницы (мобильное меню)">
           <ul className="flex flex-col py-2">

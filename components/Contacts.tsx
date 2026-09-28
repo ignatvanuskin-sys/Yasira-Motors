@@ -4,7 +4,16 @@ import { MapPanel } from "@/components/MapPanel";
 import { OpenStatus } from "@/components/OpenStatus";
 import { Section, SectionHead } from "@/components/Section";
 import { WhatsAppIcon } from "@/components/icons";
-import { address, email, links, paymentMethods, phones, schedule, whatsappLink } from "@/lib/site";
+import {
+  address,
+  email,
+  links,
+  paymentMethods,
+  phones,
+  schedule,
+  scheduleNote,
+  whatsappLink,
+} from "@/lib/site";
 
 export function Contacts() {
   return (
@@ -109,6 +118,11 @@ export function Contacts() {
             </dl>
             <p className="mt-3">
               <OpenStatus />
+            </p>
+            {/* Расхождение источников по времени закрытия — честнее попросить
+                позвонить, чем пообещать неверный час. */}
+            <p className="mt-3 border-t border-line-soft pt-3 text-[12.5px] leading-relaxed text-fog-500">
+              {scheduleNote}
             </p>
           </div>
         </div>

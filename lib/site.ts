@@ -15,16 +15,36 @@
  * Базовый адрес сайта для canonical, Open Graph, sitemap и robots.
  *
  * Приоритет:
- *  1. NEXT_PUBLIC_SITE_URL — задаётся вручную, когда подключён рабочий домен;
+ *  1. NEXT_PUBLIC_SITE_URL — задаётся вручную, когда подключён рабочий домен.
+ *     Достаточно одного этого значения и redeploy;
  *  2. VERCEL_PROJECT_PRODUCTION_URL — Vercel подставляет сам, поэтому сразу
  *     после деплоя canonical совпадает с реально работающим адресом;
- *  3. запасной вариант для локальной сборки.
+ *  3. localhost — только для локальной сборки.
+ *
+ * Рабочий домен НЕ прописан в коде: любой захардкоженный адрес однажды станет
+ * неправдой (сначала несуществующий домен, потом устаревший vercel-адрес).
+ * Если переменных окружения нет, сборка помечает адрес как неподтверждённый —
+ * аудит валит такую сборку на продакшене (см. scripts/audit.js).
  */
-const fallbackHost = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "https://yasira-motors.kz";
+const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+const vercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? fallbackHost).replace(/\/+$/, "");
+export const SITE_URL_SOURCE: "env" | "vercel" | "dev" = configuredUrl
+  ? "env"
+  : vercelProductionUrl
+    ? "vercel"
+    : "dev";
+
+export const SITE_URL = (
+  configuredUrl
+    ? configuredUrl
+    : vercelProductionUrl
+      ? `https://${vercelProductionUrl}`
+      : "http://localhost:3000"
+).replace(/\/+$/, "");
+
+/** true, если адрес пришёл из окружения (а не из локальной заглушки). */
+export const SITE_URL_IS_CONFIRMED = SITE_URL_SOURCE !== "dev";
 
 export const company = {
   name: "YASIRA MOTORS",
@@ -50,18 +70,29 @@ export const address = {
   landmark: "Остановка «Ясира» — около 2 минут пешком (200 м)",
 } as const;
 
-/** Основной номер — тот, что указан первым в карточке 2ГИС. */
+/**
+ * Основной номер — тот, что карточка 2ГИС отдаёт как главный (tel: на странице).
+ * Проверено по живой странице 28.09.2026.
+ */
 export const phone = {
   display: "+7 777 088 44 36",
   tel: "+77770884436",
   whatsapp: "77770884436",
 } as const;
 
+/**
+ * Номера, подтверждённые карточкой 2ГИС (tel: и список wa.me на странице).
+ *
+ * Подписи «магазин / СТО / детейлинг» источник не раскрывает, поэтому здесь
+ * только то, что подтверждается: основной номер и два дополнительных.
+ * Номер +7 777 088 44 33 (ранее помеченный как «детейлинг») на живой карточке
+ * 2ГИС отсутствует и с сайта убран — публиковать неподтверждённый телефон
+ * хуже, чем не публиковать его вовсе.
+ */
 export const phones = [
-  { label: "Магазин масел и автохимии", display: "+7 777 088 44 36", tel: "+77770884436" },
-  { label: "Автосервис", display: "+7 777 088 44 24", tel: "+77770884424" },
-  { label: "Автосервис", display: "+7 777 088 44 08", tel: "+77770884408" },
-  { label: "Детейлинг", display: "+7 777 088 44 33", tel: "+77770884433" },
+  { label: "Основной телефон", display: "+7 777 088 44 36", tel: "+77770884436" },
+  { label: "Дополнительный", display: "+7 777 088 44 24", tel: "+77770884424" },
+  { label: "Дополнительный", display: "+7 777 088 44 08", tel: "+77770884408" },
 ] as const;
 
 export const email = {
@@ -125,6 +156,17 @@ export const schedule: DayHours[] = [
 ];
 
 export const scheduleSummary = "Пн–Сб 09:00–19:00 · Вс 10:00–17:00";
+
+/**
+ * Про график есть расхождение источников: карточка 2ГИС (единственный, который
+ * компания ведёт сама) показывает Пн–Сб 09:00–19:00, а вывеска на фасаде
+ * магазина масел — «9–20». На сайте везде указан вариант 2ГИС, одно значение
+ * и без противоречий, плюс рядом стоит нейтральная просьба уточнить время:
+ * лучше попросить клиента позвонить, чем пообещать закрытие не в тот час.
+ *
+ * OWNER CONFIRMATION REQUIRED: до какого часа фактически работает автосервис.
+ */
+export const scheduleNote = "График указан по данным 2ГИС — точное время визита уточняйте по телефону.";
 
 /** Группа компаний Yasira — данные с официального сайта yasira.kz. */
 export const group = {

@@ -14,7 +14,11 @@ import {
   phones,
   rating,
   schedule,
+  scheduleNote,
+  scheduleSummary,
   SITE_URL,
+  SITE_URL_IS_CONFIRMED,
+  SITE_URL_SOURCE,
   whatsappLink,
   whatsappText,
 } from "@/lib/site";
@@ -42,6 +46,16 @@ describe("контакты", () => {
 
   it("основной номер присутствует в списке телефонов", () => {
     expect(phones.map((p) => p.tel)).toContain(phone.tel);
+  });
+
+  it("опубликованы только номера, подтверждённые карточкой 2ГИС", () => {
+    // Ровно эти три номера есть на живой карточке: tel: +7 777 088 44 36
+    // и список wa.me (44 36, 44 24, 44 08). Номер +7 777 088 44 33
+    // источником не подтверждается и публиковаться не должен.
+    expect(phones.map((p) => p.tel).sort()).toEqual(
+      ["+77770884436", "+77770884424", "+77770884408"].sort(),
+    );
+    expect(phones.map((p) => p.tel)).not.toContain("+77770884433");
   });
 
   it("номер WhatsApp состоит только из цифр", () => {
@@ -98,6 +112,14 @@ describe("график работы", () => {
       expect(day.close).toMatch(/^\d{2}:\d{2}$/);
       expect(toMinutes(day.open)).toBeLessThan(toMinutes(day.close));
     }
+  });
+
+  it("расхождение источников по графику закрыто пометкой, а не вторым значением", () => {
+    expect(scheduleNote).toContain("2ГИС");
+    expect(scheduleNote).toContain("уточняйте по телефону");
+    // Второго варианта времени закрытия на сайте быть не должно
+    const summaryHours = scheduleSummary.match(/\d{2}:\d{2}/g) ?? [];
+    expect(summaryHours).toEqual(["09:00", "19:00", "10:00", "17:00"]);
   });
 
   it("состояние всегда рассчитывается без исключений", () => {
@@ -255,8 +277,23 @@ describe("фотографии", () => {
 
 describe("SEO-данные", () => {
   it("базовый адрес сайта задан корректно", () => {
-    expect(SITE_URL).toMatch(/^https:\/\/[^/]+$/);
+    expect(SITE_URL).toMatch(/^https?:\/\/[^/]+$/);
     expect(SITE_URL.endsWith("/")).toBe(false);
+  });
+
+  it("собственный адрес сайта не зашит в код", () => {
+    // Адрес берётся из окружения: захардкоженный домен однажды станет
+    // неправдой (сначала непривязанный, потом устаревший vercel-адрес).
+    // Внешние ссылки (2ГИС, Instagram, yasira.kz) — другое дело, они ниже.
+    const source = fs.readFileSync(path.resolve(__dirname, "..", "lib", "site.ts"), "utf8");
+    const head = source.slice(0, source.indexOf("export const company"));
+    expect(head).toContain("NEXT_PUBLIC_SITE_URL");
+    // Ни одного конкретного домена: только переменные окружения и localhost.
+    // Шаблон `https://${vercelProductionUrl}` — это не захардкоженный адрес.
+    expect(head).not.toMatch(/https?:\/\/[a-z0-9-]+\.[a-z]{2,}/i);
+    expect(head).toContain("http://localhost:3000");
+    expect(["env", "vercel", "dev"]).toContain(SITE_URL_SOURCE);
+    expect(SITE_URL_IS_CONFIRMED).toBe(SITE_URL_SOURCE !== "dev");
   });
 
   it("навигация состоит из уникальных анкоров", () => {

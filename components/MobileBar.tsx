@@ -20,11 +20,12 @@ export function MobileBar() {
   }, []);
 
   return (
-    <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-night-950/95 backdrop-blur-md transition-transform duration-300 md:hidden ${
+    <nav
+      aria-label="Быстрые действия: позвонить или написать в WhatsApp"
+      className={`overscroll-lock fixed inset-x-0 bottom-0 z-40 border-t border-line bg-night-950/95 backdrop-blur-md transition-transform duration-300 md:hidden ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-hidden={!visible}
     >
       <div className="grid grid-cols-2 gap-2 px-3 py-2.5">
@@ -47,6 +48,6 @@ export function MobileBar() {
           WhatsApp
         </a>
       </div>
-    </div>
+    </nav>
   );
 }

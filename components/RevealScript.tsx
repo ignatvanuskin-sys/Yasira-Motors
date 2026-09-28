@@ -16,6 +16,14 @@ export function RevealScript() {
       return;
     }
 
+    // Страховка: если наблюдатель почему-то не сработал, содержимое
+    // всё равно показываем — интерфейс не должен оставаться пустым.
+    const failsafe = window.setTimeout(() => {
+      for (const node of document.querySelectorAll("[data-reveal]:not(.is-visible)")) {
+        node.classList.add("is-visible");
+      }
+    }, 4000);
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -29,7 +37,10 @@ export function RevealScript() {
     );
 
     for (const node of nodes) observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      window.clearTimeout(failsafe);
+      observer.disconnect();
+    };
   }, []);
 
   return null;

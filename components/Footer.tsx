@@ -34,8 +34,8 @@ export function Footer() {
             </p>
           </div>
 
-          <div>
-            <h2 className="text-[12px] font-bold tracking-[0.08em] text-fog-500 uppercase">
+          <nav aria-labelledby="footer-nav-heading">
+            <h2 id="footer-nav-heading" className="text-[12px] font-bold tracking-[0.08em] text-fog-500 uppercase">
               Навигация
             </h2>
             <ul className="mt-4 space-y-2.5">
@@ -50,7 +50,7 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
           <div>
             <h2 className="text-[12px] font-bold tracking-[0.08em] text-fog-500 uppercase">
@@ -107,9 +107,6 @@ export function Footer() {
                 </a>
               </li>
             </ul>
-            <p className="mt-4 text-[12.5px] text-fog-500">
-              Дополнительные телефоны: {phones.slice(1).map((p) => p.display).join(", ")}
-            </p>
           </div>
         </div>
 

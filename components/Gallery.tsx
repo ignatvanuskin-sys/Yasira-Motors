@@ -133,13 +133,18 @@ export function Gallery() {
         ))}
       </ul>
 
+      {/*
+        h-dvh, а не только inset-0: на iOS Safari fixed-элемент считается от
+        layout-вьюпорта, и нижние кнопки уезжали под панель браузера.
+        pb-safe оставляет место под домашний индикатор iPhone.
+      */}
       {index !== null && current ? (
         <div
           ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label={current.caption}
-          className="fixed inset-0 z-[70] flex flex-col bg-night-950/96 p-4 backdrop-blur-sm md:p-8"
+          className="overscroll-lock fixed inset-0 z-[70] flex h-dvh flex-col bg-night-950/96 p-4 pb-safe backdrop-blur-sm md:pb-8"
           onClick={close}
         >
           <div className="flex items-center justify-between gap-4">

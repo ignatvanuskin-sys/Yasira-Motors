@@ -115,7 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="flex min-h-screen flex-col pb-mobile-bar">
         <a
-          href="#services"
+          href="/#services"
           className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[80] focus:rounded-ctl focus:bg-brand-500 focus:px-4 focus:py-2 focus:font-semibold focus:text-white"
         >
           Перейти к услугам

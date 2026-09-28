@@ -458,7 +458,7 @@ async function main() {
       const skipLink = await cdp.evaluate(
         page,
         `(() => {
-           const el = document.querySelector('a[href="#services"]');
+           const el = document.querySelector('a[href="#services"], a[href="/#services"]');
            if (!el) return { ok: false };
            el.focus();
            const cs = getComputedStyle(el);
@@ -564,11 +564,12 @@ async function main() {
         page,
         `(async () => {
            document.documentElement.style.scrollBehavior = 'auto';
-           const anchors = [...document.querySelectorAll('a[href^="#"]')];
+           const anchors = [...document.querySelectorAll('a[href^="#"], a[href^="/#"]')];
            const report = [];
            const headerH = (document.querySelector('header') || {}).offsetHeight || 0;
            for (const a of anchors) {
-             const id = a.getAttribute('href').slice(1);
+             const raw = a.getAttribute('href') || '';
+             const id = raw.slice(raw.indexOf('#') + 1);
              if (!id) continue;
              const target = document.getElementById(id);
              if (!target) { report.push({ id, missing: true }); continue; }
@@ -592,6 +593,41 @@ async function main() {
         else if (item.hidden) record("error", "anchor-hidden", `#${item.id} уезжает под шапку (top=${item.top})`);
         else if (item.top < 0 || item.top > 160) {
           record("warning", "anchor-offset", `#${item.id} встаёт на ${item.top}px от верха`);
+        }
+      }
+
+      // Клик по ссылке шапки не должен перезагружать страницу и должен
+      // приводить к нужной секции — это проверка того, что абсолютные
+      // адреса вида /#why остаются внутренней навигацией
+      const clickNav = await cdp.evaluate(
+        page,
+        `(async () => {
+           document.documentElement.style.scrollBehavior = 'auto';
+           const before = performance.getEntriesByType('navigation').length;
+           const links = [...document.querySelectorAll('header nav a[href^="/#"]')];
+           if (links.length < 2) return { skipped: true };
+           window.scrollTo(0, 0);
+           links[1].click();
+           await new Promise((r) => setTimeout(r, 600));
+           const id = location.hash.replace('#', '');
+           const target = id ? document.getElementById(id) : null;
+           return {
+             navigations: performance.getEntriesByType('navigation').length,
+             before,
+             hash: location.hash,
+             targetTop: target ? Math.round(target.getBoundingClientRect().top) : null,
+           };
+         })()`,
+      );
+
+      if (!clickNav.skipped) {
+        if (clickNav.navigations > clickNav.before) {
+          record("error", "nav-reload", "клик по ссылке в шапке перезагружает страницу");
+        }
+        if (clickNav.targetTop === null) {
+          record("error", "nav-target", `ссылка в шапке ведёт в никуда (${clickNav.hash})`);
+        } else if (clickNav.targetTop < -2) {
+          record("error", "nav-hidden", `секция после клика ушла под шапку (${clickNav.targetTop}px)`);
         }
       }
     });
@@ -709,7 +745,407 @@ async function main() {
       if (photos.length < 8) record("error", "photos-count", `фотографий: ${photos.length}`);
     });
 
-    /* ---------------------- 10. Производительность ------------------------ */
+    /* --------------- 10. Работа без JavaScript ---------------------------- */
+    await runGroup("Прогрессивное улучшение (JS выключен)", async () => {
+      await page.send("Emulation.setScriptExecutionDisabled", { value: true });
+      await cdp.setViewport(page, 390, 844);
+      await cdp.navigate(page, `${base}/`);
+      await cdp.sleep(500);
+
+      const noJs = await cdp.evaluate(
+        page,
+        `(() => {
+           const bodyText = document.body.innerText;
+           const hidden = [...document.querySelectorAll('[data-reveal]')].filter((el) => {
+             const cs = getComputedStyle(el);
+             return cs.opacity === '0' || cs.visibility === 'hidden';
+           });
+           return {
+             textLength: bodyText.length,
+             hasH1: !!document.querySelector('h1'),
+             hiddenBlocks: hidden.length,
+             telLinks: document.querySelectorAll('a[href^="tel:"]').length,
+             waLinks: document.querySelectorAll('a[href*="wa.me"]').length,
+             sections: document.querySelectorAll('section').length,
+             overflow: document.documentElement.scrollWidth - window.innerWidth,
+             phoneVisible: bodyText.includes('+7 777 088 44 24'),
+             addressVisible: bodyText.includes('25-й микрорайон'),
+             reviewsVisible: bodyText.includes('Ильяс') || bodyText.includes('Куаныш'),
+           };
+         })()`,
+      );
+
+      await page.send("Emulation.setScriptExecutionDisabled", { value: false });
+
+      if (!noJs.hasH1) record("error", "nojs-h1", "без JS пропадает заголовок");
+      if (noJs.textLength < 2500) {
+        record("error", "nojs-content", `без JS видно только ${noJs.textLength} символов текста`);
+      }
+      if (noJs.hiddenBlocks > 0) {
+        record(
+          "error",
+          "nojs-hidden",
+          `без JS скрыто блоков анимацией появления: ${noJs.hiddenBlocks} — контент недоступен`,
+        );
+      }
+      if (noJs.sections < 7) record("error", "nojs-sections", `секций без JS: ${noJs.sections}`);
+      if (noJs.telLinks < 3) record("error", "nojs-tel", `ссылок на звонок без JS: ${noJs.telLinks}`);
+      if (noJs.waLinks < 1) record("error", "nojs-wa", "без JS пропадают ссылки WhatsApp");
+      if (!noJs.phoneVisible) record("error", "nojs-phone", "без JS не виден телефон");
+      if (!noJs.addressVisible) record("error", "nojs-address", "без JS не виден адрес");
+      if (!noJs.reviewsVisible) record("error", "nojs-reviews", "без JS не видны отзывы");
+      if (noJs.overflow > 1) record("error", "nojs-overflow", `без JS горизонтальный скролл ${noJs.overflow}px`);
+    });
+
+    /* ------------------ 11. Клавиатура: полный обход ---------------------- */
+    await runGroup("Клавиатура: полный обход", async () => {
+      await cdp.setViewport(page, 1440, 900);
+      await cdp.navigate(page, `${base}/`);
+      await cdp.sleep(400);
+
+      const walk = [];
+      for (let step = 0; step < 40; step += 1) {
+        await page.send("Input.dispatchKeyEvent", {
+          type: "rawKeyDown",
+          key: "Tab",
+          code: "Tab",
+          windowsVirtualKeyCode: 9,
+          nativeVirtualKeyCode: 9,
+        });
+        await page.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab" });
+        const focused = await cdp.evaluate(
+          page,
+          `(() => {
+             const el = document.activeElement;
+             if (!el || el === document.body) return { done: true };
+             const label = (el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 34);
+             return {
+               tag: el.tagName.toLowerCase(),
+               href: el.getAttribute('href') || null,
+               label,
+               hasOutline: (() => {
+                 const cs = getComputedStyle(el);
+                 return parseFloat(cs.outlineWidth) > 0 || cs.boxShadow !== 'none';
+               })(),
+             };
+           })()`,
+        );
+        if (focused.done) break;
+        walk.push(focused);
+      }
+
+      if (walk.length < 12) record("error", "tab-count", `с клавиатуры достижимо всего ${walk.length} элементов`);
+      const firstHref = walk[0] ? walk[0].href : null;
+      if (!(firstHref === "#services" || firstHref === "/#services")) {
+        record(
+          "warning",
+          "tab-first",
+          `первым в обходе идёт ${walk[0] ? walk[0].label : "ничего"} — ожидалась скип-ссылка`,
+        );
+      }
+      if (!walk.some((el) => (el.href || "").startsWith("tel:"))) {
+        record("error", "tab-tel", "до ссылки на звонок нельзя добраться с клавиатуры");
+      }
+      if (!walk.some((el) => (el.href || "").includes("wa.me"))) {
+        record("error", "tab-wa", "до WhatsApp нельзя добраться с клавиатуры");
+      }
+      if (!walk.some((el) => el.tag === "button")) {
+        record("error", "tab-button", "кнопки недостижимы с клавиатуры");
+      }
+      const withoutOutline = walk.filter((el) => !el.hasOutline);
+      if (withoutOutline.length > 0) {
+        record(
+          "warning",
+          "tab-focus-visible",
+          `без видимой обводки фокуса: ${withoutOutline.map((el) => el.label).slice(0, 4).join(", ")}`,
+        );
+      }
+    });
+
+    /* ------------------- 12. Дерево доступности --------------------------- */
+    await runGroup("Дерево доступности", async () => {
+      await cdp.setViewport(page, 1440, 900);
+      await cdp.navigate(page, `${base}/`);
+      await page.send("Accessibility.enable");
+
+      const tree = await page.send("Accessibility.getFullAXTree");
+      const nodes = (tree && tree.nodes) || [];
+      const byRole = new Map();
+      for (const node of nodes) {
+        const role = node.role && node.role.value;
+        if (!role) continue;
+        byRole.set(role, (byRole.get(role) || 0) + 1);
+      }
+
+      const count = (role) => byRole.get(role) || 0;
+      if (count("main") !== 1) record("error", "ax-main", `ориентиров main: ${count("main")}, нужен один`);
+      if (count("banner") !== 1) record("error", "ax-banner", `ориентиров header: ${count("banner")}`);
+      if (count("contentinfo") !== 1) record("error", "ax-footer", `ориентиров footer: ${count("contentinfo")}`);
+      if (count("navigation") < 2) record("error", "ax-nav", `ориентиров nav: ${count("navigation")}`);
+      if (count("heading") < 8) record("error", "ax-headings", `заголовков в дереве: ${count("heading")}`);
+      if (count("link") < 15) record("error", "ax-links", `ссылок в дереве: ${count("link")}`);
+
+      // Ссылки и кнопки без доступного имени — «немые» для скринридера
+      const nameless = nodes.filter(
+        (node) =>
+          ["link", "button"].includes(node.role && node.role.value) &&
+          !(node.name && String(node.name.value || "").trim()),
+      );
+      if (nameless.length) {
+        record("error", "ax-nameless", `интерактивных элементов без имени: ${nameless.length}`);
+      }
+
+      // Изображения: либо осмысленное имя, либо помечены декоративными
+      const badImages = nodes.filter((node) => {
+        if ((node.role && node.role.value) !== "image") return false;
+        const name = String((node.name && node.name.value) || "").trim();
+        return name.length > 0 && name.length < 8;
+      });
+      if (badImages.length) {
+        record("warning", "ax-image-name", `слишком короткие описания изображений: ${badImages.length}`);
+      }
+    });
+
+    /* ------------------ 13. Перекомпоновка и масштаб ---------------------- */
+    await runGroup("Перекомпоновка 320px (WCAG 1.4.10)", async () => {
+      await cdp.setViewport(page, 320, 720);
+      await cdp.navigate(page, `${base}/`);
+      await cdp.evaluate(
+        page,
+        `(async () => {
+           document.documentElement.style.scrollBehavior = 'auto';
+           for (let y = 0; y < document.documentElement.scrollHeight; y += 500) {
+             window.scrollTo(0, y);
+             await new Promise((r) => setTimeout(r, 50));
+           }
+           window.scrollTo(0, 0);
+           return true;
+         })()`,
+      );
+
+      const reflow = await cdp.evaluate(
+        page,
+        `(() => {
+           const vw = window.innerWidth;
+           const offenders = [];
+           document.querySelectorAll('body *').forEach((el) => {
+             const r = el.getBoundingClientRect();
+             if (r.width > 0 && r.right > vw + 1) {
+               const cs = getComputedStyle(el);
+               if (cs.position === 'fixed' && cs.visibility === 'hidden') return;
+               offenders.push({
+                 tag: el.tagName.toLowerCase(),
+                 cls: String(el.className || '').slice(0, 60),
+                 right: Math.round(r.right),
+               });
+             }
+           });
+           return {
+             overflow: document.documentElement.scrollWidth - vw,
+             offenders: offenders.slice(0, 6),
+             fontSize: getComputedStyle(document.body).fontSize,
+           };
+         })()`,
+      );
+
+      if (reflow.overflow > 1) {
+        record("error", "reflow-overflow", `на 320px горизонтальный скролл ${reflow.overflow}px`, reflow.offenders);
+      }
+      // Двухколоночные сетки на 320px должны складываться в одну
+      const columns = await cdp.evaluate(
+        page,
+        `(() => {
+           const grid = document.querySelector('#why ul');
+           if (!grid) return null;
+           const cs = getComputedStyle(grid);
+           return { template: cs.gridTemplateColumns.split(' ').length, display: cs.display };
+         })()`,
+      );
+      if (columns && columns.display.includes("grid") && columns.template > 1) {
+        record("warning", "reflow-columns", `на 320px сетка остаётся многоколоночной (${columns.template})`);
+      }
+    });
+
+    /* --------------- 14. Настройки пользователя -------------------------- */
+    await runGroup("Настройки пользователя (reduced-motion, контраст)", async () => {
+      // Отключённая анимация: бегущая строка стоит, блоки видны сразу
+      await page.send("Emulation.setEmulatedMedia", {
+        features: [{ name: "prefers-reduced-motion", value: "reduce" }],
+      });
+      await cdp.setViewport(page, 1440, 900);
+      await cdp.navigate(page, `${base}/`);
+      const reduced = await cdp.evaluate(
+        page,
+        `(() => {
+           const track = document.querySelector('.marquee-track');
+           const hidden = [...document.querySelectorAll('[data-reveal]')].filter(
+             (el) => getComputedStyle(el).opacity === '0',
+           );
+           return {
+             animation: track ? getComputedStyle(track).animationName : 'нет трека',
+             hiddenBlocks: hidden.length,
+           };
+         })()`,
+      );
+      await page.send("Emulation.setEmulatedMedia", { features: [] });
+
+      if (reduced.animation !== "none" && reduced.animation !== "нет трека") {
+        record("error", "reduced-motion-marquee", `при reduced-motion бегущая строка продолжает анимацию (${reduced.animation})`);
+      }
+      if (reduced.hiddenBlocks > 0) {
+        record("error", "reduced-motion-reveal", `при reduced-motion скрыто блоков: ${reduced.hiddenBlocks}`);
+      }
+
+      // Режим высокой контрастности: контурный заголовок не должен исчезнуть
+      await page.send("Emulation.setEmulatedMedia", {
+        features: [{ name: "forced-colors", value: "active" }],
+      });
+      await cdp.navigate(page, `${base}/`);
+      const forced = await cdp.evaluate(
+        page,
+        `(() => {
+           const outline = document.querySelector('.display-outline');
+           if (!outline) return { missing: true };
+           const cs = getComputedStyle(outline);
+           return { color: cs.color, stroke: cs.webkitTextStrokeWidth || cs.getPropertyValue('-webkit-text-stroke-width') };
+         })()`,
+      );
+      await page.send("Emulation.setEmulatedMedia", { features: [] });
+
+      if (forced.missing) {
+        record("warning", "forced-outline-missing", "контурная строка заголовка не найдена");
+      } else if (/rgba?\([^)]*,\s*0\s*\)/.test(forced.color) || forced.color === "rgba(0, 0, 0, 0)") {
+        record(
+          "error",
+          "forced-outline-invisible",
+          "в режиме высокой контрастности контурная строка заголовка прозрачная — текст пропадёт",
+        );
+      }
+    });
+
+    /* --------------------- 15. Согласованность данных --------------------- */
+    await runGroup("Согласованность данных на странице", async () => {
+      await cdp.setViewport(page, 1440, 900);
+      await cdp.navigate(page, `${base}/`);
+
+      const raw = match(html, /<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+      const data = raw ? JSON.parse(raw) : null;
+      if (!data) {
+        record("error", "consistency-jsonld", "не удалось прочитать JSON-LD");
+        return;
+      }
+
+      const dom = await cdp.evaluate(page, `document.body.innerText`);
+      const digits = (value) => String(value).replace(/\D/g, "");
+
+      if (!digits(dom).includes(digits(data.telephone))) {
+        record("error", "consistency-phone", `телефона ${data.telephone} нет в тексте страницы`);
+      }
+      const street = data.address && data.address.streetAddress;
+      if (street && !dom.includes(street)) {
+        record("error", "consistency-address", `адреса «${street}» нет в тексте страницы`);
+      }
+
+      // График в разметке и в интерфейсе должен совпадать
+      const hoursInMarkup = (data.openingHoursSpecification || []).map((entry) => `${entry.opens}-${entry.closes}`);
+      const expected = new Set(hoursInMarkup);
+      if (!expected.has("09:00-19:00")) record("error", "consistency-hours", "в разметке нет графика 09:00–19:00");
+      if (!expected.has("10:00-17:00")) record("error", "consistency-hours-sun", "в разметке нет графика 10:00–17:00");
+      if (!dom.includes("09:00–19:00") && !dom.includes("09:00-19:00")) {
+        record("error", "consistency-hours-ui", "графика нет в тексте страницы");
+      }
+
+      // Название компании одинаково везде
+      const name = data.name;
+      const occurrences = dom.split(name).length - 1;
+      if (occurrences < 3) {
+        record("warning", "consistency-name", `название «${name}» встречается на странице ${occurrences} раз`);
+      }
+    });
+
+    /* --------------------------- 16. Сеть --------------------------------- */
+    await runGroup("Сеть: ответы и ошибки", async () => {
+      const failed = [];
+      const badStatus = [];
+      page.on("Network.loadingFailed", (params) => {
+        if (params.blockedReason) return;
+        failed.push(`${params.type}: ${String(params.errorText).slice(0, 60)}`);
+      });
+      page.on("Network.responseReceived", (params) => {
+        const status = params.response && params.response.status;
+        if (status >= 400) badStatus.push(`${status} ${String(params.response.url).slice(-60)}`);
+      });
+      await page.send("Network.enable");
+      await cdp.setViewport(page, 1440, 900);
+      await cdp.navigate(page, `${base}/`);
+      await cdp.evaluate(
+        page,
+        `(async () => {
+           for (let y = 0; y < document.documentElement.scrollHeight; y += 700) {
+             window.scrollTo(0, y);
+             await new Promise((r) => setTimeout(r, 80));
+           }
+           return true;
+         })()`,
+      );
+      await cdp.sleep(600);
+
+      if (failed.length) record("error", "net-failed", `неудачных запросов: ${failed.length}`, failed.slice(0, 5));
+      if (badStatus.length) record("error", "net-status", `ответов с ошибкой: ${badStatus.length}`, badStatus.slice(0, 5));
+    });
+
+    /* ------------------------------ 17. 404 ------------------------------- */
+    await runGroup("Страница 404", async () => {
+      await cdp.setViewport(page, 1440, 900);
+      const before = consoleErrors.length;
+      await cdp.navigate(page, `${base}/etoy-stranicy-tochno-net/`);
+      await cdp.sleep(400);
+
+      const notFound = await cdp.evaluate(
+        page,
+        `(() => {
+           const text = document.body.innerText;
+           return {
+             branded: text.includes('Такой страницы нет'),
+             hasHomeLink: !!document.querySelector('a[href="/#services"], a[href="/#top"]'),
+             hasH1: document.querySelectorAll('h1').length,
+             noindex: (() => {
+               const meta = document.querySelector('meta[name="robots"]');
+               return !!meta && /noindex/i.test(meta.getAttribute('content') || '');
+             })(),
+             overflow: document.documentElement.scrollWidth - window.innerWidth,
+             telLinks: document.querySelectorAll('a[href^="tel:"]').length,
+           };
+         })()`,
+      );
+      await cdp.screenshot(page, path.join(REPORTS, "404.jpg"), { full: false, quality: 80 });
+
+      // На 404 относительные анкоры (#services) не находят цель: любые
+      // ссылки навигации должны быть абсолютными от корня
+      const relativeAnchors = await cdp.evaluate(
+        page,
+        `[...document.querySelectorAll('a[href^="#"]')].map((a) => a.getAttribute('href')).slice(0, 6)`,
+      );
+      if (relativeAnchors.length) {
+        record(
+          "error",
+          "404-relative-anchors",
+          `на 404 есть ссылки вида #…, которые никуда не ведут: ${relativeAnchors.join(", ")}`,
+        );
+      }
+
+      if (!notFound.branded) record("error", "404-text", "на 404 нет понятного текста");
+      if (!notFound.hasHomeLink) record("error", "404-home", "на 404 нет ссылок на разделы сайта");
+      if (notFound.hasH1 !== 1) record("error", "404-h1", `на 404 заголовков h1: ${notFound.hasH1}`);
+      if (!notFound.noindex) record("error", "404-noindex", "404 открыта для индексации");
+      if (notFound.overflow > 1) record("error", "404-overflow", "на 404 горизонтальный скролл");
+      if (notFound.telLinks < 1) record("warning", "404-tel", "на 404 нет ссылки на звонок");
+      if (consoleErrors.length > before) {
+        record("error", "404-console", "на 404 есть ошибки в консоли");
+      }
+    });
+
+    /* ---------------------- 18. Производительность ------------------------ */
     await runGroup("Производительность (Slow 4G, 4× CPU)", async () => {
       await page.send("Network.enable");
       await page.send("Network.emulateNetworkConditions", {

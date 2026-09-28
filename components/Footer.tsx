@@ -42,7 +42,7 @@ export function Footer() {
               {nav.map((item) => (
                 <li key={item.href}>
                   <a
-                    href={item.href}
+                    href={`/${item.href}`}
                     className="text-[14.5px] text-fog-300 transition-colors hover:text-fog-100"
                   >
                     {item.label}

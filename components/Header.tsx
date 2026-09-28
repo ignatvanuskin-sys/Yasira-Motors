@@ -46,7 +46,9 @@ export function Header() {
       }`}
     >
       <div className="shell flex h-[62px] items-center justify-between gap-4 md:h-[70px]">
-        <a href="#top" className="shrink-0" aria-label="YASIRA MOTORS — в начало страницы">
+        {/* Абсолютные адреса от корня: те же ссылки работают и на странице 404,
+            где относительный «#services» не нашёл бы цель */}
+        <a href="/#top" className="shrink-0" aria-label="YASIRA MOTORS — в начало страницы">
           <Logo />
         </a>
 
@@ -55,7 +57,7 @@ export function Header() {
             {nav.map((item) => (
               <li key={item.href}>
                 <a
-                  href={item.href}
+                  href={`/${item.href}`}
                   className="inline-flex h-10 items-center rounded-ctl px-3.5 text-[14.5px] font-semibold text-fog-300 transition-colors hover:bg-night-800 hover:text-fog-100"
                 >
                   {item.label}
@@ -117,7 +119,7 @@ export function Header() {
             {nav.map((item) => (
               <li key={item.href}>
                 <a
-                  href={item.href}
+                  href={`/${item.href}`}
                   onClick={() => setOpen(false)}
                   className="flex min-h-[52px] items-center border-b border-line-soft text-[17px] font-semibold text-fog-100"
                 >

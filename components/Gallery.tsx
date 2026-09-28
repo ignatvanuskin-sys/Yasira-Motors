@@ -6,8 +6,16 @@ import { Section, SectionHead } from "@/components/Section";
 import { photos, type Photo } from "@/lib/content";
 import { links, rating } from "@/lib/site";
 
+/**
+ * На телефоне десять фотографий подряд — это ~2 600px прокрутки до отзывов.
+ * Показываем первые пять и кнопку «Показать все фото»; на планшете
+ * и десктопе мозаика раскрыта полностью.
+ */
+const MOBILE_PHOTO_LIMIT = 5;
+
 export function Gallery() {
   const [index, setIndex] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const isOpen = index !== null;
 
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -97,7 +105,12 @@ export function Gallery() {
 
       <ul className="mt-9 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:auto-rows-[122px] lg:grid-cols-6">
         {photos.map((photo, i) => (
-          <li key={photo.src} className={photo.span}>
+          <li
+            key={photo.src}
+            className={`${photo.span} ${
+              i >= MOBILE_PHOTO_LIMIT && !showAll ? "hidden sm:block" : ""
+            }`}
+          >
             <button
               type="button"
               onClick={(event) => open(i, event.currentTarget)}
@@ -132,6 +145,16 @@ export function Gallery() {
           </li>
         ))}
       </ul>
+
+      {!showAll ? (
+        <button
+          type="button"
+          onClick={() => setShowAll(true)}
+          className="mt-3 inline-flex h-12 w-full items-center justify-center rounded-ctl border border-line bg-night-850 text-[15px] font-semibold text-fog-100 transition-colors hover:border-brand-500 sm:hidden"
+        >
+          Показать все {photos.length} фото
+        </button>
+      ) : null}
 
       {/*
         h-dvh, а не только inset-0: на iOS Safari fixed-элемент считается от

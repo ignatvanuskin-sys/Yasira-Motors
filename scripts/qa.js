@@ -259,6 +259,61 @@ const PERF_READ = `
   })()
 `;
 
+/**
+ * Проверка фиксированной нижней панели.
+ *
+ * Из дизайн-аудита: на 390px после перехода к «Контактам» кнопка «Позвонить»
+ * попадала под панель (её низ 807px при панели от 773px). Здесь это
+ * проверяется замером: сначала находим перекрытие CTA в контактах, затем —
+ * не уходит ли под панель конец страницы.
+ */
+const BOTTOM_BAR_CHECK = `
+  (async () => {
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    document.documentElement.style.scrollBehavior = 'auto';
+
+    const bar = document.querySelector('nav[aria-label^="Быстрые действия"]');
+    const contacts = document.getElementById('contacts');
+    const result = { bar: null, overlap: [], pageEnd: null };
+
+    if (bar) {
+      contacts.scrollIntoView({ block: 'start' });
+      await wait(600);
+      const barRect = bar.getBoundingClientRect();
+      result.bar = { top: Math.round(barRect.top), height: Math.round(barRect.height) };
+
+      const ctas = [...contacts.querySelectorAll('a[href^="tel:"], a[href*="wa.me"]')].slice(0, 4);
+      for (const el of ctas) {
+        const r = el.getBoundingClientRect();
+        if (r.height > 0 && r.bottom > barRect.top + 1 && r.top < barRect.bottom) {
+          result.overlap.push({
+            text: (el.textContent || '').trim().slice(0, 30),
+            top: Math.round(r.top),
+            bottom: Math.round(r.bottom),
+          });
+        }
+      }
+
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'auto' });
+      await wait(600);
+      const barTop = bar.getBoundingClientRect().top;
+      const footers = [...document.querySelectorAll('footer p')];
+      const last = footers[footers.length - 1];
+      if (last) {
+        result.pageEnd = {
+          bottom: Math.round(last.getBoundingClientRect().bottom),
+          barTop: Math.round(barTop),
+          text: (last.textContent || '').trim().slice(0, 40),
+        };
+      }
+    }
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    await wait(300);
+    return result;
+  })()
+`;
+
 const TOUCH_CHECK = `
   (async () => {
     const btn = document.querySelector("header button[aria-controls='mobile-menu']");
@@ -324,6 +379,23 @@ async function main() {
 
       if (vp.width < 900 && !SHOTS_ONLY) {
         entry.menu = await cdp.evaluate(browser.page, TOUCH_CHECK);
+      }
+
+      if (vp.width < 768 && !SHOTS_ONLY) {
+        const barCheck = await cdp.evaluate(browser.page, BOTTOM_BAR_CHECK);
+        entry.bottomBar = barCheck;
+        for (const hit of barCheck.overlap || []) {
+          entry.issues.push({
+            id: "bottom-bar-overlap",
+            detail: `CTA «${hit.text}» (${hit.top}-${hit.bottom}) под панелью от ${barCheck.bar?.top}`,
+          });
+        }
+        if (barCheck.pageEnd && barCheck.pageEnd.bottom > barCheck.pageEnd.barTop - 2) {
+          entry.issues.push({
+            id: "page-end-under-bar",
+            detail: `конец страницы на ${barCheck.pageEnd.bottom}px, панель начинается на ${barCheck.pageEnd.barTop}px`,
+          });
+        }
       }
 
       if (vp.shots) {

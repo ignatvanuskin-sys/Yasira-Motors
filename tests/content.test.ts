@@ -14,7 +14,6 @@ import {
   phones,
   rating,
   schedule,
-  scheduleNote,
   scheduleSummary,
   SITE_URL,
   SITE_URL_IS_CONFIRMED,
@@ -136,10 +135,16 @@ describe("график работы", () => {
     }
   });
 
-  it("в сводке графика нет второго варианта времени закрытия", () => {
+  it("график совпадает с подтверждённым владельцем", () => {
+    // Владелец подтвердил: Пн–Сб 09:00–19:00, Вс 10:00–17:00.
+    // Это же значение в карточке 2ГИС, второго варианта быть не должно.
     expect(scheduleSummary).toBe("Пн–Сб 09:00–19:00 · Вс 10:00–17:00");
-    expect(scheduleNote).toContain("2ГИС");
-    expect(scheduleNote).toContain("уточняйте по телефону");
+    for (const day of schedule.slice(0, 6)) {
+      expect(day.open).toBe("09:00");
+      expect(day.close).toBe("19:00");
+    }
+    expect(schedule[6].open).toBe("10:00");
+    expect(schedule[6].close).toBe("17:00");
   });
 
   it("состояние всегда рассчитывается без исключений", () => {

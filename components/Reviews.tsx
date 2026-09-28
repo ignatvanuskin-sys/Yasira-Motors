@@ -118,6 +118,11 @@ export function Reviews() {
         ))}
       </ul>
 
+      {/* Подсказка только на телефоне: на desktop рядом есть стрелки */}
+      <p className="mt-2 text-[13px] text-fog-500 sm:hidden">
+        Листайте карточки вбок, чтобы прочитать другие отзывы →
+      </p>
+
       <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
         <a
           href={links.twogisReviews}

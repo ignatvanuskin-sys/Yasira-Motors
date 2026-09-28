@@ -16,8 +16,9 @@ export function Contacts() {
   const extraPhones = phones.filter((item) => item.tel !== phone.tel);
 
   return (
-    <Section id="contacts" bordered>
+    <Section id="contacts">
       <SectionHead
+        index="06"
         eyebrow="Контакты"
         title="Приезжайте в YASIRA MOTORS"
         lead="Автосервис и магазин масел — по одному адресу в 25-м микрорайоне Актау."

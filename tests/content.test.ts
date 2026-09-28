@@ -328,6 +328,66 @@ describe("фотографии", () => {
   });
 });
 
+describe("тёмная карта", () => {
+  const readFile = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
+
+  it("CSP разрешает кадр карты и не расширяет права на скрипты", () => {
+    const config = JSON.parse(readFile("vercel.json"));
+    const csp = config.headers[0].headers.find(
+      (h: { key: string }) => h.key === "Content-Security-Policy",
+    ).value as string;
+
+    // Без openstreetmap.org в frame-src карта молча не загрузится,
+    // а без 2gis.kz отвалится ссылка на маршрут внутри карты
+    expect(csp).toContain("frame-src");
+    expect(csp).toContain("https://www.openstreetmap.org");
+    expect(csp).toContain("https://*.2gis.com");
+    // Карта не должна тянуть сторонние скрипты
+    expect(csp).toContain("script-src 'self' 'unsafe-inline'");
+    expect(csp).not.toContain("script-src https:");
+  });
+
+  it("карта использует координаты компании и встроенный эмбед OSM", () => {
+    const map = readFile("components/MapPanel.tsx");
+    expect(map).toContain("openstreetmap.org/export/embed.html");
+    expect(map).toContain("address.lat");
+    expect(map).toContain("address.lng");
+    // Своя метка ставится оверлеем, а не берётся из чужого оформления
+    expect(map).toContain("MapPin");
+    // iframe монтируется только при подходе — первый экран не должен ждать
+    expect(map).toContain("IntersectionObserver");
+  });
+
+  it("тёмная тема карты сделана фильтром, а не платным провайдером", () => {
+    const css = readFile("app/globals.css");
+    expect(css).toContain(".map-dark");
+    expect(css).toMatch(/invert\(0?\.92\)/);
+  });
+});
+
+describe("бегущая строка", () => {
+  const source = () =>
+    fs.readFileSync(path.join(ROOT, "components", "Marquee.tsx"), "utf8");
+
+  it("декоративная: скрыта от скринридеров и останавливается при reduced-motion", () => {
+    expect(source()).toContain('aria-hidden="true"');
+    const css = fs.readFileSync(path.join(ROOT, "app", "globals.css"), "utf8");
+    expect(css).toContain(".marquee-track");
+    expect(css).toMatch(/prefers-reduced-motion[\s\S]*marquee-track/);
+  });
+
+  it("содержит две одинаковые копии — иначе цикл был бы с разрывом", () => {
+    expect(source()).toMatch(/\[0, 1\]\.map/);
+    const css = fs.readFileSync(path.join(ROOT, "app", "globals.css"), "utf8");
+    expect(css).toMatch(/@keyframes marquee/);
+    expect(css).toContain("-50%");
+  });
+
+  it("контейнер обрезает содержимое, чтобы не появлялся горизонтальный скролл", () => {
+    expect(source()).toContain("overflow-hidden");
+  });
+});
+
 describe("нет онлайн-записи", () => {
   it("в исходниках нет booking-механики", () => {
     const banned = [

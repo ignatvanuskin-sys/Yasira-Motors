@@ -4,8 +4,9 @@ import { process } from "@/lib/content";
 
 export function Process() {
   return (
-    <Section id="process" bordered>
+    <Section id="process" tone="alt">
       <SectionHead
+        index="03"
         eyebrow="Как мы работаем"
         title="Четыре шага"
         lead="К работам приступаем после согласования — без онлайн-записи, достаточно звонка или сообщения."

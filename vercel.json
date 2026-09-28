@@ -20,7 +20,7 @@
         { "key": "Cross-Origin-Resource-Policy", "value": "same-origin" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'none'; worker-src 'none'; frame-src https://*.2gis.com https://*.2gis.kz; manifest-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'none'; worker-src 'none'; frame-src https://www.openstreetmap.org https://*.openstreetmap.org https://*.2gis.com https://*.2gis.kz; manifest-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
         }
       ]
     },

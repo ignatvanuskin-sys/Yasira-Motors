@@ -19,6 +19,27 @@
   src: url("/fonts/manrope-cyrillic.woff2") format("woff2");
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
+/* Моноширинный — для всей мета-информации: подписи, номера секций, теги.
+   Именно он даёт «инженерную» подачу, поэтому подключён только один вес. */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-cyrillic-500.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-latin-500.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
 @font-face {
   font-family: "Manrope";
   font-style: normal;
@@ -37,6 +58,7 @@
   --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
     sans-serif;
   --font-wordmark: Georgia, "Times New Roman", "PT Serif", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --color-night-950: #0a0a0c;
   --color-night-900: #101013;
@@ -47,6 +69,7 @@
 
   --color-line: #26262c;
   --color-line-soft: #1e1e23;
+  --color-line-strong: #3a3b42;
 
   --color-fog-100: #f4f4f6;
   --color-fog-200: #dedee3;
@@ -179,6 +202,15 @@
 /* ------------------------------------------------------------------
    Components / utilities
    ------------------------------------------------------------------ */
+/* Высота первого экрана: svh — «малый» вьюпорт, он стабильнее vh, потому что
+   не прыгает при появлении адресной строки мобильного браузера.
+   Первая строка — фолбэк для браузеров без svh: без него блок схлопнулся бы
+   по содержимому и первый экран перестал быть первым экраном. */
+@utility hero-viewport {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
 @utility shell {
   width: 100%;
   max-width: 1216px;
@@ -186,6 +218,89 @@
   padding-inline: 20px;
   @media (min-width: 768px) {
     padding-inline: 32px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Мета-типографика: всё служебное набирается моноширинным капсом
+   с широким трекингом. Это главный приём «технической» подачи.
+   ------------------------------------------------------------------ */
+@layer utilities {
+  /* Цвет намеренно не задан: он ставится утилитой Tailwind в разметке,
+     иначе порядок правил в слое решает, какое из двух победит. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  /* Крупный заголовок: плотный, капсом, с отрицательным трекингом */
+  .display {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.035em;
+    line-height: 0.9;
+  }
+
+  /*
+    Контурная строка заголовка. color:transparent применяется ТОЛЬКО внутри
+    @supports: без обводки текст стал бы невидимым — это уже не оформление,
+    а пропавший заголовок.
+  */
+  @supports (-webkit-text-stroke: 1px currentColor) {
+    .display-outline {
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(244, 244, 246, 0.82);
+    }
+  }
+
+  /* Плёночное зерно поверх тёмного фона: убирает «пластиковость» градиентов */
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Бегущая строка: две копии набора, сдвиг ровно на половину трека */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: marquee 48s linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /*
+    Тёмная карта из светлых тайлов OSM: обесцвечивание + инверсия.
+    Значения подобраны так, чтобы кварталы читались, улицы уходили в тёмный,
+    а подписи оставались различимыми. Своя метка и карточка адреса рисуются
+    поверх оверлеем, поэтому чужое оформление метки не мешает.
+  */
+  .map-dark {
+    filter: grayscale(1) invert(0.92) contrast(0.88) brightness(0.92);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
   }
 }
 

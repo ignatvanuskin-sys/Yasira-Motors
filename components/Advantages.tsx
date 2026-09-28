@@ -5,10 +5,11 @@ import { links, rating } from "@/lib/site";
 
 export function Advantages() {
   return (
-    <Section id="why" bordered>
+    <Section id="why">
       <SectionHead
+        index="02"
         eyebrow="Почему YASIRA MOTORS"
-        title="Как мы работаем с автомобилем"
+        title="Четыре причины обратиться"
         lead="Коротко о том, что важно владельцу машины."
       />
 

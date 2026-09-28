@@ -42,9 +42,10 @@ export function Reviews() {
     "inline-flex h-10 w-10 items-center justify-center rounded-ctl border border-line bg-night-850 text-fog-200 transition-colors hover:border-brand-500 hover:text-fog-100 disabled:pointer-events-none disabled:opacity-35";
 
   return (
-    <Section id="reviews" bordered>
+    <Section id="reviews" tone="alt">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <SectionHead
+          index="05"
           eyebrow="Отзывы"
           title="Что говорят клиенты"
           lead="Отзывы из карточки компании в 2ГИС — без изменений, с автором и датой. Источник: 2ГИС."

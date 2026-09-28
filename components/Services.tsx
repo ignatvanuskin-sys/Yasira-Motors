@@ -3,60 +3,77 @@ import { CallButton, WhatsAppButton } from "@/components/Actions";
 import { Reveal } from "@/components/Reveal";
 import { Section, SectionHead } from "@/components/Section";
 import { serviceGroups } from "@/lib/content";
-import { phone } from "@/lib/site";
+import { links, phone } from "@/lib/site";
 
+/**
+ * Услуги — нумерованный список, а не стена карточек: восемь направлений
+ * читаются как оглавление, каждая строка целиком ведёт на звонок.
+ * Формы записи нет: цена уточняется по телефону, потому что прайс-лист
+ * компания не публикует.
+ */
 export function Services() {
   return (
-    <Section id="services" bordered>
+    <Section id="services" bordered tone="alt">
       <SectionHead
+        index="01"
         eyebrow="Услуги"
         title="Что делаем"
         lead="Направления, которые компания заявила в 2ГИС. Прайс-лист не публикуется: стоимость зависит от автомобиля и объёма работ."
       />
 
-      <ul className="mt-10 grid gap-3.5 sm:grid-cols-2 lg:mt-12 xl:grid-cols-4">
-        {serviceGroups.map((group, i) => {
-          const Icon = group.icon;
-          return (
-            <Reveal as="li" key={group.id} delay={Math.min(i * 45, 260)} className="h-full">
-              <article className="group card-surface flex h-full flex-col p-5 transition-colors duration-300 hover:border-brand-500/55 hover:bg-night-800">
-                <span className="flex h-10 w-10 items-center justify-center rounded-ctl border border-line bg-night-800 transition-colors duration-300 group-hover:border-brand-500/40 group-hover:bg-brand-600/12">
-                  <Icon className="h-[19px] w-[19px] text-brand-400" strokeWidth={2} aria-hidden="true" />
+      <ul className="mt-10 border-y border-line">
+        {serviceGroups.map((group, i) => (
+          <li key={group.id} className="border-b border-line last:border-b-0">
+            <Reveal delay={Math.min(i * 40, 200)}>
+              <a
+                href={`tel:${phone.tel}`}
+                className="group flex items-center gap-4 py-6 transition-colors hover:bg-night-800 md:gap-8 md:py-7"
+              >
+                <span className="label w-7 shrink-0 text-fog-500 transition-colors group-hover:text-brand-400">
+                  {String(i + 1).padStart(2, "0")}
                 </span>
 
-                <h3 className="mt-4 text-[16.5px] leading-snug text-fog-100">{group.title}</h3>
-                <p className="mt-2.5 text-[14.5px] leading-relaxed text-fog-400">{group.text}</p>
+                <span className="min-w-0 flex-1">
+                  <span className="display block text-[clamp(1.05rem,3.6vw,1.55rem)] text-fog-100">
+                    {group.title}
+                  </span>
+                  <span className="mt-2 block max-w-[52ch] text-[14px] leading-relaxed text-fog-400">
+                    {group.text}
+                  </span>
+                  <span className="mt-3 hidden flex-wrap gap-1.5 md:flex">
+                    {group.items.map((item) => (
+                      <span
+                        key={item}
+                        className="label rounded-chip border border-line px-2.5 py-1.5 text-fog-500"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </span>
+                </span>
 
-                <ul className="mt-3.5 flex flex-wrap gap-1.5">
-                  {group.items.map((item) => (
-                    <li
-                      key={item}
-                      className="rounded-chip border border-line bg-night-800 px-2 py-1 text-[12.5px] text-fog-300"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Цена не выдумана: уточняется звонком, без формы записи */}
-                <a
-                  href={`tel:${phone.tel}`}
-                  className="mt-auto inline-flex min-h-[44px] items-center gap-1.5 pt-4 text-[13.5px] font-semibold text-brand-400 transition-colors hover:text-brand-500"
-                >
-                  <Phone className="h-3.5 w-3.5" strokeWidth={2.4} aria-hidden="true" />
+                <span className="hidden shrink-0 text-[13.5px] font-semibold text-fog-500 transition-colors group-hover:text-brand-400 lg:block">
                   Уточнить стоимость
-                </a>
-              </article>
+                </span>
+
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ctl border border-line transition-colors group-hover:border-brand-500 group-hover:bg-brand-500">
+                  <Phone
+                    className="h-4 w-4 text-fog-300 transition-colors group-hover:text-white"
+                    strokeWidth={2.2}
+                    aria-hidden="true"
+                  />
+                </span>
+              </a>
             </Reveal>
-          );
-        })}
+          </li>
+        ))}
       </ul>
 
-      <div className="mt-4 grid gap-4 rounded-card border border-line bg-night-900 p-5 md:grid-cols-[1.3fr_1fr] md:items-center md:p-6">
+      <div className="mt-6 flex flex-col gap-4 rounded-card border border-line bg-night-850 p-5 md:flex-row md:items-center md:justify-between md:p-6">
         <p className="text-[15.5px] leading-relaxed text-fog-300">
           Не знаете, какая услуга нужна? Позвоните — подскажем, с чего начать.
         </p>
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <CallButton label={`Позвонить ${phone.display}`} />
           <WhatsAppButton />
         </div>
@@ -66,7 +83,7 @@ export function Services() {
         На территории также работают автомойка, детейлинг и кафе для клиентов — по отзывам
         клиентов в{" "}
         <a
-          href="https://2gis.kz/aktau/firm/70000001029237438"
+          href={links.twogis}
           target="_blank"
           rel="noopener noreferrer"
           className="text-fog-400 underline decoration-night-700 underline-offset-2 hover:text-fog-200"

@@ -131,6 +131,10 @@ export const whatsappText = `Здравствуйте! Пишу с сайта YA
 /** Тот же хвост про автомобиль для сообщений с уточнением — например, с симптомом. */
 export const withAutoLine = (intro: string) => `${intro.trim()}\n\n${AUTO_LINE} `;
 
+/** Сообщение по конкретной услуге: услуга уже названа, автомобиль дописывает клиент. */
+export const whatsappServiceText = (service: string) =>
+  withAutoLine(`Здравствуйте! Пишу с сайта YASIRA MOTORS. Интересует: ${service}.`);
+
 export const whatsappLink = (number: string = phone.whatsapp, text = whatsappText) =>
   `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 

@@ -94,12 +94,34 @@ function checkConfigUsage() {
     problems.push('src/config.js: не экспортирована функция hoursForDay');
   }
 
-  const requiredKeys = ['root', 'port', 'siteUrl', 'business', 'booking', 'admin', 'dataFile', 'publicDir'];
+  /* Ключей booking, admin и dataFile здесь больше нет: вместе с формой
+     записи из проекта ушли хранилище, сессии и настройки расписания. */
+  const requiredKeys = [
+    'root',
+    'port',
+    'siteUrl',
+    'business',
+    'publicDir',
+    'openStatus',
+    'telHref',
+    'waLink',
+    'waText',
+  ];
   for (const key of requiredKeys) {
     if (!(key in configModule)) problems.push(`src/config.js: отсутствует обязательный ключ «${key}»`);
   }
 
-  const requiredBusiness = ['name', 'city', 'address', 'phone', 'whatsapp', 'hours', 'rating'];
+  const requiredBusiness = [
+    'name',
+    'city',
+    'address',
+    'phone',
+    'whatsapp',
+    'hours',
+    'rating',
+    'yandexRating',
+    'phoneList',
+  ];
   for (const key of requiredBusiness) {
     if (!(key in configModule.business)) {
       problems.push(`src/config.js: в business отсутствует ключ «${key}»`);
@@ -113,9 +135,10 @@ function checkConfigUsage() {
     ['business.lon', configModule.business.lon],
     ['business.rating', configModule.business.rating],
     ['business.ratingsCount', configModule.business.ratingsCount],
-    ['booking.slotMinutes', configModule.booking.slotMinutes],
-    ['booking.capacity', configModule.booking.capacity],
-    ['booking.horizonDays', configModule.booking.horizonDays],
+    ['business.yandexRating', configModule.business.yandexRating],
+    ['business.yandexRatingsCount', configModule.business.yandexRatingsCount],
+    ['business.oilsCount', configModule.business.oilsCount],
+    ['business.groupYears', configModule.business.groupYears],
   ];
   for (const [label, value] of numericPaths) {
     if (typeof value !== 'number' || Number.isNaN(value)) {

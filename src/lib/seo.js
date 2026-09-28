@@ -212,21 +212,61 @@ function schemaScript(page) {
 
 /**
  * Список страниц для sitemap.xml.
+ * Форма записи из карты сайта убрана: на сайте больше нет ни формы,
+ * ни страницы /booking.
  * @param {Array<{slug:string}>} services
  */
-function sitemapEntries(services) {
+function sitemapEntries(services = []) {
   const staticPages = [
     { loc: '/', priority: '1.0', changefreq: 'weekly' },
     { loc: '/services', priority: '0.9', changefreq: 'weekly' },
-    { loc: '/booking', priority: '0.9', changefreq: 'daily' },
-    { loc: '/contacts', priority: '0.7', changefreq: 'monthly' },
+    { loc: '/contacts', priority: '0.8', changefreq: 'monthly' },
   ];
   const servicePages = services.map((s) => ({
     loc: `/services/${s.slug}`,
-    priority: '0.8',
+    priority: '0.7',
     changefreq: 'monthly',
   }));
   return [...staticPages, ...servicePages];
 }
 
-module.exports = { url, organizationSchema, pageSchema, schemaScript, sitemapEntries, openingHours };
+/** robots.txt */
+function robots() {
+  return [
+    'User-agent: *',
+    'Allow: /',
+    'Disallow: /healthz',
+    '',
+    `Sitemap: ${config.siteUrl}/sitemap.xml`,
+    '',
+  ].join('\n');
+}
+
+/** sitemap.xml */
+function sitemap() {
+  const { SERVICES } = require('../content/services');
+  const today = new Date().toISOString().slice(0, 10);
+  const rows = sitemapEntries(SERVICES)
+    .map(
+      (entry) =>
+        `  <url>\n` +
+        `    <loc>${url(entry.loc)}</loc>\n` +
+        `    <lastmod>${today}</lastmod>\n` +
+        `    <changefreq>${entry.changefreq}</changefreq>\n` +
+        `    <priority>${entry.priority}</priority>\n` +
+        `  </url>`
+    )
+    .join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rows}\n</urlset>\n`;
+}
+
+module.exports = {
+  url,
+  organizationSchema,
+  pageSchema,
+  schemaScript,
+  sitemapEntries,
+  sitemap,
+  robots,
+  openingHours,
+};

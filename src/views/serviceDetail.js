@@ -3,28 +3,38 @@
 /**
  * Страница отдельной услуги /services/{slug}.
  *
- * Структура: hero → что делаем → когда нужно → что входит → цена →
- * сколько занимает → FAQ → запись.
+ * Структура: что делаем → когда нужно → что входит → стоимость и срок →
+ * вопросы по этой работе → позвонить или написать.
+ *
+ * Про сроки: в контенте стоят оценки вида «от 30 минут», но подаются они как
+ * ориентир, а не как обещание. Точный срок зависит от автомобиля.
  */
 
 const { html, esc } = require('../lib/html');
 const { icon } = require('./icons');
 const { layout } = require('./layout');
-const { sectionHead, faqList, priceLabel, priceNote, contactActions } = require('./partials');
+const { sectionHead, actionPair } = require('./partials');
 const config = require('../config');
-const { SERVICES } = require('../content/services');
+const { SERVICES, getService } = require('../content/services');
+const { categoryForService } = require('../content/categories');
 const seo = require('../lib/seo');
 
 /**
- * @param {object} service
+ * @param {string} slug
+ * @returns {string|null} null — если услуги с таким адресом нет (тогда 404)
  */
-function renderServiceDetail(service) {
+function renderServiceDetail(slug) {
+  const service = getService(slug);
+  if (!service) return null;
+
+  const b = config.business;
+  const category = categoryForService(service.slug);
   const related = SERVICES.filter(
-    (s) => s.slug !== service.slug && s.category === service.category
-  ).slice(0, 3);
+    (item) => item.slug !== service.slug && item.category === service.category
+  ).slice(0, 4);
 
   const body = html`
-    <section class="page-head page-head-service">
+    <section class="page-head">
       <div class="container">
         <nav class="breadcrumbs" aria-label="Хлебные крошки">
           <a href="/">Главная</a>
@@ -33,139 +43,134 @@ function renderServiceDetail(service) {
           <span aria-hidden="true">/</span>
           <span aria-current="page">${service.title}</span>
         </nav>
+        ${category ? html`<p class="kicker">${category.title}</p>` : ''}
+        <h1 class="page-title">${service.title}</h1>
+        <p class="page-text">${service.description}</p>
 
-        <div class="service-hero">
-          <div class="service-hero-body">
-            <p class="kicker">${icon(service.icon, { size: 16 })} ${service.category}</p>
-            <h1 class="page-title">${service.title}</h1>
-            <p class="page-text">${service.description}</p>
-
-            <div class="service-facts">
-              <div class="fact">
-                <span class="fact-label">Стоимость</span>
-                <strong class="fact-value">${priceLabel(service)}</strong>
-                <span class="fact-hint">${priceNote(service)}</span>
-              </div>
-              <div class="fact">
-                <span class="fact-label">Время работ</span>
-                <strong class="fact-value">${service.durationText}</strong>
-                <span class="fact-hint">Точный срок — после осмотра автомобиля</span>
-              </div>
-            </div>
-
-            <div class="page-actions">
-              <a class="btn btn-primary btn-lg" href="/booking?service=${esc(service.slug)}">
-                ${icon('calendar', { size: 20 })} Записаться на ${service.title.toLowerCase()}
-              </a>
-              <a
-                class="btn btn-ghost btn-lg"
-                href="tel:${config.business.phone.replace(/[^\d+]/g, '')}"
-              >
-                ${icon('phone', { size: 20 })} Спросить цену
-              </a>
-            </div>
+        <div class="fact-panel">
+          <div class="fact-item">
+            <span>Стоимость</span>
+            <strong>После диагностики</strong>
           </div>
+          <div class="fact-item">
+            <span>Время работы</span>
+            <strong>${service.durationText}</strong>
+          </div>
+        </div>
 
-          <div class="service-hero-aside">
-            <div class="aside-card">
-              <h2 class="aside-title">Источник данных</h2>
-              <p class="aside-text">${service.source}</p>
-            </div>
-            ${related.length
-              ? html`
-                  <div class="aside-card">
-                    <h2 class="aside-title">Другие услуги раздела</h2>
-                    <ul class="aside-links">
-                      ${related.map(
-                        (s) => html`
-                          <li>
-                            <a href="/services/${s.slug}">
-                              ${icon(s.icon, { size: 18 })} ${s.title}
-                            </a>
-                          </li>
-                        `
-                      )}
-                    </ul>
-                  </div>
-                `
-              : ''}
+        ${actionPair({
+          whatsappText: config.waText.service(service.title.toLowerCase()),
+        })}
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <div class="two-col">
+          <div>
+            ${sectionHead('Когда нужно', ['С чем', 'приезжают'])}
+            <ul class="check-list">
+              ${service.symptoms.map((symptom) => html`<li>${symptom}</li>`)}
+            </ul>
+          </div>
+          <div>
+            ${sectionHead('Что входит', ['Состав', 'работ'])}
+            <ul class="check-list">
+              ${service.included.map((item) => html`<li>${item}</li>`)}
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="container two-col">
-        <div class="col">
-          ${sectionHead('Когда нужно', 'Признаки, с которыми приезжают')}
-          <ul class="check-list">
-            ${service.symptoms.map((s) => html`<li>${icon('check', { size: 18 })} ${s}</li>`)}
-          </ul>
-        </div>
-        <div class="col">
-          ${sectionHead('Что входит', 'Состав работ')}
-          <ul class="check-list">
-            ${service.included.map((s) => html`<li>${icon('tool', { size: 18 })} ${s}</li>`)}
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-muted">
+    <section class="section section-deep">
       <div class="container narrow">
-        ${sectionHead('Стоимость', 'Что с ценой на эту услугу')}
-        <div class="price-panel">
-          <div class="price-panel-value">${priceLabel(service)}</div>
-          <p class="price-panel-text">
-            Цена зависит от марки, модели, года выпуска и состояния автомобиля.
-            Мы не публикуем «средние» цифры, потому что они почти всегда оказываются
-            неверными. Администратор назовёт стоимость после уточнения деталей —
-            и до начала работ.
-          </p>
-          ${contactActions()}
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container narrow">
-        ${sectionHead('Вопросы', `Частые вопросы: ${service.title.toLowerCase()}`)}
-        ${faqList(service.faq)}
-      </div>
-    </section>
-
-    <section class="final-cta">
-      <div class="container final-cta-inner">
-        <h2 class="final-cta-title">Записаться на ${service.title.toLowerCase()}</h2>
-        <p class="final-cta-text">
-          ${config.business.addressShort} · ${config.business.hoursText}
+        ${sectionHead(
+          'Стоимость',
+          ['Почему цена', 'после осмотра'],
+          'Стоимость зависит от марки, модели, года и состояния автомобиля. ' +
+            'Мастер называет её и объём работ до начала ремонта — работы выполняются только после вашего согласия.'
+        )}
+        <p class="page-text">
+          Ориентир по времени: ${service.durationText}. Точный срок мастер назовёт
+          после осмотра — он зависит от состояния узлов и наличия деталей.
+          Звоните или пишите, если нужна оценка по вашей ситуации.
         </p>
-        <div class="final-cta-actions">
-          <a class="btn btn-primary btn-lg" href="/booking?service=${esc(service.slug)}">
-            ${icon('calendar', { size: 20 })} Выбрать время
-          </a>
-          <a
-            class="btn btn-ghost btn-lg"
-            href="tel:${config.business.phone.replace(/[^\d+]/g, '')}"
-          >
-            ${icon('phone', { size: 20 })} ${config.business.phone}
-          </a>
-        </div>
+        ${actionPair({ whatsappText: config.waText.service(service.title.toLowerCase()) })}
+      </div>
+    </section>
+
+    ${service.faq && service.faq.length
+      ? html`
+          <section class="section section-tint">
+            <div class="container narrow">
+              ${sectionHead('Вопросы по работе', ['Что ещё', 'спрашивают'])}
+              <div class="faq-list">
+                ${service.faq.map(
+                  (item) => html`
+                    <details class="faq-item">
+                      <summary>
+                        <span>${item.q}</span>
+                        <span class="faq-icon" aria-hidden="true">${icon('plus', { size: 18 })}</span>
+                      </summary>
+                      <div class="faq-answer"><p>${item.a}</p></div>
+                    </details>
+                  `
+                )}
+              </div>
+            </div>
+          </section>
+        `
+      : ''}
+
+    ${related.length
+      ? html`
+          <section class="section section-tint">
+            <div class="container">
+              ${sectionHead('Рядом по смыслу', ['Другие работы', 'по этому направлению'])}
+              <ul class="check-list">
+                ${related.map(
+                  (item) => html`<li>
+                    <a href="/services/${esc(item.slug)}">${item.title}</a>
+                  </li>`
+                )}
+              </ul>
+            </div>
+          </section>
+        `
+      : ''}
+
+    <section class="section section-band final-cta">
+      <div class="container narrow final-cta-inner">
+        <h2 class="final-cta-title">
+          <span class="ttl-line">Нужна эта работа?</span>
+          <span class="ttl-line is-accent">Позвоните или напишите</span>
+        </h2>
+        <p class="final-cta-text">
+          Расскажите, что происходит с автомобилем, — подскажем, с чего начать,
+          и назовём время визита. Можно приехать и без звонка.
+        </p>
+        ${actionPair({ whatsappText: config.waText.service(service.title.toLowerCase()) })}
+        <p class="final-cta-meta">${b.addressShort} · ${b.hoursText}</p>
       </div>
     </section>
   `;
 
   return layout({
-    title: `${service.title} в Актау — ${config.business.name}`,
-    description: `${service.summary} YASIRA MOTORS, ${config.business.addressShort}. ${service.durationText}. Онлайн-запись на обслуживание.`,
+    title: `${service.title} в Актау — ${b.name}`,
+    description: `${service.summary} Автосервис ${b.name}, ${b.addressShort}. Стоимость — после осмотра, до начала работ.`,
     path: `/services/${service.slug}`,
     activePath: '/services',
     image: '/img/directions2.jpg',
     schema: seo.schemaScript({
       path: `/services/${service.slug}`,
-      title: `${service.title} — YASIRA MOTORS, Актау`,
+      title: `${service.title} — ${b.name}`,
       description: service.summary,
-      service,
+      service: {
+        title: service.title,
+        summary: service.summary,
+        priceFrom: service.priceFrom,
+      },
       faq: service.faq,
       breadcrumbs: [
         { name: 'Главная', url: '/' },

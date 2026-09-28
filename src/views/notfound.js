@@ -2,68 +2,64 @@
 
 /**
  * Страницы 404 и 500.
- * Тексты — человеческие: без кодов ошибок и технических подробностей.
+ * Тексты человеческие: без кодов ошибок и технических подробностей.
  */
 
 const { html } = require('../lib/html');
-const { icon } = require('./icons');
 const { layout } = require('./layout');
-const { contactActions } = require('./partials');
+const { actionPair } = require('./partials');
 const config = require('../config');
 
+/** @param {string} path */
 function renderNotFound(path) {
   const body = html`
     <section class="section error-section">
       <div class="container narrow error-inner">
-        <span class="error-code" aria-hidden="true">404</span>
+        <p class="error-code">СТРАНИЦА НЕ НАЙДЕНА</p>
         <h1 class="error-title">Такой страницы нет</h1>
         <p class="error-text">
-          Возможно, ссылка устарела или в адресе опечатка. Зато у нас есть
-          услуги, контакты и запись на обслуживание — они точно на месте.
+          Возможно, ссылка устарела. Быстрее всего — позвонить: подскажем
+          по работам и назовём время визита.
         </p>
-        <div class="error-actions">
-          <a class="btn btn-primary" href="/">На главную</a>
-          <a class="btn btn-ghost" href="/services">Услуги</a>
-          <a class="btn btn-ghost" href="/booking">Записаться</a>
-        </div>
-        ${contactActions()}
+        ${actionPair({ whatsappText: config.waText.general })}
+        <p class="error-text muted">
+          ${config.business.addressShort} · ${config.business.hoursText}
+        </p>
       </div>
     </section>
   `;
+
   return layout({
     title: `Страница не найдена — ${config.business.name}`,
-    description: 'Страница не найдена. Перейдите к услугам или запишитесь на обслуживание.',
+    description: 'Страница не найдена. Контакты автосервиса YASIRA MOTORS в Актау.',
     path: path || '/404',
     noindex: true,
     body,
   });
 }
 
-function renderServerError() {
+function renderError() {
   const body = html`
     <section class="section error-section">
       <div class="container narrow error-inner">
-        <span class="error-code" aria-hidden="true">${icon('alert', { size: 48 })}</span>
-        <h1 class="error-title">Что-то пошло не так</h1>
+        <p class="error-code">ЧТО-ТО ПОШЛО НЕ ТАК</p>
+        <h1 class="error-title">Не удалось открыть страницу</h1>
         <p class="error-text">
-          Не удалось открыть страницу. Попробуйте обновить её через минуту —
-          или позвоните нам, мы поможем.
+          Попробуйте обновить страницу. Если не помогает — позвоните или напишите
+          в WhatsApp, ответим и без сайта.
         </p>
-        <div class="error-actions">
-          <a class="btn btn-primary" href="/">На главную</a>
-          <a class="btn btn-ghost" href="/booking">Записаться по телефону</a>
-        </div>
-        ${contactActions()}
+        ${actionPair({ whatsappText: config.waText.general })}
       </div>
     </section>
   `;
+
   return layout({
-    title: `Ошибка — ${config.business.name}`,
-    description: 'Не удалось открыть страницу.',
+    title: `Не удалось открыть страницу — ${config.business.name}`,
+    description: 'Временная ошибка. Контакты автосервиса YASIRA MOTORS в Актау.',
     path: '/error',
     noindex: true,
     body,
   });
 }
 
-module.exports = { renderNotFound, renderServerError };
+module.exports = { renderNotFound, renderError };

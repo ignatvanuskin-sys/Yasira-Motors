@@ -1,19 +1,18 @@
 'use strict';
 
 /**
- * Конфигурация приложения.
+ * Конфигурация сайта.
  *
- * Все значения по умолчанию — это ПОДТВЕРЖДЁННЫЕ данные о бизнесе,
- * собранные из 2GIS (карточка фирмы 70000001029237438) и официального
- * сайта yasira.kz. Неподтверждённые данные здесь не хранятся.
+ * Все значения по умолчанию — ПОДТВЕРЖДЁННЫЕ данные о бизнесе из карточки
+ * 2ГИС (фирма 70000001029237438), карточки Яндекс Карт и сайта yasira.kz.
+ * Неподтверждённые данные здесь не хранятся: списка обслуживаемых марок,
+ * например, нет ни на одной площадке, поэтому его на сайте тоже нет.
  *
- * Любое значение можно переопределить через переменные окружения / .env.
- * Это сделано специально: рейтинг, отзывы, часы работы и цены меняются,
- * и владелец должен иметь возможность обновить их без правки кода.
+ * Любое значение переопределяется переменной окружения.
  */
 
-const fs = require('node:fs');
 const path = require('node:path');
+const fs = require('node:fs');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -56,7 +55,7 @@ function num(key, fallback) {
 }
 
 /**
- * Разбор графика работы: "1-6|09:00|20:00;7|10:00|17:00".
+ * Разбор графика работы: "1-6|09:00|19:00;7|10:00|17:00".
  * @returns {Array<{days:number[],open:string,close:string}>}
  */
 function parseHours(raw) {
@@ -87,6 +86,7 @@ const config = {
   business: {
     name: 'YASIRA MOTORS',
     legalName: 'YASIRA MOTORS',
+    kind: 'Автосервис',
     tagline: 'Квалифицированное сервисное обслуживание',
     city: 'Актау',
     address: str('BUSINESS_ADDRESS', 'Актау, 25-й микрорайон, 52/2'),
@@ -94,13 +94,13 @@ const config = {
     addressExtra: '1 этаж',
     lat: num('BUSINESS_LAT', 43.654702),
     lon: num('BUSINESS_LON', 51.184709),
+
+    /* Главный номер — единственный, который показывается в шапке и на первом
+       экране. Остальные живут в контактах: три равнозначных номера в шапке
+       заставляют выбирать вместо того, чтобы звонить. */
     phone: str('BUSINESS_PHONE', '+7 777 088 44 36'),
-    phone2: str('BUSINESS_PHONE_2', '+7 777 088 44 24'),
-    phone3: str('BUSINESS_PHONE_3', '+7 777 088 44 08'),
-    /* Номера с назначением — так подписаны телефоны в карточке 2ГИС.
-       По подписи клиент понимает, куда звонить, вместо трёх одинаковых цифр. */
     phoneList: [
-      { number: str('BUSINESS_PHONE', '+7 777 088 44 36'), role: 'магазин' },
+      { number: str('BUSINESS_PHONE', '+7 777 088 44 36'), role: 'магазин и общие вопросы' },
       { number: str('BUSINESS_PHONE_2', '+7 777 088 44 24'), role: 'СТО' },
       { number: str('BUSINESS_PHONE_3', '+7 777 088 44 08'), role: 'СТО' },
       { number: str('BUSINESS_PHONE_4', '+7 777 088 44 33'), role: 'детейлинг' },
@@ -110,55 +110,44 @@ const config = {
     emailSales: str('BUSINESS_EMAIL_SALES', 'magazine@yasira.kz'),
     instagram: str('BUSINESS_INSTAGRAM', 'https://instagram.com/yasira_motors'),
     twoGis: str('BUSINESS_2GIS', 'https://2gis.kz/aktau/firm/70000001029237438'),
+    yandex: str('BUSINESS_YANDEX', 'https://yandex.kz/maps/org/yasira_motors/24185658536/'),
     site: 'https://yasira.kz/',
-    /* Сверено с карточкой 2ГИС 28.09.2026: Пн–Сб 09:00–19:00, Вс 10:00–17:00.
-       Ранее стояло 09:00–20:00 по стороннему справочнику — это было неверно. */
+
+    /* График. Источники расходятся по закрытию: 2ГИС — 19:00, Яндекс Карты
+       и справочник auto2.info — 20:00. Взят 2ГИС как наиболее
+       поддерживаемый источник: там же живут отзывы и карточка фирмы.
+       ЗНАЧЕНИЕ ТРЕБУЕТ ПОДТВЕРЖДЕНИЯ У ВЛАДЕЛЬЦА (README §Уточнить). */
     hours: parseHours(str('BUSINESS_HOURS', '1-6|09:00|19:00;7|10:00|17:00')),
     hoursText: str('BUSINESS_HOURS_TEXT', 'Пн–Сб 09:00–19:00 · Вс 10:00–17:00'),
-    /* Подтверждено карточкой 2GIS на 28.09.2026 */
+
+    /* Рейтинги двух площадок. Оба подтверждены 28.09.2026. */
     rating: num('BUSINESS_RATING', 4.9),
     ratingsCount: num('BUSINESS_RATINGS_COUNT', 478),
     reviewsCount: num('BUSINESS_REVIEWS_COUNT', 107),
+    yandexRating: num('BUSINESS_YANDEX_RATING', 5),
+    yandexRatingsCount: num('BUSINESS_YANDEX_RATINGS_COUNT', 141),
     photosCount: num('BUSINESS_PHOTOS_COUNT', 54),
     awards: str('BUSINESS_AWARDS', '2GIS Awards 2026 · Лучший автосервис'),
+
     payments: ['Оплата картой', 'Наличный расчёт', 'Оплата через банк'],
-    /* Подтверждено блоком «Транспорт» карточки 2GIS */
     transit: { stop: 'Ясира', walk: '2 мин · 200 м' },
     parkingCount: 3,
 
-    /* Встраиваемая карта 2ГИС: показывает карточку самого сервиса
-       с фотографиями и часами работы, а не абстрактную метку. */
+    /* Подтверждено сайтом yasira.kz (о группе компаний) */
+    groupYears: num('BUSINESS_GROUP_YEARS', 20),
+    oilsCount: num('BUSINESS_OILS_COUNT', 1500),
+
     twoGisFirmId: str('BUSINESS_2GIS_FIRM_ID', '70000001029237438'),
     twoGisCity: str('BUSINESS_2GIS_CITY', 'aktau'),
   },
 
-  booking: {
-    slotMinutes: num('BOOKING_SLOT_MINUTES', 60),
-    capacity: Math.max(1, num('BOOKING_CAPACITY', 1)),
-    horizonDays: num('BOOKING_HORIZON_DAYS', 30),
-    leadMinutes: num('BOOKING_LEAD_MINUTES', 60),
-  },
-
-  admin: {
-    password: str('ADMIN_PASSWORD', ''),
-    sessionSecret: str('SESSION_SECRET', ''),
-    sessionTtlMs: 1000 * 60 * 60 * 8,
-  },
-
-  telegram: {
-    token: str('TELEGRAM_BOT_TOKEN', ''),
-    chatId: str('TELEGRAM_CHAT_ID', ''),
-  },
-
-  dataFile: path.resolve(ROOT, str('DATA_FILE', './data/db.json')),
   publicDir: path.join(ROOT, 'public'),
 };
 
-/** Настроены ли уведомления в Telegram. */
-config.telegram.enabled = Boolean(config.telegram.token && config.telegram.chatId);
+/* ── График работы ────────────────────────────────────────────────────────── */
 
 /**
- * График работы на конкретный день недели.
+ * График на конкретный день недели.
  * @param {number} isoDay 1 = Пн … 7 = Вс
  * @returns {{open:string,close:string}|null}
  */
@@ -167,6 +156,100 @@ config.hoursForDay = function hoursForDay(isoDay) {
     if (block.days.includes(isoDay)) return { open: block.open, close: block.close };
   }
   return null;
+};
+
+/**
+ * Открыт ли сервис прямо сейчас.
+ *
+ * Зачем: клиент, который читает сайт в 19:30, хочет знать не «график
+ * вообще», а звонить ли ему сейчас. Поэтому сайт отвечает на этот вопрос
+ * прямо в шапке.
+ *
+ * @param {Date} [now]
+ * @returns {{open:boolean,label:string,detail:string}}
+ */
+config.openStatus = function openStatus(now) {
+  const moment = now instanceof Date ? now : new Date();
+  const isoDay = moment.getDay() === 0 ? 7 : moment.getDay();
+  const today = config.hoursForDay(isoDay);
+  const minutes = moment.getHours() * 60 + moment.getMinutes();
+
+  const toMinutes = (value) => {
+    const [h, m] = String(value).split(':').map((n) => parseInt(n, 10));
+    return h * 60 + (Number.isFinite(m) ? m : 0);
+  };
+
+  if (today) {
+    const open = toMinutes(today.open);
+    const close = toMinutes(today.close);
+    if (minutes >= open && minutes < close) {
+      return { open: true, label: 'Открыто', detail: `до ${today.close}` };
+    }
+    if (minutes < open) {
+      return { open: false, label: 'Закрыто', detail: `откроемся в ${today.open}` };
+    }
+  }
+
+  // Ищем ближайший рабочий день в пределах недели
+  for (let shift = 1; shift <= 7; shift += 1) {
+    const nextDay = ((isoDay - 1 + shift) % 7) + 1;
+    const schedule = config.hoursForDay(nextDay);
+    if (schedule) {
+      const when = shift === 1 ? 'завтра' : config.weekdayName(nextDay, true);
+      return { open: false, label: 'Закрыто', detail: `${when} с ${schedule.open}` };
+    }
+  }
+  return { open: false, label: 'Закрыто', detail: 'уточните по телефону' };
+};
+
+/**
+ * Название дня недели.
+ * @param {number} isoDay 1 = Пн
+ * @param {boolean} [accusative] «в среду» вместо «среда»
+ * @returns {string}
+ */
+config.weekdayName = function weekdayName(isoDay, accusative) {
+  const base = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
+  const acc = ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу', 'воскресенье'];
+  const list = accusative ? acc : base;
+  return list[isoDay - 1] || '';
+};
+
+/* ── Ссылки на действия ──────────────────────────────────────────────────── */
+
+/**
+ * Ссылка «позвонить».
+ * @param {string} phone
+ * @returns {string}
+ */
+config.telHref = function telHref(phone) {
+  return 'tel:' + String(phone).replace(/[^\d+]/g, '');
+};
+
+/**
+ * Ссылка в WhatsApp с уже написанным сообщением.
+ *
+ * Смысл именно в готовом тексте: клиент нажимает — и разговор начат,
+ * ему не нужно придумывать, что написать. Это главный сценарий сайта.
+ *
+ * @param {string} text
+ * @returns {string}
+ */
+config.waLink = function waLink(text) {
+  return 'https://wa.me/' + config.business.whatsapp + '?text=' + encodeURIComponent(text);
+};
+
+/** Готовые сообщения для разных точек сайта. */
+config.waText = {
+  general: 'Здравствуйте! Хочу узнать по ремонту автомобиля.',
+  diagnose: 'Здравствуйте! Подскажите, с чего начать диагностику. Что происходит с машиной: ',
+  parts: 'Здравствуйте! Хочу уточнить наличие масла и расходников.',
+  /**
+   * @param {string} service название услуги в языке клиента
+   * @returns {string}
+   */
+  service: (service) =>
+    `Здравствуйте! Интересует ${service}. Хотел бы уточнить по стоимости и возможности приехать.`,
 };
 
 module.exports = config;

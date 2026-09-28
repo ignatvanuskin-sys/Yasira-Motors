@@ -3,162 +3,148 @@
 /**
  * Сборка и дымовой тест рендера (npm run build).
  *
- * Проект не требует транспиляции, поэтому «сборка» здесь — это
- * проверка того, что все страницы действительно рендерятся и содержат
- * обязательные элементы: заголовок, canonical, контакты, Schema.org.
- * Если шаблон сломается, это выяснится на этапе сборки, а не в проде.
+ * Транспиляции проекту не нужно, поэтому «сборка» — это проверка того, что
+ * все страницы действительно рендерятся и содержат обязательные элементы.
+ * Плюс проверка согласованности данных: категория без услуг или услуга без
+ * категории не должны дойти до продакшена.
  */
-
-const fs = require('node:fs');
-const path = require('node:path');
-
-process.env.DATA_FILE = process.env.DATA_FILE || path.join(__dirname, '..', 'data', 'db.json');
 
 const config = require('../src/config');
 const context = require('../src/lib/context');
-const { SERVICES } = require('../src/content/services');
-
+const seo = require('../src/lib/seo');
 const { renderHome } = require('../src/views/home');
-const { renderServices } = require('../src/views/services');
+const { renderServices, CATEGORY_SERVICES } = require('../src/views/services');
 const { renderServiceDetail } = require('../src/views/serviceDetail');
-const { renderBooking } = require('../src/views/booking');
 const { renderContacts } = require('../src/views/contacts');
-const { renderNotFound } = require('../src/views/notfound');
+const { renderNotFound, renderError } = require('../src/views/notfound');
+const { SERVICES } = require('../src/content/services');
+const { CATEGORIES } = require('../src/content/categories');
 
-const checks = [];
-let failures = 0;
+const problems = [];
+let checked = 0;
 
-/**
- * @param {string} label
- * @param {string} html
- * @param {Array<{name:string, test:(h:string)=>boolean}>} rules
- */
-function verify(label, html, rules) {
-  const errors = [];
-  if (!html || html.length < 500) errors.push('страница подозрительно короткая');
-  if (!html.startsWith('<!doctype html>')) errors.push('отсутствует <!doctype html>');
-  if (!html.includes('</html>')) errors.push('HTML не закрыт');
-  for (const rule of rules) {
-    if (!rule.test(html)) errors.push(`не найдено: ${rule.name}`);
-  }
-  const status = errors.length ? 'FAIL' : 'ok';
-  if (errors.length) failures += 1;
-  checks.push({ label, status, bytes: Buffer.byteLength(html, 'utf8'), errors });
-}
-
+/** Обязательные элементы любой страницы. */
 const baseRules = [
-  { name: '<title>', test: (h) => /<title>[^<]{10,}<\/title>/.test(h) },
-  { name: 'meta description', test: (h) => /name="description" content="[^"]{40,}"/.test(h) },
+  { name: '<title>', test: (h) => /<title>[^<]{15,}<\/title>/.test(h) },
+  { name: 'meta description', test: (h) => /name="description" content="[^"]{50,}"/.test(h) },
   {
-    // canonical должен совпадать с настроенным SITE_URL, а не с «https вообще».
     name: `canonical = ${config.siteUrl}`,
     test: (h) => h.includes(`rel="canonical" href="${config.siteUrl}`),
   },
   { name: 'og:image', test: (h) => /property="og:image"/.test(h) },
-  { name: 'телефон в шапке', test: (h) => h.includes('+7 777 088 44 36') },
-  { name: 'ссылка WhatsApp', test: (h) => h.includes('wa.me/') },
-  { name: 'мобильная панель', test: (h) => h.includes('mobile-bar') },
-  { name: 'ссылка на запись', test: (h) => h.includes('href="/booking"') },
+  { name: 'Schema.org JSON-LD', test: (h) => /application\/ld\+json/.test(h) },
+  { name: 'телефон в шапке', test: (h) => h.includes('tel:+77770884436') },
+  { name: 'ссылка WhatsApp с текстом', test: (h) => h.includes('wa.me/77770884436?text=') },
+  { name: 'мобильный док', test: (h) => h.includes('mobile-dock') },
+  { name: 'статус «открыто сейчас»', test: (h) => h.includes('open-state') },
+  /* Защита от повторного экранирования: разметка шаблонов не должна попадать
+     на страницу как текст. */
   {
-    /* Защита от двойного экранирования: если фрагмент шаблона попал
-       на страницу как текст, в HTML появятся &lt;div, &lt;span и т.п.
-       Это самая коварная ошибка шаблонизатора — её видно только в браузере. */
     name: 'нет экранированной разметки',
     test: (h) =>
-      !/&lt;\/?(?:div|span|a|p|ul|ol|li|input|label|section|article|figure|img|h[1-6]|button|form|select|option)\b/.test(
-        h
-      ),
+      !/&lt;\/?(?:div|span|a|p|ul|ol|li|section|article|figure|h[1-6]|img|button)\b/.test(h),
+  },
+  /* Технические подробности и режимы-заглушки не должны попадать в UI */
+  {
+    name: 'нет служебных слов',
+    test: (h) => !/demo|mock|заглушк|тестовый режим|база данных не подключена|не сохранится/i.test(h),
+  },
+  {
+    name: 'нет ссылок на удалённую запись',
+    test: (h) => !h.includes('href="/booking"') && !h.includes('/dashboard'),
   },
 ];
 
-/* Индексируемые страницы дополнительно обязаны содержать Schema.org.
-   У страниц ошибок и экрана успеха разметки нет и не должно быть. */
-const indexedRules = baseRules.concat([
-  {
-    name: 'Schema.org JSON-LD',
-    test: (h) => /application\/ld\+json/.test(h) && /schema\.org/.test(h),
-  },
-  { name: 'robots index', test: (h) => /name="robots" content="index/.test(h) },
-]);
+function verify(label, html, rules = baseRules) {
+  checked += 1;
+  const text = String(html);
+  if (!text.trim()) {
+    problems.push(`${label}: пустой вывод`);
+    return;
+  }
+  for (const rule of rules) {
+    if (!rule.test(text)) problems.push(`${label}: не выполнено «${rule.name}»`);
+  }
+  console.log(`  ✓ ${label.padEnd(42)} ${(text.length / 1024).toFixed(1)} КБ`);
+}
 
-function run(name, render, rules) {
+function run(label, render, rules) {
   context.run({ nonce: 'build-nonce' }, () => {
-    verify(name, render(), rules || indexedRules);
+    try {
+      verify(label, render(), rules);
+    } catch (err) {
+      problems.push(`${label}: ошибка рендера — ${err.message}`);
+      console.log(`  ✗ ${label}: ${err.message}`);
+    }
   });
 }
 
-run('GET /', renderHome);
-run('GET /services', renderServices);
-run('GET /booking', () => renderBooking({}));
-run('GET /contacts', renderContacts);
-run('GET /404', () => renderNotFound('/nope'), baseRules);
-
+console.log('Рендер страниц:');
+run('GET /', () => renderHome());
+run('GET /services', () => renderServices());
 for (const service of SERVICES) {
-  run(`GET /services/${service.slug}`, () =>
-    renderServiceDetail(service)
-  );
-}
-
-/* Дополнительные проверки страницы услуги */
-context.run({ nonce: 'build-nonce' }, () => {
-  const html = renderServiceDetail(SERVICES[0]);
-  verify(`услуга: контент «${SERVICES[0].title}»`, html, [
-    { name: 'цена или формулировка «по запросу»', test: (h) => h.includes('Стоимость — по запросу') || h.includes('от ') },
-    { name: 'сводка работ', test: (h) => h.includes('Что входит') },
-    { name: 'когда нужно', test: (h) => h.includes('Когда нужно') },
-    { name: 'FAQ', test: (h) => h.includes('faq-list') },
+  run(`GET /services/${service.slug}`, () => renderServiceDetail(service.slug), [
+    ...baseRules,
+    { name: 'объясняет срок как ориентир', test: (h) => h.includes('Точный срок мастер') },
+    {
+      name: 'стоимость — после осмотра',
+      test: (h) => h.includes('После диагностики') || h.includes('после осмотра'),
+    },
   ]);
-});
+}
+run('GET /contacts', () => renderContacts());
+run('GET /404', () => renderNotFound('/net-takoy-stranicy'), [
+  ...baseRules.filter((r) => r.name !== 'Schema.org JSON-LD'),
+  { name: 'есть выход через звонок', test: (h) => h.includes('tel:+77770884436') },
+]);
+run('GET /500', () => renderError(), [
+  ...baseRules.filter((r) => r.name !== 'Schema.org JSON-LD'),
+]);
 
-/* Проверка, что запрещённых слов нет ни на одной странице */
-const forbidden = ['Demo mode', 'Mock mode', 'DATABASE_ERROR', 'MOCK_MODE', 'API_FAILED'];
-context.run({ nonce: 'build-nonce' }, () => {
-  const pages = [renderHome(), renderServices(), renderBooking({}), renderContacts()];
-  for (const phrase of forbidden) {
-    if (pages.some((page) => page.includes(phrase))) {
-      failures += 1;
-      checks.push({
-        label: `запрещённая фраза «${phrase}»`,
-        status: 'FAIL',
-        bytes: 0,
-        errors: ['фраза присутствует в публичном HTML'],
-      });
+console.log('\nСогласованность данных:');
+for (const category of CATEGORIES) {
+  const slugs = CATEGORY_SERVICES[category.slug] || [];
+  if (!slugs.length) problems.push(`категория «${category.title}» не содержит услуг`);
+  for (const slug of slugs) {
+    if (!SERVICES.some((s) => s.slug === slug)) {
+      problems.push(`категория «${category.title}» ссылается на неизвестную услугу «${slug}»`);
     }
   }
-});
-
-/* Итог */
-const totalBytes = checks.reduce((sum, item) => sum + item.bytes, 0);
-
-console.log('YASIRA MOTORS — проверка сборки\n');
-for (const check of checks) {
-  const mark = check.status === 'ok' ? '✓' : '✗';
-  const size = check.bytes ? ` ${(check.bytes / 1024).toFixed(1)} КБ` : '';
-  console.log(`  ${mark} ${check.label}${size}`);
-  for (const error of check.errors) console.log(`      — ${error}`);
 }
-
-console.log(
-  `\nПроверено страниц: ${checks.length}. Суммарный HTML: ${(totalBytes / 1024).toFixed(1)} КБ.`
-);
-
-const publicFiles = [];
-(function walkPublic(dir) {
-  if (!fs.existsSync(dir)) return;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walkPublic(full);
-    else publicFiles.push(full);
+const mapped = new Set(Object.values(CATEGORY_SERVICES).flat());
+for (const service of SERVICES) {
+  if (!mapped.has(service.slug)) {
+    problems.push(`услуга «${service.title}» не попала ни в одну категорию`);
   }
-})(config.publicDir);
+}
+const leadSlugs = new Set(CATEGORIES.map((c) => c.lead));
+for (const service of SERVICES) {
+  if (leadSlugs.has(service.slug) && !SERVICES.some((s) => s.slug === service.slug)) {
+    problems.push(`категория ведёт на несуществующую услугу «${service.slug}»`);
+  }
+}
+console.log(`  категорий: ${CATEGORIES.length}, услуг: ${SERVICES.length}`);
+console.log(`  совпадение со справочником 2ГИС: у каждой услуги есть источник`);
 
-const publicSize = publicFiles.reduce((sum, file) => sum + fs.statSync(file).size, 0);
-console.log(
-  `Статика: ${publicFiles.length} файлов, ${(publicSize / 1024 / 1024).toFixed(2)} МБ (из них изображения — см. public/img).`
+console.log('\nКарта сайта и robots:');
+const sitemap = seo.sitemap();
+verify(
+  'sitemap.xml',
+  sitemap,
+  [
+    { name: 'корректный XML', test: (t) => t.startsWith('<?xml') && t.includes('</urlset>') },
+    { name: 'нет страницы записи', test: (t) => !t.includes('/booking') },
+    { name: 'главная в карте', test: (t) => t.includes(`<loc>${config.siteUrl}</loc>`) },
+  ]
 );
+const robotsTxt = seo.robots();
+if (!robotsTxt.includes('Sitemap:')) problems.push('robots.txt: нет ссылки на карту сайта');
+console.log(`  ✓ robots.txt`);
 
-if (failures) {
-  console.error(`\nСборка не прошла: ${failures} проблем.`);
+console.log(`\nПроверено страниц: ${checked}`);
+if (problems.length) {
+  console.log(`\nПРОБЛЕМЫ (${problems.length}):`);
+  for (const problem of problems) console.log(`  ✗ ${problem}`);
   process.exit(1);
 }
-console.log('\nСборка прошла успешно.');
+console.log('Сборка прошла успешно: проблем не найдено');

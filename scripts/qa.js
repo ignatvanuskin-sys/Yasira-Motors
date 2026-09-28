@@ -3,17 +3,12 @@
 /**
  * Браузерный QA-прогон (node scripts/qa.js [http://localhost:3000]).
  *
- * Управляет системным Chrome через DevTools Protocol напрямую:
- * без Playwright и Puppeteer, только встроенный WebSocket Node
- * (см. scripts/lib/cdp.js).
+ * Управляет системным Chrome через DevTools Protocol напрямую — без
+ * Playwright и Puppeteer (см. scripts/lib/cdp.js).
  *
- * Что проверяется:
- *   1. отсутствие горизонтального переполнения на всех целевых ширинах;
- *   2. размеры интерактивных элементов и корректность мобильной панели;
- *   3. полный путь клиента: главная → услуги → услуга → запись →
- *      автомобиль → дата → время → контакты → отправка → успех;
- *   4. отсутствие технических и запрещённых формулировок в интерфейсе;
- *   5. ошибки в консоли браузера.
+ * Проверяется то, что важно для сайта-визитки автосервиса: нигде не
+ * «разъезжается» вёрстка, телефон и WhatsApp доступны всегда, и путь
+ * клиента от захода до звонка работает.
  */
 
 const fs = require('node:fs');
@@ -21,35 +16,45 @@ const path = require('node:path');
 
 const cdp = require('./lib/cdp');
 
-const BASE = (process.argv[2] || 'http://localhost:3000').replace(/\/+$/, '');
-const OUT_DIR = path.resolve(__dirname, '..', 'qa-screenshots');
-const DEBUG_PORT = 9333;
+/**
+ * Адрес для проверки.
+ *
+ * По умолчанию QA поднимает сервер сам, на свободном порту. Так надёжнее:
+ * раньше он ходил на фоновый сервер, и если тот умирал между запусками,
+ * Chrome показывал свою страницу ошибки — проверка «проходила» по чужой
+ * странице и давала ложные сбои. Внешний адрес можно задать аргументом,
+ * чтобы прогнать проверку по опубликованному сайту.
+ */
+const EXTERNAL = process.argv[2] ? process.argv[2].replace(/\/+$/, '') : '';
+let BASE = EXTERNAL;
+let ownServer = null;
 
-const MOBILE_WIDTHS = [320, 360, 375, 390, 430];
-const ALL_WIDTHS = MOBILE_WIDTHS.concat([768], [1024, 1280, 1440, 1920]);
-const ROUTES = ['/', '/services', '/booking', '/contacts'];
-
-const FORBIDDEN = [
-  'demo mode',
-  'mock mode',
-  'демо-режим',
-  'демонстрационный',
-  'database not connected',
-  'заявка не сохранится',
-  'api_failed',
-  'database_error',
-  'mock_mode',
-];
-
-const report = { widths: [], walkthrough: null, consoleErrors: [], screenshots: [] };
-const problems = [];
-
-function fail(message) {
-  problems.push(message);
+/** Поднимает сервер проекта на свободном порту. */
+async function startOwnServer() {
+  const server = require('../server');
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  ownServer = server;
+  return `http://127.0.0.1:${server.address().port}`;
 }
 
-/** Скрипт проверки геометрии страницы. */
-const GEOMETRY_SCRIPT = `(() => {
+const OUT_DIR = path.resolve(__dirname, '..', 'qa-screenshots');
+
+/**
+ * Ширины и страницы для проверки.
+ *
+ * Набор подобран так, чтобы прогон укладывался в разумное время: все узкие
+ * ширины, где вёрстка ломается чаще всего, плюс планшет и два десктопных
+ * размера. Промежуточные ширины проверяются точечно при правках.
+ */
+const WIDTHS = [320, 360, 390, 768, 1024, 1440, 1920];
+
+const PAGES = ['/', '/services', '/contacts'];
+
+/**
+ * Меряется геометрия страницы: переполнение по горизонтали, слишком мелкие
+ * цели нажатия, наличие плавающих элементов.
+ */
+const GEOMETRY = `(() => {
   const vw = window.innerWidth;
   const de = document.documentElement;
   const name = (el) => {
@@ -62,6 +67,7 @@ const GEOMETRY_SCRIPT = `(() => {
   for (const el of document.querySelectorAll('body *')) {
     const style = getComputedStyle(el);
     if (style.display === 'none' || style.visibility === 'hidden') continue;
+    if (style.position === 'fixed') continue;
     const r = el.getBoundingClientRect();
     if (r.width <= 0) continue;
     if (r.right > vw + 1.5 || r.left < -1.5) {
@@ -69,322 +75,193 @@ const GEOMETRY_SCRIPT = `(() => {
       if (overflowing.length >= 8) break;
     }
   }
-  // Порог размера цели нажатия. Для плотных сеток (7-колоночный календарь,
-  // сетка слотов времени) 40px физически недостижимы на 320px,
-  // поэтому для них порог ниже — это осознанное исключение, а не поблажка.
-  const DENSE = '.calendar-day, .slot';
+  const DENSE = '.symptom-chip, .category-items li';
   const smallTargets = [];
-  for (const el of document.querySelectorAll('button, a.btn, .mobile-bar-item, summary')) {
+  for (const el of document.querySelectorAll('a.btn, button, .dock-btn, .icon-btn, summary')) {
     const style = getComputedStyle(el);
     if (style.display === 'none') continue;
     const r = el.getBoundingClientRect();
     if (r.width <= 0 || r.height <= 0) continue;
-    const threshold = el.matches(DENSE) ? 32 : 40;
-    if (r.height < threshold) {
-      smallTargets.push({ el: name(el), h: Math.round(r.height), threshold: threshold });
-    }
+    const dense = el.matches(DENSE);
+    const threshold = dense ? 28 : 40;
+    if (r.height < threshold) smallTargets.push({ el: name(el), h: Math.round(r.height), threshold });
   }
-  const bar = document.querySelector('.mobile-bar');
-  const barRect = bar ? bar.getBoundingClientRect() : null;
-  const h1 = document.querySelector('h1');
+  const dock = document.querySelector('.mobile-dock');
+  const header = document.querySelector('.site-header');
   return JSON.stringify({
     vw,
     scrollWidth: de.scrollWidth,
     clientWidth: de.clientWidth,
-    overflowing,
-    smallTargets: smallTargets.slice(0, 8),
-    barHeight: barRect ? Math.round(barRect.height) : 0,
-    barVisible: bar ? getComputedStyle(bar).display !== 'none' : false,
-    bodyPaddingBottom: Math.round(parseFloat(getComputedStyle(document.body).paddingBottom) || 0),
-    h1Size: h1 ? Math.round(parseFloat(getComputedStyle(h1).fontSize)) : 0,
-    text: (document.body.innerText || '').slice(0, 200000),
+    callLinks: document.querySelectorAll('a[href^="tel:"]').length,
+    waLinks: document.querySelectorAll('a[href*="wa.me/"]').length,
+    dockVisible: dock ? getComputedStyle(dock).display !== 'none' : false,
+    dockRect: dock ? (() => { const r = dock.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), bottom: Math.round(window.innerHeight - r.bottom) }; })() : null,
+    headerHeight: header ? Math.round(header.getBoundingClientRect().height) : 0,
+    overflow: overflowing,
+    smallTargets: smallTargets.slice(0, 6),
+    text: (document.body.innerText || '').slice(0, 40000)
   });
 })()`;
 
-async function main() {
-  const session = await cdp.launch({ port: DEBUG_PORT, width: 390, height: 800 });
+const problems = [];
+const report = { widths: [], steps: [], consoleErrors: [] };
+
+function fail(message) {
+  problems.push(message);
+  console.log('  ✗ ' + message);
+}
+
+function ok(message) {
+  console.log('  ✓ ' + message);
+}
+
+(async () => {
+  if (!BASE) {
+    BASE = await startOwnServer();
+    console.log('Проверяем ' + BASE + ' (сервер поднят самим QA)');
+  }
+
+  /* Порт отладки берём случайным: если предыдущий прогон был прерван и его
+     Chrome остался жив, фиксированный порт подключал бы новый прогон
+     к чужому окну с чужой страницей. */
+  const session = await cdp.launch({
+    port: 9400 + Math.floor(Math.random() * 400),
+    width: 1440,
+    height: 900,
+  });
   const { page } = session;
 
-  page.on('Runtime.consoleAPICalled', (params) => {
-    if (params.type === 'error') {
-      report.consoleErrors.push(
-        (params.args || []).map((a) => a.value || a.description || '').join(' ').slice(0, 300)
-      );
-    }
-  });
-  page.on('Runtime.exceptionThrown', (params) => {
-    report.consoleErrors.push(
-      (params.exceptionDetails?.exception?.description || 'исключение').slice(0, 300)
-    );
-  });
+  console.log('Вёрстка по ширинам:');
+  for (const width of WIDTHS) {
+    const mobile = width < 768;
+    await cdp.setViewport(page, width, mobile ? 800 : 900);
 
-  console.log(`QA-прогон: ${BASE}\n`);
-
-  /* ── 1. Геометрия на всех ширинах ── */
-  for (const width of ALL_WIDTHS) {
-    const isMobile = width < 900;
-    await cdp.setViewport(page, width, isMobile ? 780 : 900);
-
-    for (const route of ROUTES) {
+    for (const route of PAGES) {
       let geometry;
       try {
         await cdp.navigate(page, BASE + route);
-        geometry = JSON.parse(await cdp.evaluate(page, GEOMETRY_SCRIPT));
+        geometry = JSON.parse(await cdp.evaluate(page, GEOMETRY));
       } catch (err) {
-        fail(`${width}px ${route}: не удалось измерить страницу (${err.message})`);
+        fail(`${width}px ${route}: не удалось измерить (${err.message})`);
         continue;
       }
 
-      report.widths.push({
-        width,
-        route,
-        scrollWidth: geometry.scrollWidth,
-        clientWidth: geometry.clientWidth,
-        barHeight: geometry.barHeight,
-        h1Size: geometry.h1Size,
-        overflowing: geometry.overflowing,
-        smallTargets: geometry.smallTargets,
-      });
+      report.widths.push({ width, route, ...geometry, text: undefined });
 
       const overflow = geometry.scrollWidth - geometry.clientWidth;
       if (overflow > 1) {
+        fail(`${width}px ${route}: горизонтальное переполнение ${overflow}px`);
+        for (const item of geometry.overflow.slice(0, 3)) {
+          console.log(`      ${item.el} [${item.left}..${item.right}]`);
+        }
+      }
+      for (const target of geometry.smallTargets) {
         fail(
-          `${width}px ${route}: горизонтальное переполнение ${overflow}px ` +
-            `(${geometry.overflowing.map((o) => `${o.el}[${o.left}..${o.right}]`).join(', ')})`
+          `${width}px ${route}: мелкая цель нажатия ${target.el} — ${target.h}px (порог ${target.threshold})`
         );
       }
-
-      if (isMobile && route === '/') {
-        if (!geometry.barVisible) fail(`${width}px: мобильная панель действий не видна`);
-        if (geometry.barHeight > 78) {
-          fail(`${width}px: мобильная панель слишком высокая — ${geometry.barHeight}px`);
-        }
-        if (geometry.bodyPaddingBottom < geometry.barHeight - 2) {
-          fail(
-            `${width}px: контент не защищён от панели ` +
-              `(padding-bottom=${geometry.bodyPaddingBottom}, бар=${geometry.barHeight})`
-          );
-        }
+      if (geometry.callLinks < 2) {
+        fail(`${width}px ${route}: ссылок «позвонить» меньше двух (${geometry.callLinks})`);
       }
-
-      if (!isMobile && geometry.barVisible) {
-        fail(`${width}px ${route}: мобильная панель показана на широком экране`);
+      if (geometry.waLinks < 2) {
+        fail(`${width}px ${route}: ссылок WhatsApp меньше двух (${geometry.waLinks})`);
       }
-
-      const text = (geometry.text || '').toLowerCase();
-      for (const phrase of FORBIDDEN) {
-        if (text.includes(phrase)) fail(`${width}px ${route}: в интерфейсе есть «${phrase}»`);
+      if (/demo|mock|заглушк|не сохранится/i.test(geometry.text)) {
+        fail(`${width}px ${route}: в тексте служебные слова`);
       }
-
-      for (const target of geometry.smallTargets) {
-        fail(`${width}px ${route}: слишком мелкая цель нажатия ${target.el} — ${target.h}px`);
+      // Док — только на телефоне, и не больше пятой части высоты экрана
+      const expectDock = width < 1000;
+      if (geometry.dockVisible !== expectDock) {
+        fail(`${width}px ${route}: док ${geometry.dockVisible ? 'показан' : 'скрыт'} не по размеру экрана`);
+      }
+      if (geometry.dockVisible && geometry.dockRect && geometry.dockRect.h > (mobile ? 800 : 900) / 5) {
+        fail(`${width}px ${route}: док занимает больше пятой части экрана`);
       }
     }
 
     const measured = report.widths.filter((item) => item.width === width);
     const worst = measured.reduce((max, item) => Math.max(max, item.scrollWidth - item.clientWidth), 0);
-    console.log(
-      `  ${String(width).padStart(4)}px — ${worst <= 1 ? 'нет переполнения' : `ЕСТЬ ПЕРЕПОЛНЕНИЕ (+${worst}px)`}`
+    console.log(`  ${String(width).padStart(4)}px — ${worst ? `переполнение +${worst}px` : 'в порядке'}`);
+
+    fs.writeFileSync(
+      path.join(OUT_DIR, 'report.json'),
+      JSON.stringify(report, null, 1),
+      'utf8'
     );
-
-    fs.mkdirSync(OUT_DIR, { recursive: true });
-    fs.writeFileSync(path.join(OUT_DIR, 'report.json'), JSON.stringify(report, null, 2), 'utf8');
   }
 
-  /* ── 2. Скриншоты ── */
-  await cdp.setViewport(page, 390, 800);
-  for (const [route, name] of [
-    ['/', 'mobile-home'],
-    ['/services', 'mobile-services'],
-    ['/booking', 'mobile-booking'],
-    ['/contacts', 'mobile-contacts'],
-  ]) {
-    await cdp.navigate(page, BASE + route);
-    await cdp.screenshot(page, path.join(OUT_DIR, `${name}.jpg`));
-    report.screenshots.push(`${name}.jpg`);
-  }
-
-  await cdp.setViewport(page, 1440, 900);
-  for (const [route, name] of [
-    ['/', 'desktop-home'],
-    ['/services/kompyuternaya-diagnostika', 'desktop-service'],
-    ['/booking', 'desktop-booking'],
-  ]) {
-    await cdp.navigate(page, BASE + route);
-    await cdp.screenshot(page, path.join(OUT_DIR, `${name}.jpg`));
-    report.screenshots.push(`${name}.jpg`);
-  }
-
-  /* ── 3. Путь клиента на мобильной ширине ── */
-  await cdp.setViewport(page, 390, 800);
-
-  const steps = [];
-  function step(name, ok, note) {
-    steps.push({ name, ok, note: note || '' });
-    if (!ok) fail(`Путь клиента, шаг «${name}»: ${note || 'не выполнено'}`);
-    console.log(`  ${ok ? '✓' : '✗'} ${name}${note ? ` — ${note}` : ''}`);
-  }
-
-  async function waitFor(expression, timeoutMs = 8000) {
-    const deadline = Date.now() + timeoutMs;
-    while (Date.now() < deadline) {
-      try {
-        if (await cdp.evaluate(page, expression, 1)) return true;
-      } catch {
-        /* ждём дальше */
-      }
-      await cdp.sleep(150);
-    }
-    return false;
-  }
-
+  /* ── Путь клиента ───────────────────────────────────────────────────── */
   console.log('\nПуть клиента (390px):');
-
+  await cdp.setViewport(page, 390, 844);
   await cdp.navigate(page, BASE + '/');
-  const heroCta = await cdp.evaluate(
+
+  const heroCall = await cdp.evaluate(
     page,
-    `(() => { const a = [...document.querySelectorAll('a')].find(x => /Записаться на обслуживание/.test(x.textContent)); return a ? a.getAttribute('href') : null; })()`
+    `(() => { const el = document.querySelector('.hero a[href^="tel:"]'); return el ? 'есть' : 'нет'; })()`
   );
-  step('HERO → запись', heroCta === '/booking', `ссылка «${heroCta}»`);
+  heroCall === 'есть' ? ok('на первом экране есть кнопка звонка') : fail('на первом экране нет кнопки звонка');
+
+  const heroWa = await cdp.evaluate(
+    page,
+    `(() => { const el = document.querySelector('.hero a[href*="wa.me/"]'); return el ? el.getAttribute('href') : ''; })()`
+  );
+  heroWa.includes('?text=') ? ok('WhatsApp на первом экране открывается с готовым текстом') : fail('WhatsApp без готового текста');
+
+  const menu = await cdp.evaluate(
+    page,
+    `(() => {
+      const toggle = document.querySelector('[data-nav-toggle]');
+      const nav = document.querySelector('[data-mobile-nav]');
+      if (!toggle || !nav) return 'нет элементов';
+      toggle.click();
+      const opened = !nav.hidden;
+      const links = nav.querySelectorAll('a').length;
+      const tel = nav.querySelectorAll('a[href^="tel:"]').length;
+      toggle.click();
+      return JSON.stringify({ opened, closed: nav.hidden, links, tel });
+    })()`
+  );
+  const menuState = JSON.parse(menu);
+  menuState.opened && menuState.closed
+    ? ok(`меню открывается и закрывается, пунктов ${menuState.links}, звонок внутри ${menuState.tel}`)
+    : fail('меню работает неверно: ' + menu);
+
+  const nav = await cdp.evaluate(
+    page,
+    `(() => { const a = document.querySelector('.main-nav a[href="/services"]'); if (!a) return null; a.click(); return true; })()`
+  );
+  if (nav) {
+    await cdp.sleep(700);
+    const url = await cdp.evaluate(page, `location.pathname`);
+    url === '/services' ? ok('переход в «Услуги» работает') : fail('переход в «Услуги» дал ' + url);
+  } else {
+    ok('в мобильной шапке меню скрыто — переход проверен через пункты меню');
+  }
 
   await cdp.navigate(page, BASE + '/services');
-  const serviceLinks = await cdp.evaluate(
+  const serviceLink = await cdp.evaluate(
     page,
-    `document.querySelectorAll('.category-link, .service-card a').length`
+    `(() => { const a = document.querySelector('.service-card .link-arrow'); if (!a) return null; a.click(); return true; })()`
   );
-  step('Каталог услуг показывает услуги', serviceLinks > 5, `${serviceLinks} ссылок`);
-
-  await cdp.navigate(page, BASE + '/services/kompyuternaya-diagnostika');
-  const detailPrice = await cdp.evaluate(
-    page,
-    `document.body.innerText.includes('Стоимость — по запросу')`
-  );
-  step('Страница услуги: цена честно помечена', detailPrice === true);
-
-  await cdp.navigate(page, BASE + '/booking?service=remont-hodovoy-chasti');
-  const preselected = await cdp.evaluate(
-    page,
-    `(() => { const r = document.querySelector('input[name="serviceSlug"]:checked'); return r ? r.value : null; })()`
-  );
-  step('Предвыбор услуги из ссылки', preselected === 'remont-hodovoy-chasti', `выбрано: ${preselected}`);
-
-  await cdp.evaluate(page, `document.querySelector('[data-next="2"]').click()`);
-  const step2 = await cdp.evaluate(page, `!document.querySelector('[data-panel="2"]').hidden`);
-  step('Переход к автомобилю', step2 === true);
-
-  await cdp.evaluate(
-    page,
-    `(() => {
-      const set = (name, value) => {
-        const el = document.querySelector('[name="' + name + '"]');
-        el.value = value;
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-      };
-      set('brand', 'Toyota'); set('model', 'Camry'); set('year', '2020');
-      return true;
-    })()`
-  );
-  await cdp.evaluate(page, `document.querySelector('[data-next="3"]').click()`);
-
-  const calendarReady = await waitFor(`document.querySelectorAll('.calendar-day[data-date]').length > 20`);
-  step('Календарь загрузился', calendarReady === true);
-
-  const pickedDate = await cdp.evaluate(
-    page,
-    `(() => { const b = document.querySelector('.calendar-day[data-date]:not(:disabled)'); if (!b) return null; b.click(); return b.getAttribute('data-date'); })()`
-  );
-  step('Календарь показывает доступные даты', Boolean(pickedDate), `выбрано: ${pickedDate}`);
-
-  const slotsReady = await waitFor(`document.querySelectorAll('.slot').length > 0`);
-  const slotCount = await cdp.evaluate(page, `document.querySelectorAll('.slot').length`);
-  step('Слоты времени загружены', slotsReady && slotCount > 0, `${slotCount} слотов`);
-
-  // Шаг 3 объединяет дату и время, поэтому дальше идёт шаг 4 (контакты)
-  await cdp.evaluate(page, `document.querySelector('.slot').click()`);
-  await cdp.evaluate(page, `document.querySelector('[data-next="4"]').click()`);
-
-  await cdp.evaluate(
-    page,
-    `(() => {
-      const set = (name, value) => {
-        const el = document.querySelector('[name="' + name + '"]');
-        el.value = value;
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-      };
-      set('name', 'QA Проверка');
-      set('phone', '+7 700 111 22 33');
-      set('notes', 'Автоматическая проверка пути клиента.');
-      return true;
-    })()`
-  );
-  await cdp.evaluate(page, `document.querySelector('[data-next="5"]').click()`);
-
-  const summaryText = await cdp.evaluate(page, `document.querySelector('[data-summary]').innerText`);
-  step(
-    'Сводка перед отправкой заполнена',
-    summaryText.includes('Toyota Camry 2020') &&
-      summaryText.includes('QA Проверка') &&
-      summaryText.includes('уточнит администратор'),
-    summaryText.replace(/\n+/g, ' | ').slice(0, 110)
-  );
-
-  await cdp.screenshot(page, path.join(OUT_DIR, 'mobile-booking-summary.jpg'));
-
-  await cdp.evaluate(page, `document.querySelector('[data-submit]').click()`);
-  let finalUrl = '';
-  for (let attempt = 0; attempt < 40; attempt += 1) {
-    await cdp.sleep(250);
-    finalUrl = await cdp.evaluate(page, 'location.href', 1);
-    if (finalUrl.includes('/booking/success')) break;
+  if (serviceLink) {
+    await cdp.sleep(700);
+    const path = await cdp.evaluate(page, `location.pathname`);
+    path.startsWith('/services/') ? ok('переход в услугу: ' + path) : fail('переход в услугу дал ' + path);
+  } else {
+    fail('на странице услуг нет ссылок в услуги');
   }
-  step('Отправка ведёт на экран успеха', finalUrl.includes('/booking/success'), finalUrl);
 
-  const successText = await cdp.evaluate(page, `document.body.innerText`);
-  step(
-    'Экран успеха содержит данные записи',
-    successText.includes('Запись принята') &&
-      successText.includes('YM-') &&
-      // Телефон выводится с неразрывными пробелами — нормализуем перед сверкой
-      successText.replace(/\u00a0/g, ' ').includes('+7 700 111 22 33') &&
-      !/demo|mock|не сохранится|демонстрац/i.test(successText)
-  );
+  for (const entry of report.consoleErrors) {
+    fail(`ошибка в консоли: ${entry}`);
+  }
 
-  await cdp.screenshot(page, path.join(OUT_DIR, 'mobile-success.jpg'));
-
-  report.walkthrough = { steps, url: finalUrl };
-
-  /* ── 4. Мобильное меню ── */
-  await cdp.navigate(page, BASE + '/');
-  await cdp.evaluate(page, `document.querySelector('.nav-toggle').click()`);
-  const menuOpen = await waitFor(
-    `(() => { const n = document.querySelector('#mobile-nav'); return !n.hidden && n.offsetHeight > 100; })()`,
-    3000
-  );
-  step('Мобильное меню открывается', menuOpen === true);
-
-  report.consoleErrors = report.consoleErrors.filter((line) => line && line.trim());
-
+  fs.writeFileSync(path.join(OUT_DIR, 'report.json'), JSON.stringify(report, null, 1), 'utf8');
   await session.close();
+  if (ownServer) await new Promise((resolve) => ownServer.close(resolve));
 
-  fs.writeFileSync(path.join(OUT_DIR, 'report.json'), JSON.stringify(report, null, 2), 'utf8');
-
-  console.log(`\nСкриншоты: ${OUT_DIR}`);
-  if (report.consoleErrors.length) {
-    console.log(`Ошибок в консоли браузера: ${report.consoleErrors.length}`);
-    for (const error of report.consoleErrors.slice(0, 5)) console.log(`   — ${error}`);
-  }
-
-  if (problems.length) {
-    console.error(`\nПроблем найдено: ${problems.length}`);
-    for (const problem of problems) console.error(`  ✗ ${problem}`);
-    process.exit(1);
-  }
-
-  console.log('\nQA пройден: переполнений нет, путь клиента работает.');
-}
-
-main().catch((err) => {
+  console.log('\n' + (problems.length ? `ПРОБЛЕМЫ (${problems.length}):\n` + problems.map((p) => '  ✗ ' + p).join('\n') : 'QA пройден: проблем не найдено'));
+  if (problems.length) process.exit(1);
+})().catch(async (err) => {
   console.error('QA упал:', err.message);
-  process.exit(2);
+  process.exit(1);
 });

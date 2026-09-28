@@ -1,8 +1,8 @@
 {
   "name": "yasira-motors",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "YASIRA MOTORS — сайт автосервиса в Актау с онлайн-записью на обслуживание",
+  "description": "YASIRA MOTORS — сайт автосервиса в Актау: услуги, отзывы, контакты, карта",
   "main": "server.js",
   "engines": {
     "node": ">=18"
@@ -10,18 +10,17 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "seed": "node scripts/seed.js",
-    "hash-password": "node scripts/hash-password.js",
     "lint": "node scripts/lint.js",
     "typecheck": "node scripts/typecheck.js",
     "test": "node --test",
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "qa": "node scripts/qa.js",
+    "qa:shots": "node scripts/qa-shots.js"
   },
   "keywords": [
     "автосервис",
     "актау",
-    "yasira-motors",
-    "booking"
+    "yasira-motors"
   ],
   "license": "UNLICENSED"
 }

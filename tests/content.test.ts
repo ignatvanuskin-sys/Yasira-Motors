@@ -455,6 +455,40 @@ describe("бегущая строка", () => {
   });
 });
 
+describe("поведение при reduced-motion", () => {
+  const css = () => fs.readFileSync(path.join(ROOT, "app", "globals.css"), "utf8");
+
+  it("выключает все бесконечные анимации, а не ускоряет их", () => {
+    /*
+      Утилиты Tailwind с animation-iteration-count: infinite нельзя оставлять
+      общему правилу с duration 0.001ms — при бесконечном повторе элемент
+      начинает прокручивать тысячи циклов в секунду. Список проверяем целиком,
+      чтобы новая утилита не осталась за его пределами.
+    */
+    const list = css().match(/\.spotlight,[\s\S]*?\{\s*animation: none !important;/);
+    expect(list).not.toBeNull();
+    for (const selector of [
+      ".spotlight",
+      ".beam-path",
+      ".marquee-track",
+      ".animate-bounce",
+      ".animate-ping",
+      ".animate-pulse",
+    ]) {
+      expect(list![0]).toContain(selector);
+    }
+  });
+
+  it("раскладывает остановленную ленту, а не оставляет её обрезанной", () => {
+    const source = css();
+    expect(source).toMatch(/prefers-reduced-motion[\s\S]*\.marquee-track\s*\{[^}]*flex-wrap: wrap/);
+    // Вторая копия нужна только для цикла — в статике это дубль каждого слова
+    expect(source).toMatch(
+      /prefers-reduced-motion[\s\S]*\.marquee-track > :nth-child\(n \+ 2\)\s*\{[^}]*display: none/,
+    );
+  });
+});
+
 describe("нет онлайн-записи", () => {
   it("в исходниках нет booking-механики", () => {
     const banned = [

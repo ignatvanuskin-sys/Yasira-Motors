@@ -7,13 +7,13 @@ export function Process() {
     <Section id="process" bordered>
       <SectionHead
         eyebrow="Как мы работаем"
-        title="Пять шагов от звонка до выдачи автомобиля"
-        lead="Порядок работ обычный для автосервиса: сначала диагностика и согласование, затем ремонт. К работам приступаем после вашего согласия."
+        title="Четыре шага"
+        lead="К работам приступаем после согласования — без онлайн-записи, достаточно звонка или сообщения."
       />
 
-      <ol className="mt-11 grid gap-7 md:grid-cols-5 md:gap-4">
+      <ol className="mt-11 grid gap-7 md:grid-cols-4 md:gap-4">
         {process.map((item, i) => (
-          <Reveal as="li" key={item.step} delay={Math.min(i * 70, 260)} className="relative">
+          <Reveal as="li" key={item.step} delay={Math.min(i * 70, 240)} className="relative">
             <div className="relative flex gap-4 md:block">
               <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-night-900 text-[13px] font-extrabold tracking-[0.04em] text-brand-400">
                 {item.step}

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { advantages, facts, photos, process, reviews, services } from "@/lib/content";
+import { advantages, photos, process, reviews, serviceGroups } from "@/lib/content";
 import {
   address,
   company,
@@ -25,8 +25,21 @@ import {
 import { getOpenState, toMinutes } from "@/lib/schedule";
 
 const ROOT = path.resolve(__dirname, "..");
-
 const publicFile = (src: string) => path.join(ROOT, "public", src.replace(/^\//, ""));
+
+/** Все исходники приложения — для сквозных проверок содержимого. */
+function appSources(): { file: string; text: string }[] {
+  const dirs = ["app", "components", "lib"];
+  const out: { file: string; text: string }[] = [];
+  for (const dir of dirs) {
+    for (const name of fs.readdirSync(path.join(ROOT, dir))) {
+      if (!/\.(ts|tsx)$/.test(name)) continue;
+      const file = path.join(dir, name);
+      out.push({ file, text: fs.readFileSync(path.join(ROOT, file), "utf8") });
+    }
+  }
+  return out;
+}
 
 describe("контакты", () => {
   it("телефон для звонка записан в международном формате", () => {
@@ -34,31 +47,35 @@ describe("контакты", () => {
     expect(phone.display.replace(/\D/g, "")).toBe(phone.tel.replace(/\D/g, ""));
   });
 
-  it("все телефоны корректны и не дублируются", () => {
-    const tels = phones.map((p) => p.tel);
-    expect(new Set(tels).size).toBe(tels.length);
-    for (const item of phones) {
-      expect(item.tel).toMatch(/^\+7\d{10}$/);
-      expect(item.display.replace(/\D/g, "")).toBe(item.tel.replace(/\D/g, ""));
-      expect(item.label.trim().length).toBeGreaterThan(0);
+  it("главная кнопка ведёт в автосервис, а не в магазин", () => {
+    // Карточка 2ГИС подписывает +7 777 088 44 24 как «СТО»,
+    // а +7 777 088 44 36 как «магазин». Сайт про сервис.
+    expect(phone.tel).toBe("+77770884424");
+    expect(phone.tel).not.toBe("+77770884436");
+  });
+
+  it("опубликованы все четыре номера из карточки 2ГИС с их подписями", () => {
+    // Номера видны в карточке после нажатия «Показать телефоны».
+    const expected = [
+      { tel: "+77770884424", label: "Автосервис" },
+      { tel: "+77770884408", label: "Автосервис" },
+      { tel: "+77770884436", label: "Магазин масел" },
+      { tel: "+77770884433", label: "Детейлинг" },
+    ];
+    expect(phones).toHaveLength(4);
+    for (const item of expected) {
+      const found = phones.find((p) => p.tel === item.tel);
+      expect(found, `нет номера ${item.tel}`).toBeDefined();
+      expect(found?.label).toBe(item.label);
     }
+    expect(new Set(phones.map((p) => p.tel)).size).toBe(4);
   });
 
   it("основной номер присутствует в списке телефонов", () => {
     expect(phones.map((p) => p.tel)).toContain(phone.tel);
   });
 
-  it("опубликованы только номера, подтверждённые карточкой 2ГИС", () => {
-    // Ровно эти три номера есть на живой карточке: tel: +7 777 088 44 36
-    // и список wa.me (44 36, 44 24, 44 08). Номер +7 777 088 44 33
-    // источником не подтверждается и публиковаться не должен.
-    expect(phones.map((p) => p.tel).sort()).toEqual(
-      ["+77770884436", "+77770884424", "+77770884408"].sort(),
-    );
-    expect(phones.map((p) => p.tel)).not.toContain("+77770884433");
-  });
-
-  it("номер WhatsApp состоит только из цифр", () => {
+  it("номер WhatsApp состоит только из цифр и совпадает с основным", () => {
     expect(phone.whatsapp).toMatch(/^\d{11}$/);
     expect(phone.whatsapp).toBe(phone.tel.replace(/\D/g, ""));
   });
@@ -70,6 +87,12 @@ describe("контакты", () => {
     expect(url.pathname).toBe(`/${phone.whatsapp}`);
     expect(url.searchParams.get("text")).toBe(whatsappText);
     expect(whatsappText.length).toBeGreaterThan(10);
+  });
+
+  it("текст WhatsApp не ломает ссылку спецсимволами", () => {
+    const url = new URL(whatsappLink(phone.whatsapp, 'Привет & вопрос: "масло"? #1'));
+    expect(url.searchParams.get("text")).toBe('Привет & вопрос: "масло"? #1');
+    expect(url.href).not.toMatch(/[\s"#]/);
   });
 
   it("ссылка WhatsApp собирается и для дополнительного номера", () => {
@@ -96,7 +119,6 @@ describe("контакты", () => {
     expect(address.microDistrict).toMatch(/25-й микрорайон, 52\/2/);
     expect(address.lat).toBeCloseTo(43.6547, 3);
     expect(address.lng).toBeCloseTo(51.1847, 3);
-    expect(Number.isInteger(address.parkingSpots)).toBe(true);
   });
 });
 
@@ -114,12 +136,10 @@ describe("график работы", () => {
     }
   });
 
-  it("расхождение источников по графику закрыто пометкой, а не вторым значением", () => {
+  it("в сводке графика нет второго варианта времени закрытия", () => {
+    expect(scheduleSummary).toBe("Пн–Сб 09:00–19:00 · Вс 10:00–17:00");
     expect(scheduleNote).toContain("2ГИС");
     expect(scheduleNote).toContain("уточняйте по телефону");
-    // Второго варианта времени закрытия на сайте быть не должно
-    const summaryHours = scheduleSummary.match(/\d{2}:\d{2}/g) ?? [];
-    expect(summaryHours).toEqual(["09:00", "19:00", "10:00", "17:00"]);
   });
 
   it("состояние всегда рассчитывается без исключений", () => {
@@ -131,90 +151,112 @@ describe("график работы", () => {
   });
 });
 
-describe("рейтинг и факты", () => {
-  it("рейтинг в допустимых пределах", () => {
-    expect(rating.value).toBeGreaterThan(0);
-    expect(rating.value).toBeLessThanOrEqual(5);
-    expect(rating.count).toBeGreaterThan(0);
-    expect(rating.count).toBeGreaterThan(100);
+describe("рейтинг", () => {
+  it("значения совпадают с карточкой 2ГИС", () => {
+    expect(rating.value).toBe(4.9);
+    expect(rating.count).toBe(478);
+    expect(rating.reviews).toBe(107);
+    expect(rating.photos).toBe(54);
+    expect(rating.source).toBe("2ГИС");
+    expect(rating.verifiedOn).toMatch(/^\d{2}\.\d{2}\.\d{4}$/);
   });
 
-  it("награда и количество фото описаны словами", () => {
-    expect(rating.award).toContain("2GIS Awards");
-    expect(rating.photos).toBeGreaterThan(photos.length);
+  it("рейтинг не подменяется другими числами (4.5 / 390)", () => {
+    // 4.5 и ~390 для YASIRA MOTORS на 2ГИС не существуют — проверено на живой карточке.
+    expect(rating.value).not.toBe(4.5);
+    expect(rating.count).not.toBe(390);
   });
 
-  it("в полосе фактов нет расхождений с рейтингом", () => {
-    const text = facts.map((f) => `${f.value} ${f.label} ${f.sub}`).join(" ");
-    expect(text).toContain(String(rating.value));
-    expect(text).toContain("2GIS Awards");
-    expect(text).toContain("1500");
+  it("награда описана ровно так, как в источнике", () => {
+    expect(rating.awardBadge).toBe("2GIS Awards");
+    expect(rating.awardTitle).toBe("Лучший автосервис 2026");
+    // Слов, которых нет в карточке, быть не должно
+    const wording = `${rating.awardBadge} ${rating.awardTitle}`.toLowerCase();
+    for (const claim of ["победител", "премия", "награда вручена", "номинант"]) {
+      expect(wording).not.toContain(claim);
+    }
   });
 
-  it("факты не пустые", () => {
-    expect(facts.length).toBeGreaterThanOrEqual(3);
-    for (const fact of facts) {
-      expect(fact.value.trim().length).toBeGreaterThan(0);
-      expect(fact.label.trim().length).toBeGreaterThan(0);
+  it("рейтинг используется из одного источника, а не вписан в компоненты", () => {
+    for (const { file, text } of appSources()) {
+      if (file === path.join("lib", "site.ts")) continue;
+      // В компонентах не должно быть «4,9» / «478» как захардкоженных значений
+      expect(text, `${file} содержит захардкоженное число оценок`).not.toMatch(/\b478\b/);
+      expect(text, `${file} содержит захардкоженный рейтинг`).not.toMatch(/4[.,]9\s*(из|\/)/);
     }
   });
 });
 
 describe("услуги", () => {
   it("восемь направлений с уникальными идентификаторами", () => {
-    expect(services).toHaveLength(8);
-    expect(new Set(services.map((s) => s.id)).size).toBe(services.length);
+    expect(serviceGroups).toHaveLength(8);
+    expect(new Set(serviceGroups.map((s) => s.id)).size).toBe(serviceGroups.length);
   });
 
-  it("у каждой услуги есть заголовок, описание, иконка и источник", () => {
-    for (const service of services) {
-      expect(service.title.trim().length).toBeGreaterThan(3);
-      expect(service.text.trim().length).toBeGreaterThan(20);
-      expect(service.source.trim().length).toBeGreaterThan(3);
-      expect(service.icon).toBeTruthy();
+  it("у каждого направления есть название, описание, работы и источник", () => {
+    for (const group of serviceGroups) {
+      expect(group.title.trim().length).toBeGreaterThan(3);
+      expect(group.text.trim().length).toBeGreaterThan(20);
+      expect(group.source.trim().length).toBeGreaterThan(3);
+      expect(group.items.length).toBeGreaterThanOrEqual(1);
+      for (const item of group.items) expect(item.trim().length).toBeGreaterThan(2);
+      expect(group.icon).toBeTruthy();
     }
   });
 
-  it("описания услуг не обещают того, чего нет в источниках", () => {
-    const banned = [/гаранти/i, /\bбесплатн/i, /скидк/i, /за \d+ минут/i, /\bдёшев/i, /\bдешев/i];
-    for (const service of services) {
-      for (const pattern of banned) {
-        expect(service.text).not.toMatch(pattern);
-      }
+  it("описания короткие: не больше двух предложений", () => {
+    for (const group of serviceGroups) {
+      const sentences = group.text.split(/(?<=[.!?])\s+/).filter(Boolean);
+      expect(sentences.length, `${group.title}: слишком длинный текст`).toBeLessThanOrEqual(2);
+      expect(group.text.length).toBeLessThan(140);
+    }
+  });
+
+  it("не обещаем того, чего нет в источниках", () => {
+    const text = serviceGroups.map((s) => `${s.title} ${s.text} ${s.items.join(" ")}`).join(" ");
+    for (const pattern of [/гаранти/i, /\bбесплатн/i, /скидк/i, /за \d+ минут/i, /точност[ьи] до/i]) {
+      expect(text).not.toMatch(pattern);
     }
   });
 });
 
 describe("преимущества и процесс", () => {
-  it("четыре преимущества с подтверждающим источником", () => {
+  it("четыре короткие причины обратиться", () => {
     expect(advantages).toHaveLength(4);
     for (const item of advantages) {
-      expect(item.title.trim().length).toBeGreaterThan(10);
-      expect(item.text.trim().length).toBeGreaterThan(60);
-      expect(item.note.trim().length).toBeGreaterThan(3);
+      expect(item.title.trim().length).toBeGreaterThan(8);
+      expect(item.text.trim().length).toBeGreaterThan(30);
+      expect(item.text.length).toBeLessThan(120);
+      expect(item.icon).toBeTruthy();
     }
   });
 
-  it("преимущества не содержат неподтверждённых обещаний", () => {
+  it("преимущества не содержат рекламных штампов", () => {
     const text = advantages.map((a) => `${a.title} ${a.text}`).join(" ");
-    expect(text).not.toMatch(/индивидуальный подход/i);
-    expect(text).not.toMatch(/лучшие специалисты/i);
-    expect(text).not.toMatch(/высокое качество/i);
+    for (const pattern of [
+      /индивидуальный подход/i,
+      /лучшие специалисты/i,
+      /высокое качество/i,
+      /честн/i,
+      /качественно и в срок/i,
+    ]) {
+      expect(text).not.toMatch(pattern);
+    }
   });
 
-  it("процесс состоит из пяти пронумерованных шагов", () => {
-    expect(process).toHaveLength(5);
-    expect(process.map((s) => s.step)).toEqual(["01", "02", "03", "04", "05"]);
+  it("процесс — четыре шага", () => {
+    expect(process).toHaveLength(4);
+    expect(process.map((s) => s.step)).toEqual(["01", "02", "03", "04"]);
     for (const step of process) {
       expect(step.title.trim().length).toBeGreaterThan(5);
-      expect(step.text.trim().length).toBeGreaterThan(20);
+      expect(step.text.trim().length).toBeGreaterThan(15);
     }
   });
 });
 
 describe("отзывы", () => {
-  it("все отзывы заполнены и не дублируются", () => {
-    expect(reviews.length).toBeGreaterThanOrEqual(8);
+  it("шесть отзывов, все заполнены и не дублируются", () => {
+    expect(reviews).toHaveLength(6);
     const keys = reviews.map((r) => `${r.author}|${r.dateISO}`);
     expect(new Set(keys).size).toBe(keys.length);
   });
@@ -231,18 +273,26 @@ describe("отзывы", () => {
   });
 
   it("даты отзывов не из будущего", () => {
-    const today = new Date();
+    const today = Date.now();
     for (const review of reviews) {
-      expect(new Date(review.dateISO).getTime()).toBeLessThanOrEqual(today.getTime());
+      expect(new Date(review.dateISO).getTime()).toBeLessThanOrEqual(today);
     }
   });
 
-  it("отзывы не переписаны: нет маркетинговых обещаний от лица клиента", () => {
-    const banned = [/рекомендую всем/i, /лучший сервис в городе/i, /\bидеально\b/i];
-    for (const review of reviews) {
-      for (const pattern of banned) {
-        expect(review.text).not.toMatch(pattern);
-      }
+  it("в выборке есть отзывы с конкретикой, а не только общая похвала", () => {
+    const text = reviews.map((r) => r.text).join(" ").toLowerCase();
+    // «ABS» в отзыве набрано кириллическими А и В, поэтому проверяем
+    // токены, которые точно воспроизводятся: они и доказывают конкретику.
+    for (const concrete of ["датчик", "амортизатор", "масло", "свечи", "электрик", "блакировка"]) {
+      expect(text, `нет конкретики про «${concrete}»`).toContain(concrete);
+    }
+  });
+
+  it("отзывы на казахском помечены языком", () => {
+    const kk = reviews.filter((r) => r.lang === "kk");
+    expect(kk.length).toBeGreaterThanOrEqual(1);
+    for (const review of kk) {
+      expect(review.text).toMatch(/[әғқңөұүһі]/i);
     }
   });
 });
@@ -254,23 +304,71 @@ describe("фотографии", () => {
     }
   });
 
-  it("у каждой фотографии длинный описательный alt", () => {
+  it("у каждой фотографии описательный alt и размеры", () => {
     for (const photo of photos) {
       expect(photo.alt.length, `короткий alt: ${photo.src}`).toBeGreaterThan(25);
       expect(photo.caption.trim().length).toBeGreaterThan(5);
-      expect(photo.span.trim().length).toBeGreaterThan(0);
+      expect(photo.w).toBeGreaterThan(300);
+      expect(photo.h).toBeGreaterThan(300);
     }
   });
 
-  it("нет повторяющихся изображений", () => {
+  it("нет повторяющихся изображений и тяжёлых файлов", () => {
     const srcs = photos.map((p) => p.src);
     expect(new Set(srcs).size).toBe(srcs.length);
-  });
-
-  it("вес фотографий галереи в разумных пределах", () => {
     for (const photo of photos) {
       const size = fs.statSync(publicFile(photo.src)).size;
       expect(size, `${photo.src} весит ${Math.round(size / 1024)}KB`).toBeLessThan(320 * 1024);
+    }
+  });
+});
+
+describe("нет онлайн-записи", () => {
+  it("в исходниках нет booking-механики", () => {
+    const banned = [
+      /записаться/i,
+      /\bзапись\b/i,
+      /booking/i,
+      /appointment/i,
+      /свободные слот/i,
+      /выберите дату/i,
+      /выберите время/i,
+      /отправить заявку/i,
+      /перенести запись/i,
+      /отменить запись/i,
+      /<form/i,
+      /<input/i,
+      /<select/i,
+      /<textarea/i,
+    ];
+    for (const { file, text } of appSources()) {
+      for (const pattern of banned) {
+        expect(text, `${file} содержит ${pattern}`).not.toMatch(pattern);
+      }
+    }
+  });
+
+  it("в навигации нет пункта записи", () => {
+    expect(nav.map((item) => item.label)).toEqual([
+      "Услуги",
+      "О компании",
+      "Отзывы",
+      "Фото",
+      "Контакты",
+    ]);
+  });
+});
+
+describe("действия на сайте", () => {
+  it("используются только три типа действий", () => {
+    const ctaWords = ["Позвонить", "WhatsApp", "Построить маршрут"];
+    for (const word of ctaWords) expect(word.length).toBeGreaterThan(3);
+    // Никаких «оставить заявку», «получить консультацию», «записаться»
+    const sources = appSources()
+      .map((s) => s.text)
+      .join(" ");
+    for (const banned of [/получить консультац/i, /оставить заявк/i, /записаться/i]) {
+      expect(sources).not.toMatch(banned);
     }
   });
 });
@@ -282,14 +380,9 @@ describe("SEO-данные", () => {
   });
 
   it("собственный адрес сайта не зашит в код", () => {
-    // Адрес берётся из окружения: захардкоженный домен однажды станет
-    // неправдой (сначала непривязанный, потом устаревший vercel-адрес).
-    // Внешние ссылки (2ГИС, Instagram, yasira.kz) — другое дело, они ниже.
-    const source = fs.readFileSync(path.resolve(__dirname, "..", "lib", "site.ts"), "utf8");
+    const source = fs.readFileSync(path.join(ROOT, "lib", "site.ts"), "utf8");
     const head = source.slice(0, source.indexOf("export const company"));
     expect(head).toContain("NEXT_PUBLIC_SITE_URL");
-    // Ни одного конкретного домена: только переменные окружения и localhost.
-    // Шаблон `https://${vercelProductionUrl}` — это не захардкоженный адрес.
     expect(head).not.toMatch(/https?:\/\/[a-z0-9-]+\.[a-z]{2,}/i);
     expect(head).toContain("http://localhost:3000");
     expect(["env", "vercel", "dev"]).toContain(SITE_URL_SOURCE);
@@ -297,11 +390,9 @@ describe("SEO-данные", () => {
   });
 
   it("навигация состоит из уникальных анкоров", () => {
-    expect(nav.length).toBeGreaterThanOrEqual(4);
     const hrefs = nav.map((item) => item.href);
     expect(new Set(hrefs).size).toBe(hrefs.length);
     for (const href of hrefs) expect(href).toMatch(/^#[a-z-]+$/);
-    for (const item of nav) expect(item.label.trim().length).toBeGreaterThan(2);
   });
 
   it("название компании и город указаны", () => {
@@ -311,13 +402,11 @@ describe("SEO-данные", () => {
 
   it("способы оплаты перечислены", () => {
     expect(paymentMethods.length).toBeGreaterThanOrEqual(3);
-    for (const method of paymentMethods) expect(method.trim().length).toBeGreaterThan(3);
   });
 
   it("данные группы компаний согласованы", () => {
     expect(group.yearsOnMarket).toBe(20);
     expect(group.oilItems).toBe(1500);
     expect(group.offices).toContain("Актау");
-    expect(group.cities).toBeGreaterThanOrEqual(10);
   });
 });

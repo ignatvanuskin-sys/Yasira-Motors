@@ -1,5 +1,5 @@
 import { address, company, email, links, phone, schedule, SITE_URL } from "@/lib/site";
-import { services } from "@/lib/content";
+import { serviceGroups } from "@/lib/content";
 
 /** schedule[] идёт с понедельника — Schema.org требует английские имена дней. */
 const SCHEMA_DAYS = [
@@ -59,12 +59,12 @@ export function structuredData() {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Услуги автосервиса",
-      itemListElement: services.map((service) => ({
+      itemListElement: serviceGroups.map((group) => ({
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: service.title,
-          description: service.text,
+          name: group.title,
+          description: group.text,
         },
       })),
     },

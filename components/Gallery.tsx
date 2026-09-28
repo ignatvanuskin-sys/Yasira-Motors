@@ -81,8 +81,8 @@ export function Gallery() {
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <SectionHead
           eyebrow="Фото"
-          title="Как устроен сервис"
-          lead="Реальные снимки компании: ремонтный цех, стенд развал-схождения, магазин масел и работа мастеров. Стоковых изображений на сайте нет."
+          title="Реальный сервис YASIRA MOTORS"
+          lead="Снимки цеха, оборудования и работы мастеров. Стоковых изображений на сайте нет."
           className="md:max-w-2xl"
         />
         <a
@@ -91,7 +91,7 @@ export function Gallery() {
           rel="noopener noreferrer"
           className="shrink-0 text-[14.5px] font-bold text-brand-400 transition-colors hover:text-brand-500"
         >
-          Ещё {rating.photos - photos.length} фото в 2ГИС →
+          Смотреть больше фото в 2ГИС →
         </a>
       </div>
 
@@ -144,7 +144,10 @@ export function Gallery() {
           role="dialog"
           aria-modal="true"
           aria-label={current.caption}
-          className="overscroll-lock fixed inset-0 z-[70] flex h-dvh flex-col bg-night-950/96 p-4 pb-safe backdrop-blur-sm md:pb-8"
+          /* Без backdrop-blur: полноэкранное размытие — самая дорогая
+             операция отрисовки на слабом телефоне. Фон и так почти
+             непрозрачный, разница не видна, а кадры дешевле. */
+          className="overscroll-lock fixed inset-0 z-[70] flex h-dvh flex-col bg-night-950/97 p-4 pb-safe md:pb-8"
           onClick={close}
         >
           <div className="flex items-center justify-between gap-4">

@@ -7,15 +7,19 @@ import { Process } from "@/components/Process";
 import { Reviews } from "@/components/Reviews";
 import { Services } from "@/components/Services";
 
+/**
+ * Порядок секций — под сценарий «нашёл в 2ГИС → понял услуги → увидел сервис
+ * → прочитал отзывы → позвонил». Никаких лишних блоков.
+ */
 export default function HomePage() {
   return (
     <>
       <Hero />
       <Services />
       <Advantages />
-      <Reviews />
       <Process />
       <Gallery />
+      <Reviews />
       <Contacts />
       <FinalCta />
     </>

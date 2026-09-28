@@ -62,6 +62,8 @@ function loadHeaderRules(configPath) {
 function createStaticServer(root, options = {}) {
   const configPath = options.configPath || path.resolve(root, "..", "vercel.json");
   const rules = loadHeaderRules(configPath);
+  /** @type {Map<string, Buffer>} */
+  const gzipCache = new Map();
 
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, "http://127.0.0.1");
@@ -100,10 +102,16 @@ function createStaticServer(root, options = {}) {
 
     // Сжимаем текстовые ответы как на продакшене: иначе замеры
     // скорости и переданного объёма получаются нереалистичными.
+    // Результат кэшируем — иначе синхронный gzip на каждый запрос сам
+    // становится источником задержек и портит замеры TBT в браузере.
     if (compressible && acceptsGzip) {
-      const body = fs.readFileSync(filePath);
+      let gzipped = gzipCache.get(filePath);
+      if (!gzipped) {
+        gzipped = zlib.gzipSync(fs.readFileSync(filePath), { level: 6 });
+        gzipCache.set(filePath, gzipped);
+      }
       res.writeHead(200, { "content-type": type, "content-encoding": "gzip", vary: "Accept-Encoding" });
-      res.end(zlib.gzipSync(body, { level: 9 }));
+      res.end(gzipped);
       return;
     }
 

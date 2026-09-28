@@ -47,7 +47,7 @@ export function Reviews() {
         <SectionHead
           eyebrow="Отзывы"
           title="Что говорят клиенты"
-          lead="Отзывы перенесены из карточки компании в 2ГИС без изменений — с автором, датой и пометкой 2ГИС о подтверждённом посещении."
+          lead="Отзывы из карточки компании в 2ГИС — без изменений, с автором и датой. Источник: 2ГИС."
           className="md:max-w-2xl"
         />
 
@@ -60,7 +60,9 @@ export function Reviews() {
               <span className="text-[15px] font-bold text-fog-400">из 5</span>
             </div>
             <Stars value={5} className="mt-2 h-[15px] w-[15px]" />
-            <p className="mt-2 text-[13px] text-fog-400">{rating.count} оценок в 2ГИС</p>
+            <p className="mt-2 text-[13px] text-fog-400">
+              {rating.count} оценок в {rating.source}
+            </p>
           </div>
 
           <div className="hidden gap-2 sm:flex">
@@ -123,7 +125,7 @@ export function Reviews() {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-[14.5px] font-bold text-brand-400 transition-colors hover:text-brand-500"
         >
-          Все отзывы в 2ГИС
+          Смотреть все отзывы в 2ГИС
           <ExternalLink className="h-4 w-4" aria-hidden="true" />
         </a>
         <p className="text-[13px] text-fog-500">

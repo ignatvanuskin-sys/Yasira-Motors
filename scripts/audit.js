@@ -133,7 +133,11 @@ async function main() {
         }
       }
 
-      for (const url of ["/", "/404.html", "/robots.txt", "/sitemap.xml", "/manifest.webmanifest", "/og.jpg"]) {
+      // out/404.html отдаётся напрямую только локальным сервером:
+      // на Vercel этот файл используется как документ для 404, а не по своему пути.
+      const urls = ["/", "/robots.txt", "/sitemap.xml", "/manifest.webmanifest", "/og.jpg"];
+      if (!EXTERNAL) urls.push("/404.html");
+      for (const url of urls) {
         const res = await fetch(`${base}${url}`, { method: "GET" });
         if (!res.ok) record("error", "http-status", `${url} вернул ${res.status}`);
       }
@@ -141,6 +145,14 @@ async function main() {
       const notFound = await fetch(`${base}/etoy-stranicy-tochno-net`);
       if (notFound.status !== 404) {
         record("error", "404-status", `несуществующий путь вернул ${notFound.status}, ожидался 404`);
+      } else {
+        const body = await notFound.text();
+        if (!/Такой страницы нет/.test(body)) {
+          record("error", "404-branded", "404 отдаётся без брендированной страницы");
+        }
+        if (!/noindex/i.test(body)) {
+          record("warning", "404-noindex", "у страницы 404 нет noindex");
+        }
       }
 
       const ogBuffer = Buffer.from(await (await fetch(`${base}/og.jpg`)).arrayBuffer());
@@ -217,17 +229,21 @@ async function main() {
       if (!/Sitemap:\s*https?:\/\//i.test(robots)) record("error", "robots-sitemap", "в robots.txt нет Sitemap");
       const sitemap = await fetchText(`${base}/sitemap.xml`);
       if (!/<urlset/.test(sitemap) || !/<loc>/.test(sitemap)) record("error", "sitemap", "sitemap.xml невалиден");
-      const canonicalHost = (match(html, /<link rel="canonical" href="(https?:\/\/[^"]+)"/) || "").replace(
-        /^https?:\/\//,
-        "",
-      );
+      const hostOf = (value) => (value || "").replace(/^https?:\/\//, "").replace(/\/+$/, "");
+      const canonicalBase = match(html, /<link rel="canonical" href="(https?:\/\/[^"]+)"/);
+      const canonicalHost = hostOf(canonicalBase);
+
       if (canonicalHost) {
-        const sitemapHost = (match(sitemap, /<loc>(https?:\/\/[^<]+)<\/loc>/) || "").replace(/^https?:\/\//, "");
-        if (sitemapHost && !sitemapHost.startsWith(canonicalHost)) {
+        const sitemapHost = hostOf(match(sitemap, /<loc>(https?:\/\/[^<]+)<\/loc>/));
+        if (sitemapHost && sitemapHost !== canonicalHost) {
           record("warning", "host-mismatch", `canonical ${canonicalHost} и sitemap ${sitemapHost} расходятся`);
         }
-        if (EXTERNAL && !EXTERNAL.includes(canonicalHost)) {
-          record("warning", "canonical-host", `canonical указывает на ${canonicalHost}, а сайт открыт на ${EXTERNAL}`);
+        if (EXTERNAL && hostOf(EXTERNAL) !== canonicalHost) {
+          record(
+            "warning",
+            "canonical-host",
+            `canonical указывает на ${canonicalHost}, а сайт открыт на ${hostOf(EXTERNAL)}`,
+          );
         }
       }
     });

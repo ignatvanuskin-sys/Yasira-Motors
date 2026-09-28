@@ -115,7 +115,21 @@ export const links = {
   groupSite: "https://yasira.kz/",
 } as const;
 
-export const whatsappText = "Здравствуйте! Пишу с сайта YASIRA MOTORS.";
+/**
+ * Строка про автомобиль — единственное, что человеку нужно дописать самому.
+ *
+ * Идёт последней: WhatsApp ставит курсор в конец подставленного текста,
+ * поэтому марку печатают сразу, не целясь в поле. Спрашивают её всё равно
+ * первым же ответным сообщением, а от модели зависят и наличие фильтров,
+ * и объём работ — пусть будет известно сразу.
+ */
+const AUTO_LINE = "Авто (марка, модель, год):";
+
+/** Приглашение к разговору и строка, которую клиент дописывает сам. */
+export const whatsappText = `Здравствуйте! Пишу с сайта YASIRA MOTORS.\n\n${AUTO_LINE} `;
+
+/** Тот же хвост про автомобиль для сообщений с уточнением — например, с симптомом. */
+export const withAutoLine = (intro: string) => `${intro.trim()}\n\n${AUTO_LINE} `;
 
 export const whatsappLink = (number: string = phone.whatsapp, text = whatsappText) =>
   `https://wa.me/${number}?text=${encodeURIComponent(text)}`;

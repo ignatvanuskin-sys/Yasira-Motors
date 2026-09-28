@@ -24,6 +24,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { withAutoLine } from "@/lib/site";
+
 /* ---------------------------------- Услуги --------------------------------- */
 
 export type ServiceGroup = {
@@ -146,7 +148,9 @@ export const advantages: Advantage[] = [
 export type Symptom = { label: string; text: string };
 
 const symptomText = (topic: string, action: string) =>
-  `Здравствуйте! Пишу с сайта YASIRA MOTORS. ${topic} ${action} Подскажите, что делать и когда можно подъехать.`;
+  withAutoLine(
+    `Здравствуйте! Пишу с сайта YASIRA MOTORS. ${topic} ${action} Подскажите, что делать и когда можно подъехать.`,
+  );
 
 export const symptoms: Symptom[] = [
   {

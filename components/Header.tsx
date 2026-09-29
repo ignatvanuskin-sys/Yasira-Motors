@@ -99,6 +99,23 @@ export function Header() {
     return () => observer.disconnect();
   }, []);
 
+  /*
+    У нижней границы страницы наблюдатель молчит: последняя секция уже не
+    попадает в зону чтения, и подсветка пропадала — «Контакты» читались как
+    недоступный пункт. Поэтому у самого низа подсвечиваем последний пункт.
+  */
+  useEffect(() => {
+    const onScroll = () => {
+      const doc = document.documentElement;
+      if (window.scrollY + window.innerHeight < doc.scrollHeight - 4) return;
+      const last = nav[nav.length - 1];
+      if (last) setActiveId(last.href.replace(/^\/?#/, ""));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();

@@ -75,7 +75,16 @@ export function Logo({
         <span className="font-wordmark text-[19px] leading-none font-bold text-brand-500">
           YASIRA
         </span>
-        <span className={`text-[12px] leading-none font-bold tracking-[0.22em] ${motorsTone}`}>
+        {/*
+          На самых узких экранах второе слово уходит: вместе с кнопками звонка
+          и меню логотип не влезал в 320px, и правый край шапки уезжал за экран,
+          утягивая за собой горизонтальную прокрутку всей страницы. Название
+          компании целиком остаётся в sr-only, поэтому для скринридера ничего
+          не меняется.
+        */}
+        <span
+          className={`text-[12px] leading-none font-bold tracking-[0.22em] max-[379px]:hidden ${motorsTone}`}
+        >
           MOTORS
         </span>
       </span>

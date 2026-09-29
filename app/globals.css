@@ -555,10 +555,45 @@
   animation-play-state: paused;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+/*
+  Меню на телефоне появляется и уходит плавно. Раньше блок просто включался
+  и выключался атрибутом hidden, то есть рывком. Анимируются только opacity
+  и transform: они не пересчитывают вёрстку, поэтому кадры не дёргаются.
+  Полное скрытие остаётся за hidden — его выставляет компонент после анимации.
+*/
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
   }
+}
+
+@keyframes menu-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+.menu-panel[data-state="open"] {
+  animation: menu-in 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.menu-panel[data-state="closing"] {
+  animation: menu-out 160ms ease-in both;
+}
+
+/*
+  Прокрутка к разделам и появление меню остаются плавными и при этой настройке:
+  владелец сайта просил, чтобы на телефоне переход по меню двигался, а не
+  прыгал. Это осознанное исключение — остальная декоративная анимация ниже
+  по-прежнему выключается.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel[data-state] {
+    animation-duration: 200ms !important;
+  }
+
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;

@@ -1,15 +1,75 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Menu, Phone, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { WhatsAppIcon } from "@/components/icons";
 import { nav, phone, scheduleSummary, whatsappLink } from "@/lib/site";
 
+/** Совпадает с menu-out в globals.css: столько меню уезжает перед hidden. */
+const MENU_CLOSE_MS = 160;
+
+/**
+ * Единственный источник offsets для прокрутки задан в CSS (scroll-padding-top),
+ * поэтому переход делается через scrollIntoView, а не через расчёт вручную.
+ */
 export function Header() {
   const [open, setOpen] = useState(false);
+  /** Идёт закрытие: меню ещё в DOM, но уже уезжает — иначе анимации не будет. */
+  const [closing, setClosing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeTimer = useRef<number | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimer.current === null) return;
+    window.clearTimeout(closeTimer.current);
+    closeTimer.current = null;
+    setClosing(false);
+  };
+
+  const openMenu = () => {
+    cancelClose();
+    setOpen(true);
+  };
+
+  const closeMenu = () => {
+    if (!open || closing) return;
+    setClosing(true);
+    closeTimer.current = window.setTimeout(() => {
+      closeTimer.current = null;
+      setClosing(false);
+      setOpen(false);
+    }, MENU_CLOSE_MS);
+  };
+
+  /**
+   * Плавный переход к разделу по анкору.
+   *
+   * Обычный переход по ссылке даёт рывок: пока меню открыто, скролл страницы
+   * заблокирован (body overflow hidden), и браузер отрабатывает переход раньше,
+   * чем блокировка снимется. Поэтому сначала снимаем блокировку синхронно,
+   * закрываем меню, и только потом прокручиваем.
+   */
+  const goToAnchor = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    const target = document.getElementById(href.replace(/^\/?#/, ""));
+    closeMenu();
+    // На странице 404 цели нет — пусть работает обычный переход на главную
+    if (!target) return;
+    event.preventDefault();
+    document.body.style.overflow = "";
+    window.requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    window.history.pushState(null, "", href);
+  };
+
+  useEffect(
+    () => () => {
+      if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -29,7 +89,7 @@ export function Header() {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      setOpen(false);
+      closeMenu();
       // Фокус возвращаем на кнопку, которая открыла меню
       triggerRef.current?.focus();
     };
@@ -58,6 +118,7 @@ export function Header() {
               <li key={item.href}>
                 <a
                   href={`/${item.href}`}
+                  onClick={(event) => goToAnchor(event, item.href)}
                   className="inline-flex h-10 items-center rounded-ctl px-3.5 text-[14.5px] font-semibold text-fog-300 transition-colors hover:bg-night-800 hover:text-fog-100"
                 >
                   {item.label}
@@ -97,7 +158,7 @@ export function Header() {
           <button
             ref={triggerRef}
             type="button"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => (open ? closeMenu() : openMenu())}
             className="inline-flex h-11 w-11 items-center justify-center rounded-ctl border border-line bg-night-850 text-fog-100 lg:hidden"
             aria-label={open ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={open}
@@ -109,10 +170,16 @@ export function Header() {
       </div>
 
       {/* Мобильное меню */}
+      {/*
+        Панель вынесена из потока шапки: пока она была в потоке, её высота
+        растягивала саму шапку вместе с её фоном. Теперь это выпадающая
+        панель под шапкой, которая умеет появляться и уезжать.
+      */}
       <div
         id="mobile-menu"
         hidden={!open}
-        className="overscroll-lock shell border-t border-line bg-night-950/98 pb-6 lg:hidden"
+        data-state={closing ? "closing" : "open"}
+        className="menu-panel overscroll-lock shell absolute inset-x-0 top-full max-h-[calc(100svh-62px)] overflow-y-auto bg-night-950/98 pb-6 lg:hidden"
       >
         <nav aria-label="Разделы страницы (мобильное меню)">
           <ul className="flex flex-col py-2">
@@ -120,7 +187,7 @@ export function Header() {
               <li key={item.href}>
                 <a
                   href={`/${item.href}`}
-                  onClick={() => setOpen(false)}
+                  onClick={(event) => goToAnchor(event, item.href)}
                   className="flex min-h-[52px] items-center border-b border-line-soft text-[17px] font-semibold text-fog-100"
                 >
                   {item.label}

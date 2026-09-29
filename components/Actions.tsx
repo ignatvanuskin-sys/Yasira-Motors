@@ -27,7 +27,13 @@ export function CallButton({
       data-track-source={source}
     >
       <Phone className="h-[18px] w-[18px] shrink-0" strokeWidth={2.4} aria-hidden="true" />
-      <span className="whitespace-nowrap">{label ?? "Позвонить"}</span>
+      {/*
+        Перенос разрешён: подпись вида «Позвонить +7 777 088 44 24» в одну
+        строку шире узкого экрана, и запрет переноса выдавливал содержимое
+        секции за пределы страницы. На широких экранах места хватает, и текст
+        по-прежнему идёт одной строкой.
+      */}
+      <span className="text-center">{label ?? "Позвонить"}</span>
     </a>
   );
 }

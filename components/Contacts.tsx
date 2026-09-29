@@ -24,7 +24,9 @@ export function Contacts() {
         lead="Автосервис и магазин масел — по одному адресу в 25-м микрорайоне Актау."
       />
 
-      <div className="mt-10 grid gap-4 lg:grid-cols-[1fr_1.05fr]">
+      {/* min-w-0 у колонок: иначе сетка растягивается по самому широкому
+          содержимому и выдавливает страницу вбок на узких экранах */}
+      <div className="mt-10 grid gap-4 [&>*]:min-w-0 lg:grid-cols-[1fr_1.05fr]">
         <div className="lg:col-start-1 lg:row-start-1">
           <div className="card-surface h-full p-5 md:p-6">
             <h3 className="flex items-center gap-2.5 text-[16px] font-bold text-fog-100">
@@ -37,7 +39,7 @@ export function Contacts() {
             <p className="mt-1 text-[14.5px] text-fog-400">Актау, {address.floor}</p>
 
             {/* Быстрые действия — сразу под адресом, выше всего второстепенного */}
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <div className="mt-5 grid gap-3 [&>*]:min-w-0 sm:grid-cols-2">
               <CallButton size="lg" label={`Позвонить ${phone.display}`} source="contacts" />
               <WhatsAppButton size="lg" label="WhatsApp" source="contacts" />
               <a

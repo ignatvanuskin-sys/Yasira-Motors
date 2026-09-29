@@ -634,6 +634,27 @@ describe("аналитика и шляпка", () => {
     expect(entry?.headers[0].value).toContain("immutable");
   });
 
+  it("каждый пункт меню ведёт в существующую секцию", () => {
+    // Пункт без цели на странице — это битая ссылка, а не «просто не активно»
+    const dir = path.join(ROOT, "components");
+    const sources = [
+      path.join(ROOT, "app", "page.tsx"),
+      ...fs
+        .readdirSync(dir)
+        .filter((name) => name.endsWith(".tsx"))
+        .map((name) => path.join(dir, name)),
+    ].map((file) => fs.readFileSync(file, "utf8"));
+
+    const ids = new Set<string>();
+    for (const source of sources) {
+      for (const match of source.matchAll(/id="([a-z-]+)"/g)) ids.add(match[1]);
+    }
+
+    for (const item of nav) {
+      expect(ids.has(item.href.replace(/^#/, "")), item.href).toBe(true);
+    }
+  });
+
   it("активный раздел подсвечивается в навигации", () => {
     const header = readSource("components/Header.tsx");
     expect(header).toContain("aria-current");

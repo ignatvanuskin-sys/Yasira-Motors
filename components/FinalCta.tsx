@@ -50,8 +50,8 @@ export function FinalCta() {
                 </a>
 
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                  <CallButton size="lg" label="Позвонить" />
-                  <WhatsAppButton size="lg" label="Написать в WhatsApp" />
+                  <CallButton size="lg" label="Позвонить" source="final" />
+                  <WhatsAppButton size="lg" label="Написать в WhatsApp" source="final" />
                 </div>
 
                 <p className="mt-5">

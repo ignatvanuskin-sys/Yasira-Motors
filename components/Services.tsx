@@ -44,6 +44,9 @@ export function Services() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Написать в WhatsApp про «${group.title}»`}
+                data-track="service_card_click"
+                data-track-source="services"
+                data-track-topic={group.title}
                 className="group flex min-h-[48px] items-center gap-4 py-6 md:gap-8 md:py-7"
               >
                 <span className="min-w-0 flex-1">

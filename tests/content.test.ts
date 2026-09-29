@@ -592,6 +592,55 @@ describe("правки по аудиту", () => {
   });
 });
 
+describe("аналитика и шляпка", () => {
+  it("без идентификаторов счётчики не подключаются вообще", () => {
+    const source = readSource("lib/analytics.ts");
+    expect(source).toContain("NEXT_PUBLIC_YM_ID");
+    expect(source).toContain("NEXT_PUBLIC_GA_ID");
+    // Обёртка выходит сразу: ни скрипта, ни запроса
+    expect(source).toMatch(/!hasAnalytics\) return;/);
+    expect(readSource("components/Analytics.tsx")).toMatch(/if \(!hasAnalytics\) return;/);
+  });
+
+  it("события размечены атрибутами рядом с элементами, а не селекторами", () => {
+    for (const file of [
+      "components/SymptomChips.tsx",
+      "components/Services.tsx",
+      "components/MobileBar.tsx",
+      "components/MapPanel.tsx",
+      "components/CopyPhone.tsx",
+    ]) {
+      expect(readSource(file), file).toContain("data-track");
+    }
+    // Источник клика передаёт сам компонент, а не угадывает скрипт
+    expect(readSource("components/Actions.tsx")).toContain("data-track-source");
+  });
+
+  it("CSP разрешает счётчики, но не открывает script-src на весь https", () => {
+    const config = JSON.parse(readSource("vercel.json"));
+    const csp = config.headers[0].headers.find(
+      (h: { key: string }) => h.key === "Content-Security-Policy",
+    ).value as string;
+    expect(csp).toContain("https://mc.yandex.ru");
+    expect(csp).toContain("https://www.googletagmanager.com");
+    expect(csp).not.toContain("script-src https:");
+  });
+
+  it("статичные ассеты отдаются с долгим кешем", () => {
+    const config = JSON.parse(readSource("vercel.json"));
+    const entry = config.headers.find(
+      (h: { source: string }) => h.source === "/_next/static/(.*)",
+    );
+    expect(entry?.headers[0].value).toContain("immutable");
+  });
+
+  it("активный раздел подсвечивается в навигации", () => {
+    const header = readSource("components/Header.tsx");
+    expect(header).toContain("aria-current");
+    expect(header).toContain("IntersectionObserver");
+  });
+});
+
 describe("частые вопросы", () => {
   it("шесть-восемь вопросов, ответы только из подтверждённых данных", () => {
     expect(faq.length).toBeGreaterThanOrEqual(6);

@@ -80,8 +80,8 @@ export function Hero() {
         </p>
 
         <div className="mt-5 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
-          <CallButton size="lg" label={`Позвонить ${phone.display}`} />
-          <WhatsAppButton size="lg" />
+          <CallButton size="lg" label={`Позвонить ${phone.display}`} source="hero" />
+          <WhatsAppButton size="lg" source="hero" />
         </div>
 
         {/* Строка доверия без рамок: рейтинг и график, разделённые волоском */}

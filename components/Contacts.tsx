@@ -1,5 +1,6 @@
 import { Clock, Mail, MapPin, Navigation } from "lucide-react";
 import { CallButton, WhatsAppButton } from "@/components/Actions";
+import { CopyPhone } from "@/components/CopyPhone";
 import { MapPanel } from "@/components/MapPanel";
 import { OpenStatus } from "@/components/OpenStatus";
 import { Section, SectionHead } from "@/components/Section";
@@ -37,8 +38,8 @@ export function Contacts() {
 
             {/* Быстрые действия — сразу под адресом, выше всего второстепенного */}
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <CallButton size="lg" label={`Позвонить ${phone.display}`} />
-              <WhatsAppButton size="lg" label="WhatsApp" />
+              <CallButton size="lg" label={`Позвонить ${phone.display}`} source="contacts" />
+              <WhatsAppButton size="lg" label="WhatsApp" source="contacts" />
               <a
                 href={links.twogisRoute}
                 target="_blank"
@@ -50,6 +51,8 @@ export function Contacts() {
                 <Navigation className="h-[18px] w-[18px] text-brand-400" aria-hidden="true" />
                 Построить маршрут
               </a>
+              {/* С компьютера звонок не сделать — номер нужен текстом */}
+              <CopyPhone className="hidden sm:col-span-2 md:inline-flex" />
             </div>
 
             <div className="mt-5 border-t border-line-soft pt-4">

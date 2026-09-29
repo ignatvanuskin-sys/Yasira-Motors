@@ -33,6 +33,9 @@ export function SymptomChips() {
                     href={whatsappLink(phone.whatsapp, symptom.text)}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-track="symptom_select"
+                    data-track-source="symptoms"
+                    data-track-topic={symptom.label}
                     className="flex h-full min-h-[48px] w-full items-center gap-2 rounded-chip border border-line bg-night-800 px-3.5 py-2 text-[13.5px] font-medium text-fog-200 transition-colors hover:border-brand-500 hover:bg-night-750 hover:text-fog-100 sm:inline-flex sm:w-auto"
                   >
                     <WhatsAppIcon className="h-3.5 w-3.5 shrink-0 text-brand-400" />
@@ -44,8 +47,8 @@ export function SymptomChips() {
           </div>
 
           <div className="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col">
-            <CallButton label={`Позвонить ${phone.display}`} />
-            <WhatsAppButton />
+            <CallButton label={`Позвонить ${phone.display}`} source="symptoms" />
+            <WhatsAppButton source="symptoms" />
           </div>
         </div>
       </div>

@@ -18,6 +18,8 @@ export function Header() {
   /** Идёт закрытие: меню ещё в DOM, но уже уезжает — иначе анимации не будет. */
   const [closing, setClosing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  /** Раздел, который читают прямо сейчас: подсвечивается в навигации. */
+  const [activeId, setActiveId] = useState("");
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeTimer = useRef<number | null>(null);
 
@@ -71,6 +73,32 @@ export function Header() {
     [],
   );
 
+  /*
+    Подсветка активного раздела. Активной считаем ту секцию, что ближе всего
+    к верху экрана: у страницы нет «текущего» раздела в смысле истории, есть
+    только тот, который человек читает прямо сейчас.
+  */
+  useEffect(() => {
+    const ids = nav.map((item) => item.href.replace(/^\/?#/, "")).filter(Boolean);
+    const nodes = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    if (!nodes.length || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const top = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (top) setActiveId(top.target.id);
+      },
+      { rootMargin: "-84px 0px -55% 0px" },
+    );
+
+    for (const node of nodes) observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
@@ -119,7 +147,14 @@ export function Header() {
                 <a
                   href={`/${item.href}`}
                   onClick={(event) => goToAnchor(event, item.href)}
-                  className="inline-flex h-10 items-center rounded-ctl px-3.5 text-[14.5px] font-semibold text-fog-300 transition-colors hover:bg-night-800 hover:text-fog-100"
+                  aria-current={
+                    activeId === item.href.replace(/^\/?#/, "") ? "true" : undefined
+                  }
+                  className={`inline-flex h-10 items-center rounded-ctl px-3.5 text-[14.5px] font-semibold transition-colors ${
+                    activeId === item.href.replace(/^\/?#/, "")
+                      ? "bg-night-800 text-fog-100"
+                      : "text-fog-300 hover:bg-night-800 hover:text-fog-100"
+                  }`}
                 >
                   {item.label}
                 </a>
@@ -131,6 +166,8 @@ export function Header() {
         <div className="flex items-center gap-2">
           <a
             href={`tel:${phone.tel}`}
+            data-track="call_click"
+            data-track-source="header"
             className="hidden h-11 items-center gap-2 rounded-ctl border border-line bg-night-850 pr-4 pl-3 text-[14.5px] font-semibold text-fog-100 transition-colors hover:border-brand-500 md:inline-flex"
           >
             <Phone className="h-4 w-4 text-brand-400" strokeWidth={2.4} aria-hidden="true" />
@@ -143,6 +180,8 @@ export function Header() {
             rel="noopener noreferrer"
             className="hidden h-11 w-11 items-center justify-center rounded-ctl border border-line bg-night-850 text-fog-200 transition-colors hover:border-brand-500 hover:text-fog-100 md:inline-flex"
             aria-label="Написать в WhatsApp"
+            data-track="whatsapp_click"
+            data-track-source="header"
           >
             <WhatsAppIcon className="h-[18px] w-[18px]" />
           </a>
@@ -151,6 +190,8 @@ export function Header() {
             href={`tel:${phone.tel}`}
             className="inline-flex h-11 w-11 items-center justify-center rounded-ctl bg-brand-500 text-white md:hidden"
             aria-label={`Позвонить ${phone.display}`}
+            data-track="call_click"
+            data-track-source="header"
           >
             <Phone className="h-[19px] w-[19px]" strokeWidth={2.4} aria-hidden="true" />
           </a>

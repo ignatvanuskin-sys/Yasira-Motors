@@ -4,12 +4,16 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { MobileBar } from "@/components/MobileBar";
 import { RevealScript } from "@/components/RevealScript";
-import { company, SITE_URL } from "@/lib/site";
+import { company, phone, rating, SITE_URL } from "@/lib/site";
 import { structuredData } from "@/lib/seo";
 import "./globals.css";
 
-const description =
-  "Автосервис в Актау: диагностика, ТО и замена масла, ремонт двигателя, АКПП, МКПП, ходовой и развал-схождение. 25-й микрорайон, 52/2. ★ 4,9 в 2ГИС. Тел. +7 777 088 44 36";
+/*
+  Описание собирается из конфига, а не набирается руками. Раньше здесь стоял
+  номер магазина масел (+7 777 088 44 36): сниппет поисковика и превью ссылки
+  расходились с телефоном на странице. Теперь такое расхождение невозможно.
+*/
+const description = `Автосервис в Актау: диагностика, ТО и замена масла, ремонт двигателя, АКПП, МКПП, ходовой и развал-схождение. 25-й микрорайон, 52/2. ★ ${rating.value.toString().replace(".", ",")} в 2ГИС. Тел. ${phone.display}`;
 
 /** Предпросмотрные деплои Vercel не должны попадать в индекс поисковиков. */
 const isPreview = process.env.VERCEL_ENV === "preview";

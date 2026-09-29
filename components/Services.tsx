@@ -5,31 +5,29 @@ import { Section, SectionHead } from "@/components/Section";
 import { SymptomChips } from "@/components/SymptomChips";
 import { RubricMarquee } from "@/components/fx/RubricMarquee";
 import { serviceGroups } from "@/lib/content";
-import { links, phone, whatsappLink, whatsappServiceText } from "@/lib/site";
+import { phone, whatsappLink, whatsappServiceText } from "@/lib/site";
 
 /**
- * Услуги — нумерованный список, а не стена карточек: восемь направлений
- * читаются как оглавление.
+ * Услуги — список направлений, а не стена карточек: восемь строк читаются
+ * как оглавление. Номеров у строк нет: «01–08» подразумевала порядок, которого
+ * у списка нет, а подпись «Уточнить стоимость» повторялась восемь раз и
+ * ничего не уточняла.
  *
  * У строки два действия, и выбрать можно осознанно: сама строка ведёт на
  * звонок, рядом кнопка WhatsApp с уже подставленным названием услуги.
- * Раньше вариант был один — позвонить, хотя часть людей предпочитает
- * написать: так можно отправить сообщение, не отрываясь от работы.
  *
  * Две ссылки стоят рядом, а не одна внутри другой: вложенные ссылки ломают
  * и разметку, и озвучку скринридером.
  *
- * Формы записи нет: цена уточняется в разговоре, потому что прайс-лист
- * компания не публикует.
+ * Формы записи нет: время визита согласуют по телефону или в WhatsApp.
  */
 export function Services() {
   return (
     <Section id="services" bordered tone="alt">
       <SectionHead
-        index="01"
         eyebrow="Услуги"
         title="Что делаем"
-        lead="Направления, которые компания заявила в 2ГИС. Прайс-лист не публикуется: стоимость зависит от автомобиля и объёма работ."
+        lead="Диагностика, обслуживание и ремонт легковых автомобилей. Точную стоимость называем после диагностики — до начала работ."
       />
 
       <ul className="mt-10 border-y border-line">
@@ -39,12 +37,9 @@ export function Services() {
               <div className="flex items-center gap-2 py-6 md:gap-3 md:py-7">
                 <a
                   href={`tel:${phone.tel}`}
+                  aria-label={`Позвонить в YASIRA MOTORS по услуге «${group.title}»`}
                   className="group flex min-w-0 flex-1 items-center gap-4 md:gap-8"
                 >
-                  <span className="label w-7 shrink-0 text-fog-500 transition-colors group-hover:text-brand-400">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-
                   <span className="min-w-0 flex-1">
                     <span className="display block text-[clamp(1.05rem,3.6vw,1.55rem)] text-fog-100">
                       {group.title}
@@ -64,10 +59,6 @@ export function Services() {
                     </span>
                   </span>
 
-                  <span className="hidden shrink-0 text-[13.5px] font-semibold text-fog-500 transition-colors group-hover:text-brand-400 lg:block">
-                    Уточнить стоимость
-                  </span>
-
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ctl border border-line transition-colors group-hover:border-brand-500 group-hover:bg-brand-500">
                     <Phone
                       className="h-4 w-4 text-fog-300 transition-colors group-hover:text-white"
@@ -81,7 +72,7 @@ export function Services() {
                   href={whatsappLink(phone.whatsapp, whatsappServiceText(group.title))}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`Написать в WhatsApp по услуге «${group.title}»`}
+                  aria-label={`Написать в WhatsApp про «${group.title}»`}
                   className="group flex h-11 w-11 shrink-0 items-center justify-center rounded-ctl border border-line transition-colors hover:border-brand-500 hover:bg-brand-500"
                 >
                   <WhatsAppIcon className="h-4 w-4 text-fog-300 transition-colors group-hover:text-white" />
@@ -100,17 +91,7 @@ export function Services() {
       <RubricMarquee />
 
       <p className="mt-6 text-[13px] text-fog-500">
-        На территории также работают автомойка, детейлинг и кафе для клиентов — по отзывам
-        клиентов в{" "}
-        <a
-          href={links.twogis}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-fog-400 underline decoration-night-700 underline-offset-2 hover:text-fog-200"
-        >
-          2ГИС
-        </a>
-        .
+        На территории также работают автомойка, детейлинг и кафе для клиентов.
       </p>
     </Section>
   );

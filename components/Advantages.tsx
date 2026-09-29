@@ -25,7 +25,6 @@ export function Advantages() {
   return (
     <Section id="why">
       <SectionHead
-        index="02"
         eyebrow="Почему YASIRA MOTORS"
         title="Четыре причины обратиться"
         lead="Коротко о том, что важно владельцу машины."
@@ -67,8 +66,8 @@ export function Advantages() {
             {rating.awardBadge} · {rating.awardTitle}
           </p>
           <p className="mt-1.5 text-[14px] text-fog-400">
-            Бейдж на карточке компании в 2ГИС. Рейтинг {rating.value.toString().replace(".", ",")} —{" "}
-            {rating.count} оценок, сверено {rating.verifiedOn}.
+            Отметка в карточке компании в 2ГИС. Рейтинг {rating.value.toString().replace(".", ",")} —{" "}
+            {rating.count} оценок.
           </p>
         </div>
         <a

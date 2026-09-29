@@ -15,7 +15,6 @@ export function Process() {
   return (
     <Section id="process" tone="alt">
       <SectionHead
-        index="03"
         eyebrow="Как мы работаем"
         title="Четыре шага"
         lead="Сначала диагностика, затем согласование: объём работ и стоимость вы узнаете до начала ремонта. Начать достаточно звонком или сообщением."

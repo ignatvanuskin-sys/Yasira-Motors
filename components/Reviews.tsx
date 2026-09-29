@@ -45,10 +45,9 @@ export function Reviews() {
     <Section id="reviews" tone="alt">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <SectionHead
-          index="05"
           eyebrow="Отзывы"
           title="Что говорят клиенты"
-          lead="Отзывы из карточки компании в 2ГИС — без изменений, с автором и датой. Источник: 2ГИС."
+          lead="Отзывы клиентов из карточки компании в 2ГИС — с авторами и датами."
           className="md:max-w-2xl"
         />
 
@@ -131,12 +130,9 @@ export function Reviews() {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-[14.5px] font-bold text-brand-400 transition-colors hover:text-brand-500"
         >
-          Смотреть все отзывы в 2ГИС
+          Все отзывы — в карточке 2ГИС
           <ExternalLink className="h-4 w-4" aria-hidden="true" />
         </a>
-        <p className="text-[13px] text-fog-500">
-          В карточке 2ГИС опубликованы и критические отзывы — мы не скрываем источник.
-        </p>
       </div>
     </Section>
   );

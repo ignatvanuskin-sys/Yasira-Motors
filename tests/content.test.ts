@@ -504,6 +504,73 @@ describe("поведение при reduced-motion", () => {
   });
 });
 
+describe("правки по аудиту", () => {
+  const layout = () => fs.readFileSync(path.join(ROOT, "app", "layout.tsx"), "utf8");
+
+  /** Исходники всех компонентов, включая fx/: их тексты тоже видит клиент. */
+  const componentSources = () => {
+    const dir = path.join(ROOT, "components");
+    const files: string[] = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        for (const nested of fs.readdirSync(path.join(dir, entry.name))) {
+          if (nested.endsWith(".tsx")) files.push(path.join(dir, entry.name, nested));
+        }
+      } else if (entry.name.endsWith(".tsx")) {
+        files.push(path.join(dir, entry.name));
+      }
+    }
+    return files.map((file) => ({ name: path.basename(file), text: fs.readFileSync(file, "utf8") }));
+  };
+
+  it("метаданные берут телефон из конфига, а не номер магазина", () => {
+    /*
+      Аудит: description и og/twitter показывали +7 777 088 44 36 — номер
+      магазина масел, тогда как все CTA на странице ведут на 44 24.
+    */
+    // Комментарий, который объясняет старый дефект, номер содержит — вырезаем
+    const source = layout().replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(source).toContain("phone.display");
+    expect(source).not.toMatch(/777\s?088\s?44\s?36/);
+  });
+
+  it("в текстах для клиента нет служебных пояснений", () => {
+    // Комментарии разработчика проверке не подлежат — вырезаем их.
+    const banned = [
+      /заявила в 2ГИС/i,
+      /Стоковых изображений/i,
+      /\bсверено\b/i,
+      /не скрываем/i,
+      /без изменений, с автором/i,
+    ];
+    for (const { name, text } of componentSources()) {
+      const body = text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+      for (const pattern of banned) {
+        expect(pattern.test(body), `${name}: ${pattern}`).toBe(false);
+      }
+    }
+  });
+
+  it("у секций нет нумерации, которой нет в реальности", () => {
+    for (const { name, text } of componentSources()) {
+      expect(text.includes('index="0'), name).toBe(false);
+    }
+  });
+
+  it("развал-схождение относится к ходовой части, а не к диагностике", () => {
+    const diagnostika = serviceGroups.find((group) => group.id === "diagnostika")!;
+    const hodovaya = serviceGroups.find((group) => group.id === "hodovaya")!;
+    expect(diagnostika.items.join(" ")).not.toMatch(/развал/i);
+    expect(hodovaya.items.join(" ")).toMatch(/развал-схождение/i);
+  });
+
+  it("в трансмиссии названы обе коробки передач", () => {
+    const transmissiya = serviceGroups.find((group) => group.id === "transmissiya")!;
+    expect(transmissiya.text).toMatch(/АКПП/);
+    expect(transmissiya.text).toMatch(/МКПП/);
+  });
+});
+
 describe("нет онлайн-записи", () => {
   it("в исходниках нет booking-механики", () => {
     const banned = [

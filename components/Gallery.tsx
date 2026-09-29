@@ -88,10 +88,9 @@ export function Gallery() {
     <Section id="gallery">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <SectionHead
-          index="04"
           eyebrow="Фото"
           title="Реальный сервис YASIRA MOTORS"
-          lead="Снимки цеха, оборудования и работы мастеров. Стоковых изображений на сайте нет."
+          lead="Цех, оборудование и работа мастеров YASIRA MOTORS."
           className="md:max-w-2xl"
         />
         <a

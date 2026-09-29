@@ -28,19 +28,19 @@ export function Section({
 }
 
 /**
- * Заголовок секции. Служебная строка набрана моноширинным капсом с номером
- * секции акцентом — это основной приём «технической» подачи: страница читается
- * как документ с разделами, а не как набор блоков.
+ * Заголовок секции: служебная строка моноширинным капсом и заголовок.
+ *
+ * Номеров у секций нет намеренно. «01/02/03» подразумевал порядок изучения,
+ * которого у страницы нет: человек приходит сразу к услугам или к контактам.
+ * Нумерация осталась только в блоке «Как мы работаем» — там это шаги.
  */
 export function SectionHead({
-  index,
   eyebrow,
   title,
   lead,
   align = "left",
   className = "",
 }: {
-  index?: string;
   eyebrow: string;
   title: ReactNode;
   lead?: ReactNode;
@@ -51,15 +51,7 @@ export function SectionHead({
     <div
       className={`${align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-3xl"} ${className}`}
     >
-      <p className="label flex items-center gap-2.5 text-fog-500">
-        {index ? (
-          <>
-            <span className="text-brand-400">{index}</span>
-            <span aria-hidden="true">/</span>
-          </>
-        ) : null}
-        {eyebrow}
-      </p>
+      <p className="label text-fog-500">{eyebrow}</p>
 
       <h2 className="display mt-4 text-[clamp(1.6rem,4.4vw,2.85rem)] text-fog-100">{title}</h2>
 

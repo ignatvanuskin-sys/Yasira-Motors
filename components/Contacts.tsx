@@ -18,7 +18,6 @@ export function Contacts() {
   return (
     <Section id="contacts">
       <SectionHead
-        index="06"
         eyebrow="Контакты"
         title="Приезжайте в YASIRA MOTORS"
         lead="Автосервис и магазин масел — по одному адресу в 25-м микрорайоне Актау."
@@ -83,8 +82,7 @@ export function Contacts() {
         <div className="lg:col-start-1 lg:row-start-2">
           <div className="card-surface h-full p-5 md:p-6">
             <h3 className="text-[15px] font-bold text-fog-100">Другие телефоны</h3>
-            <p className="mt-1.5 text-[12px] text-fog-500">Подписи — по данным карточки 2ГИС.</p>
-            <ul className="mt-1.5 divide-y divide-night-800">
+            <ul className="mt-2 divide-y divide-night-800">
               {extraPhones.map((item) => (
                 <li key={item.tel}>
                   <a

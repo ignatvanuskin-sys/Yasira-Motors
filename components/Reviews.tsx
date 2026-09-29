@@ -5,19 +5,26 @@ import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { Stars } from "@/components/Stars";
 import { TwoGisMark } from "@/components/icons";
 import { Section, SectionHead } from "@/components/Section";
-import { reviews } from "@/lib/content";
+import { REVIEWS_SHOWN, visibleReviews } from "@/lib/content";
 import { links, rating } from "@/lib/site";
 
 export function Reviews() {
   const railRef = useRef<HTMLUListElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  const [active, setActive] = useState(1);
 
   const sync = useCallback(() => {
     const el = railRef.current;
     if (!el) return;
     setAtStart(el.scrollLeft <= 8);
     setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 8);
+    // Номер карточки в окне: шаг = ширина карточки + зазор ленты (gap-3.5)
+    const card = el.firstElementChild as HTMLElement | null;
+    if (card && card.offsetWidth > 0) {
+      const step = card.offsetWidth + 14;
+      setActive(Math.min(REVIEWS_SHOWN, Math.max(1, Math.round(el.scrollLeft / step) + 1)));
+    }
   }, []);
 
   useEffect(() => {
@@ -85,7 +92,7 @@ export function Reviews() {
         aria-label="Отзывы клиентов из 2ГИС — прокручивается по горизонтали"
         className="no-scrollbar -mx-5 mt-9 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-5 pb-2 md:-mx-8 md:px-8"
       >
-        {reviews.map((review) => (
+        {visibleReviews.map((review) => (
           <li
             key={`${review.author}-${review.dateISO}`}
             className="w-[292px] shrink-0 snap-start sm:w-[352px]"
@@ -103,6 +110,14 @@ export function Reviews() {
                 «{review.text}»
               </p>
 
+              {/* Появляется только когда владелец подтвердит перевод */}
+              {review.translation ? (
+                <p className="mt-2.5 text-[13.5px] leading-relaxed text-fog-400">
+                  <span className="label mr-2 text-fog-500">Перевод</span>
+                  {review.translation}
+                </p>
+              ) : null}
+
               <footer className="mt-5 border-t border-line-soft pt-3.5">
                 <p className="text-[14.5px] font-bold text-fog-100">{review.author}</p>
                 <p className="mt-0.5 text-[12.5px] text-fog-500">{review.date}</p>
@@ -119,9 +134,14 @@ export function Reviews() {
       </ul>
 
       {/* Подсказка только на телефоне: на desktop рядом есть стрелки */}
-      <p className="mt-2 text-[13px] text-fog-500 sm:hidden">
-        Листайте карточки вбок, чтобы прочитать другие отзывы →
-      </p>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <p className="text-[13px] text-fog-500 sm:hidden">
+          Листайте карточки вбок, чтобы прочитать другие отзывы →
+        </p>
+        <p className="text-[13px] font-semibold text-fog-400 sm:ml-auto">
+          Отзыв {active} из {visibleReviews.length}
+        </p>
+      </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
         <a

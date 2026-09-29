@@ -1,8 +1,7 @@
-import { Phone } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { Reveal } from "@/components/Reveal";
 import { Section, SectionHead } from "@/components/Section";
-import { SymptomChips } from "@/components/SymptomChips";
 import { RubricMarquee } from "@/components/fx/RubricMarquee";
 import { serviceGroups } from "@/lib/content";
 import { phone, whatsappLink, whatsappServiceText } from "@/lib/site";
@@ -34,57 +33,53 @@ export function Services() {
         {serviceGroups.map((group, i) => (
           <li key={group.id} className="border-b border-line last:border-b-0">
             <Reveal delay={Math.min(i * 40, 200)}>
-              <div className="flex items-center gap-2 py-6 md:gap-3 md:py-7">
-                <a
-                  href={`tel:${phone.tel}`}
-                  aria-label={`Позвонить в YASIRA MOTORS по услуге «${group.title}»`}
-                  className="group flex min-w-0 flex-1 items-center gap-4 md:gap-8"
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="display block text-[clamp(1.05rem,3.6vw,1.55rem)] text-fog-100">
-                      {group.title}
-                    </span>
-                    <span className="mt-2 block max-w-[52ch] text-[14px] leading-relaxed text-fog-400">
-                      {group.text}
-                    </span>
-                    <span className="mt-3 hidden flex-wrap gap-1.5 md:flex">
-                      {group.items.map((item) => (
-                        <span
-                          key={item}
-                          className="label rounded-chip border border-line px-2.5 py-1.5 text-fog-500"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </span>
+              {/*
+                Вся строка — одна ссылка в WhatsApp. На телефоне попасть по
+                строке заметно проще, чем по кнопке рядом с текстом, а вложенные
+                ссылки ломают и разметку, и озвучку скринридером. Звонок остался
+                в первом экране, в контактах и в нижней панели.
+              */}
+              <a
+                href={whatsappLink(phone.whatsapp, whatsappServiceText(group.title))}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Написать в WhatsApp про «${group.title}»`}
+                className="group flex min-h-[48px] items-center gap-4 py-6 md:gap-8 md:py-7"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="display block text-[clamp(1.05rem,3.6vw,1.55rem)] text-fog-100">
+                    {group.title}
                   </span>
-
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ctl border border-line transition-colors group-hover:border-brand-500 group-hover:bg-brand-500">
-                    <Phone
-                      className="h-4 w-4 text-fog-300 transition-colors group-hover:text-white"
-                      strokeWidth={2.2}
+                  <span className="mt-2 block max-w-[52ch] text-[14px] leading-relaxed text-fog-400">
+                    {group.text}
+                  </span>
+                  <span className="mt-3 hidden flex-wrap gap-1.5 md:flex">
+                    {group.items.map((item) => (
+                      <span
+                        key={item}
+                        className="label rounded-chip border border-line px-2.5 py-1.5 text-fog-500"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </span>
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-fog-500 transition-colors group-hover:text-brand-400">
+                    Написать в WhatsApp
+                    <ArrowRight
+                      className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
                       aria-hidden="true"
                     />
                   </span>
-                </a>
+                </span>
 
-                <a
-                  href={whatsappLink(phone.whatsapp, whatsappServiceText(group.title))}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Написать в WhatsApp про «${group.title}»`}
-                  className="group flex h-11 w-11 shrink-0 items-center justify-center rounded-ctl border border-line transition-colors hover:border-brand-500 hover:bg-brand-500"
-                >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ctl border border-line transition-colors group-hover:border-brand-500 group-hover:bg-brand-500">
                   <WhatsAppIcon className="h-4 w-4 text-fog-300 transition-colors group-hover:text-white" />
-                </a>
-              </div>
+                </span>
+              </a>
             </Reveal>
           </li>
         ))}
       </ul>
-
-      {/* Самый короткий путь к обращению: выбор симптома вместо выбора услуги */}
-      <SymptomChips />
 
       {/* Полный перечень рубрик, заявленных компанией в 2ГИС: выше показаны
           направления, здесь — весь список целиком */}

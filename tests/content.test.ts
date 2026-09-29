@@ -1,7 +1,16 @@
 ﻿import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { advantages, photos, process, reviews, serviceGroups, symptoms } from "@/lib/content";
+import {
+  REVIEWS_SHOWN,
+  advantages,
+  photos,
+  process,
+  reviews,
+  serviceGroups,
+  symptoms,
+  visibleReviews,
+} from "@/lib/content";
 import {
   address,
   company,
@@ -568,6 +577,50 @@ describe("правки по аудиту", () => {
     const transmissiya = serviceGroups.find((group) => group.id === "transmissiya")!;
     expect(transmissiya.text).toMatch(/АКПП/);
     expect(transmissiya.text).toMatch(/МКПП/);
+  });
+});
+
+describe("мобильная выдача", () => {
+  it("симптомов не больше девяти и у каждого готовое сообщение", () => {
+    expect(symptoms.length).toBeLessThanOrEqual(9);
+    for (const symptom of symptoms) {
+      expect(symptom.text).toContain("Здравствуйте! Пишу с сайта YASIRA MOTORS.");
+      expect(symptom.text.trimEnd().endsWith("Авто (марка, модель, год):")).toBe(true);
+    }
+  });
+
+  it("отзывы идут свежие сверху, не больше шести, старые скрыты", () => {
+    expect(visibleReviews.length).toBeLessThanOrEqual(REVIEWS_SHOWN);
+    const dates = visibleReviews.map((review) => review.dateISO);
+    expect([...dates].sort((a, b) => b.localeCompare(a))).toEqual(dates);
+    for (const review of visibleReviews) {
+      // Скрытый отзыв не должен попасть в выборку, а старый — тем более
+      expect(review.hidden).toBeUndefined();
+      expect(review.dateISO >= "2021-01-01").toBe(true);
+    }
+  });
+
+  it("строка услуги — одна ссылка, без вложенных", () => {
+    /*
+      На телефоне по строке попасть проще, чем по кнопке рядом, а вложенные
+      ссылки ломают и разметку, и озвучку скринридером.
+    */
+    const source = fs.readFileSync(path.join(ROOT, "components", "Services.tsx"), "utf8");
+    // Границы списка: от его начала до ленты рубрик под ним
+    const list = source.slice(source.indexOf("serviceGroups.map"), source.indexOf("<RubricMarquee"));
+    expect(list).toContain("whatsappLink(phone.whatsapp");
+    expect(list).not.toContain("`tel:");
+    expect(list.match(/<a[\s>]/g)?.length).toBe(1);
+  });
+
+  it("«Что беспокоит?» стоит сразу после первого экрана", () => {
+    const page = fs.readFileSync(path.join(ROOT, "app", "page.tsx"), "utf8");
+    let cursor = -1;
+    for (const marker of ["<Hero />", "<Marquee />", "<SymptomChips />", "<Services />"]) {
+      const at = page.indexOf(marker);
+      expect(at, marker).toBeGreaterThan(cursor);
+      cursor = at;
+    }
   });
 });
 

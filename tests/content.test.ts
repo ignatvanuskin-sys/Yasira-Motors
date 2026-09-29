@@ -424,15 +424,26 @@ describe("тёмная карта", () => {
     expect(csp).not.toContain("script-src https:");
   });
 
-  it("карта использует координаты компании и встроенный эмбед OSM", () => {
-    const map = readSource("components/MapPanel.tsx");
+  it("карта грузится только по нажатию и маршрут строится из координат", () => {
+    // Комментарии объясняют старый механизм — проверяем только код
+    const map = readSource("components/MapPanel.tsx").replace(/\/\*[\s\S]*?\*\//g, "");
     expect(map).toContain("openstreetmap.org/export/embed.html");
     expect(map).toContain("address.lat");
     expect(map).toContain("address.lng");
     // Своя метка ставится оверлеем, а не берётся из чужого оформления
     expect(map).toContain("MapPin");
-    // iframe монтируется только при подходе — первый экран не должен ждать
-    expect(map).toContain("IntersectionObserver");
+
+    // До нажатия — фасад с адресом: чужие тайлы не тянутся при прокрутке
+    expect(map).toContain("Показать карту");
+    // Бесконечного «Загружаем карту…» быть не должно
+    expect(map).not.toContain("Загружаем карту");
+    // При ошибке остаётся текстовая ссылка, а не пустая рамка
+    expect(map).toContain("onError");
+
+    // Маршрут в трёх картах, без ключей и сторонних библиотек
+    for (const provider of ["2gis", "google", "yandex"]) {
+      expect(map).toContain(`provider: "${provider}"`);
+    }
   });
 
   it("тёмная тема карты сделана фильтром, а не платным провайдером", () => {

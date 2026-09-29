@@ -52,7 +52,12 @@ export function Hero() {
         className="top-0 left-0 h-[78%] w-[92%] lg:h-full lg:w-[62%]"
       />
 
-      <div className="shell relative z-10 flex flex-1 flex-col justify-end pt-[104px]">
+      {/*
+        Отступы первого экрана намеренно разные по ширине экрана. На 360×640
+        рейтинг и обе кнопки обязаны попадать в кадр без прокрутки, поэтому
+        на телефоне вертикальные интервалы сжаты; с sm возвращается воздух.
+      */}
+      <div className="shell relative z-10 flex flex-1 flex-col justify-end pt-[76px] sm:pt-[104px]">
         <p className="label flex flex-wrap items-center gap-x-3 gap-y-1 text-fog-200">
           YASIRA MOTORS
           <span className="text-fog-500">/</span>
@@ -63,24 +68,24 @@ export function Hero() {
 
         {/* Oswald узкий, поэтому кегль можно поднять: строки остаются
             компактными и не заходят глубоко на светлую часть снимка */}
-        <h1 className="display mt-5 text-[clamp(2.2rem,min(7.8vw,9.8vh),5.6rem)] text-fog-100">
+        <h1 className="display mt-3.5 text-[clamp(2rem,min(7.8vw,9.8vh),5.6rem)] text-fog-100 sm:mt-5">
           <span className="block">YASIRA MOTORS</span>
           <span className="block">Ремонт и обслуживание</span>
           <span className="display-outline block">автомобилей в Актау</span>
         </h1>
 
-        <p className="mt-6 max-w-[46ch] text-[16.5px] leading-relaxed text-fog-200">
+        <p className="mt-4 max-w-[46ch] text-[16.5px] leading-relaxed text-fog-200 sm:mt-6">
           Диагностика, техническое обслуживание и ремонт легковых автомобилей. Сначала
           находим причину неисправности — затем согласовываем работы и стоимость.
         </p>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="mt-5 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
           <CallButton size="lg" label={`Позвонить ${phone.display}`} />
           <WhatsAppButton size="lg" />
         </div>
 
         {/* Строка доверия без рамок: рейтинг и график, разделённые волоском */}
-        <div className="mt-9 flex flex-wrap items-center gap-x-4 gap-y-2 pb-10 text-fog-400">
+        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 pb-4 text-fog-400 sm:mt-9 sm:pb-10">
           <a
             href={links.twogisReviews}
             target="_blank"

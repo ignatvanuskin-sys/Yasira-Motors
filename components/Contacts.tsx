@@ -4,7 +4,7 @@ import { MapPanel } from "@/components/MapPanel";
 import { OpenStatus } from "@/components/OpenStatus";
 import { Section, SectionHead } from "@/components/Section";
 import { WhatsAppIcon } from "@/components/icons";
-import { address, email, links, paymentMethods, phone, phones } from "@/lib/site";
+import { address, email, links, paymentMethods, phone, phones, scheduleSummary } from "@/lib/site";
 
 /**
  * Порядок блоков намеренный: сначала быстрые действия и адрес, потом карта,
@@ -43,6 +43,8 @@ export function Contacts() {
                 href={links.twogisRoute}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-track="route_click"
+                data-track-provider="2gis"
                 className="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-ctl border border-line bg-night-800 px-6 text-[15px] font-semibold text-fog-100 transition-colors hover:border-brand-500 sm:col-span-2"
               >
                 <Navigation className="h-[18px] w-[18px] text-brand-400" aria-hidden="true" />
@@ -55,16 +57,9 @@ export function Contacts() {
                 <Clock className="h-[17px] w-[17px] text-fog-400" aria-hidden="true" />
                 График работы
               </h4>
-              <dl className="mt-2 divide-y divide-night-800">
-                <div className="flex items-center justify-between gap-3 py-1.5">
-                  <dt className="text-[14.5px] text-fog-400">Пн–Сб</dt>
-                  <dd className="text-[14.5px] font-semibold text-fog-200">09:00–19:00</dd>
-                </div>
-                <div className="flex items-center justify-between gap-3 py-1.5">
-                  <dt className="text-[14.5px] text-fog-400">Воскресенье</dt>
-                  <dd className="text-[14.5px] font-semibold text-fog-200">10:00–17:00</dd>
-                </div>
-              </dl>
+              {/* График берётся из конфига: набранный руками, он расходится
+                  с остальной страницей и с разметкой для поисковика */}
+              <p className="mt-2 text-[14.5px] font-semibold text-fog-200">{scheduleSummary}</p>
               <p className="mt-2">
                 <OpenStatus />
               </p>
@@ -87,7 +82,9 @@ export function Contacts() {
                 <li key={item.tel}>
                   <a
                     href={`tel:${item.tel}`}
-                    className="flex min-h-[44px] items-center justify-between gap-3 text-[13.5px] text-fog-400 transition-colors hover:text-fog-200"
+                    data-track="call_click"
+                    data-track-source="contacts"
+                    className="flex min-h-[48px] items-center justify-between gap-3 text-[13.5px] text-fog-400 transition-colors hover:text-fog-200"
                   >
                     <span>{item.label}</span>
                     <span className="font-semibold whitespace-nowrap text-fog-300">

@@ -977,7 +977,7 @@ async function main() {
 
     /* --------------- 14. Настройки пользователя -------------------------- */
     await runGroup("Настройки пользователя (reduced-motion, контраст)", async () => {
-      // Отключённая анимация: бегущая строка стоит, блоки видны сразу
+      // Отключённая анимация: лента рубрик стоит и разложена, блоки видны сразу
       await page.send("Emulation.setEmulatedMedia", {
         features: [{ name: "prefers-reduced-motion", value: "reduce" }],
       });
@@ -986,20 +986,42 @@ async function main() {
       const reduced = await cdp.evaluate(
         page,
         `(() => {
-           const track = document.querySelector('.marquee-track');
+           const name = (el) => (el ? getComputedStyle(el).animationName : 'нет элемента');
+           const ribbon = document.querySelector('.marquee-ribbon .marquee-track');
+           const cards = document.querySelector('.marquee-group .marquee-track');
            const hidden = [...document.querySelectorAll('[data-reveal]')].filter(
              (el) => getComputedStyle(el).opacity === '0',
            );
            return {
-             animation: track ? getComputedStyle(track).animationName : 'нет трека',
+             ribbon: name(ribbon),
+             cards: name(cards),
+             cardsWrap: cards ? getComputedStyle(cards).flexWrap : '',
+             cardsCopies: cards
+               ? [...cards.children].filter((el) => getComputedStyle(el).display !== 'none').length
+               : 0,
              hiddenBlocks: hidden.length,
            };
          })()`,
       );
       await page.send("Emulation.setEmulatedMedia", { features: [] });
 
-      if (reduced.animation !== "none" && reduced.animation !== "нет трека") {
-        record("error", "reduced-motion-marquee", `при reduced-motion бегущая строка продолжает анимацию (${reduced.animation})`);
+      /*
+        Лента направлений в первом экране — намеренное исключение: по просьбе
+        владельца сайта она остаётся движущейся, иначе на телефоне читается
+        столбиком текста. Проверяем, что исключение живо, а не просто забыто.
+      */
+      if (reduced.ribbon !== "marquee") {
+        record("error", "ribbon-motion", `лента направлений в первом экране не движется при reduced-motion (${reduced.ribbon})`);
+      }
+      if (reduced.cards !== "none" && reduced.cards !== "нет элемента") {
+        record("error", "reduced-motion-marquee", `при reduced-motion лента рубрик продолжает анимацию (${reduced.cards})`);
+      }
+      if (reduced.cardsWrap !== "wrap" || reduced.cardsCopies !== 1) {
+        record(
+          "error",
+          "reduced-motion-marquee-clipped",
+          `остановленная лента рубрик обрезана: flex-wrap ${reduced.cardsWrap}, копий показано ${reduced.cardsCopies}`,
+        );
       }
       if (reduced.hiddenBlocks > 0) {
         record("error", "reduced-motion-reveal", `при reduced-motion скрыто блоков: ${reduced.hiddenBlocks}`);

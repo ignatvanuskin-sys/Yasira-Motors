@@ -436,11 +436,24 @@ describe("бегущая строка", () => {
   const source = () =>
     fs.readFileSync(path.join(ROOT, "components", "Marquee.tsx"), "utf8");
 
-  it("декоративная: скрыта от скринридеров и останавливается при reduced-motion", () => {
+  it("декоративная: скрыта от скринридеров и собрана из основных направлений", () => {
     expect(source()).toContain('aria-hidden="true"');
+    // Полный перечень направлений остаётся ниже, в блоке услуг
+    expect(source()).toMatch(/serviceGroups\.slice\(0, MAIN_DIRECTIONS\)/);
+  });
+
+  it("остаётся полоской и при reduced-motion — по просьбе владельца сайта", () => {
+    /*
+      Остановленная и обрезанная полоска читается столбиком текста, поэтому
+      движение здесь сохраняется намеренно. Исключение живёт под отдельным
+      классом; лента рубрик под блоком услуг по-прежнему останавливается
+      и раскладывается в строки.
+    */
+    expect(source()).toContain("marquee-ribbon");
     const css = fs.readFileSync(path.join(ROOT, "app", "globals.css"), "utf8");
-    expect(css).toContain(".marquee-track");
-    expect(css).toMatch(/prefers-reduced-motion[\s\S]*marquee-track/);
+    expect(css).toMatch(
+      /prefers-reduced-motion[\s\S]*\.marquee-ribbon \.marquee-track\s*\{[^}]*animation: marquee/,
+    );
   });
 
   it("содержит две одинаковые копии — иначе цикл был бы с разрывом", () => {
@@ -470,7 +483,7 @@ describe("поведение при reduced-motion", () => {
     for (const selector of [
       ".spotlight",
       ".beam-path",
-      ".marquee-track",
+      ".marquee-group .marquee-track",
       ".animate-bounce",
       ".animate-ping",
       ".animate-pulse",
@@ -479,12 +492,14 @@ describe("поведение при reduced-motion", () => {
     }
   });
 
-  it("раскладывает остановленную ленту, а не оставляет её обрезанной", () => {
+  it("раскладывает остановленную ленту рубрик, а не оставляет её обрезанной", () => {
     const source = css();
-    expect(source).toMatch(/prefers-reduced-motion[\s\S]*\.marquee-track\s*\{[^}]*flex-wrap: wrap/);
+    expect(source).toMatch(
+      /prefers-reduced-motion[\s\S]*\.marquee-group \.marquee-track\s*\{[^}]*flex-wrap: wrap/,
+    );
     // Вторая копия нужна только для цикла — в статике это дубль каждого слова
     expect(source).toMatch(
-      /prefers-reduced-motion[\s\S]*\.marquee-track > :nth-child\(n \+ 2\)\s*\{[^}]*display: none/,
+      /prefers-reduced-motion[\s\S]*\.marquee-group \.marquee-track > :nth-child\(n \+ 2\)\s*\{[^}]*display: none/,
     );
   });
 });

@@ -3,16 +3,28 @@ import { company } from "@/lib/site";
 
 /**
  * Бегущая строка с направлениями работ — визуальный разделитель между первым
- * экраном и услугами. Декоративная: для скринридеров скрыта, при
- * prefers-reduced-motion анимация выключается, при наведении ставится на паузу.
- * Ширина трека = две одинаковые копии, поэтому сдвиг на 50% даёт бесшовный цикл.
+ * экраном и услугами. Декоративная: для скринридеров скрыта, при наведении
+ * ставится на паузу. Ширина трека = две одинаковые копии, поэтому сдвиг
+ * на 50% даёт бесшовный цикл.
+ *
+ * Набор сокращён до основных направлений: полный список всё равно идёт ниже,
+ * в блоке услуг, а от длинного перечня полоска только тяжелеет.
+ *
+ * Движение при `prefers-reduced-motion` здесь сохраняется намеренно: иначе
+ * на телефоне полоска перестаёт быть полоской и читается столбиком текста.
+ * Это исключение описано в globals.css по классу `marquee-ribbon`.
  */
+const MAIN_DIRECTIONS = 5;
+
 export function Marquee() {
-  const words = [...serviceGroups.map((group) => group.title), company.city];
+  const words = [
+    ...serviceGroups.slice(0, MAIN_DIRECTIONS).map((group) => group.title),
+    company.city,
+  ];
 
   return (
     <div
-      className="marquee relative overflow-hidden border-y border-line bg-night-900 py-4"
+      className="marquee marquee-ribbon relative overflow-hidden border-y border-line bg-night-900 py-4"
       aria-hidden="true"
     >
       <div className="marquee-track">

@@ -1,5 +1,5 @@
 import { address, company, email, links, phone, schedule, SITE_URL } from "@/lib/site";
-import { serviceGroups } from "@/lib/content";
+import { faq, serviceGroups } from "@/lib/content";
 
 /** schedule[] идёт с понедельника — Schema.org требует английские имена дней. */
 const SCHEMA_DAYS = [
@@ -68,5 +68,23 @@ export function structuredData() {
         },
       })),
     },
+  };
+}
+
+/**
+ * Разметка FAQPage — из тех же данных, что показаны в блоке «Частые вопросы».
+ * Расхождение между разметкой и текстом на странице поисковики считают
+ * нарушением, поэтому источник один.
+ */
+export function faqStructuredData() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${SITE_URL}/#faq`,
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
   };
 }

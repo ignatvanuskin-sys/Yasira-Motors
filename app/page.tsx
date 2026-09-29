@@ -1,5 +1,6 @@
 import { Advantages } from "@/components/Advantages";
 import { Contacts } from "@/components/Contacts";
+import { Faq } from "@/components/Faq";
 import { FinalCta } from "@/components/FinalCta";
 import { Gallery } from "@/components/Gallery";
 import { Hero } from "@/components/Hero";
@@ -28,6 +29,7 @@ export default function HomePage() {
       <Process />
       <Gallery />
       <Reviews />
+      <Faq />
       <Contacts />
       <FinalCta />
     </>

@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { MobileBar } from "@/components/MobileBar";
 import { RevealScript } from "@/components/RevealScript";
 import { company, phone, rating, SITE_URL } from "@/lib/site";
-import { structuredData } from "@/lib/seo";
+import { faqStructuredData, structuredData } from "@/lib/seo";
 import "./globals.css";
 
 /*
@@ -26,19 +26,11 @@ export const metadata: Metadata = {
   },
   description,
   applicationName: company.name,
-  keywords: [
-    "автосервис Актау",
-    "СТО Актау",
-    "ремонт автомобилей Актау",
-    "обслуживание автомобилей Актау",
-    "замена масла Актау",
-    "компьютерная диагностика Актау",
-    "развал-схождение Актау",
-    "ремонт АКПП Актау",
-    "ремонт ходовой части Актау",
-    "шиномонтаж Актау",
-    "YASIRA MOTORS",
-  ],
+  /*
+    meta keywords не заполняем: поисковики его не учитывают уже много лет,
+    а список ключевых слов в разметке только раскрывает, что мы считаем
+    важным. Ключевые фразы работают в тексте страницы и в разметке Schema.org.
+  */
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -115,6 +107,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           // Данные только подтверждённые: адрес, телефон, график, рубрики.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData()) }}
+        />
+        <script
+          type="application/ld+json"
+          // Вопросы и ответы — те же, что в блоке «Частые вопросы» на странице.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData()) }}
         />
       </head>
       <body className="flex min-h-screen flex-col pb-mobile-bar">

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   REVIEWS_SHOWN,
   advantages,
+  faq,
   photos,
   process,
   reviews,
@@ -577,6 +578,35 @@ describe("правки по аудиту", () => {
     const transmissiya = serviceGroups.find((group) => group.id === "transmissiya")!;
     expect(transmissiya.text).toMatch(/АКПП/);
     expect(transmissiya.text).toMatch(/МКПП/);
+  });
+});
+
+describe("частые вопросы", () => {
+  it("шесть-восемь вопросов, ответы только из подтверждённых данных", () => {
+    expect(faq.length).toBeGreaterThanOrEqual(6);
+    expect(faq.length).toBeLessThanOrEqual(8);
+    for (const item of faq) {
+      expect(item.question.endsWith("?")).toBe(true);
+      expect(item.answer.length).toBeGreaterThan(15);
+      // Гарантий, цен и скидок владелец не подтверждал — обещать нельзя
+      expect(item.answer).not.toMatch(/гаранти|₸|скидк|бесплатн/i);
+    }
+  });
+
+  it("аккордеон нативный, а разметка FAQPage берёт те же данные", () => {
+    const component = fs.readFileSync(path.join(ROOT, "components", "Faq.tsx"), "utf8");
+    expect(component).toContain("<details");
+    expect(component).toContain("<summary");
+    const seo = fs.readFileSync(path.join(ROOT, "lib", "seo.ts"), "utf8");
+    expect(seo).toContain("FAQPage");
+    expect(seo).toContain("faq.map");
+  });
+
+  it("устаревший meta keywords убран", () => {
+    const layout = fs
+      .readFileSync(path.join(ROOT, "app", "layout.tsx"), "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(layout).not.toContain("keywords");
   });
 });
 
